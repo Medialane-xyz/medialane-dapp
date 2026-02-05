@@ -1,0 +1,378 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.gradient-background {
+  background: linear-gradient(300deg, rgba(0, 0, 255, 0.1), rgba(0, 47, 255, 0.1), rgba(0, 81, 255, 0.1));
+  background-size: 180% 180%;
+  animation: gradient-animation 18s ease infinite;
+
+  @keyframes gradient-animation {
+    0% {
+      background-position: 20% 50%;
+    }
+
+    50% {
+      background-position: 70% 20%;
+    }
+
+    100% {
+      background-position: 50% 20%;
+    }
+  }
+}
+
+
+.background-image {
+  background: './background.jpg';
+}
+
+.bg-modal {
+  backdrop-filter: blur(7.449999809265137px);
+}
+
+.ml-blue {
+  color: blue;
+}
+
+.ml-bg-blue {
+  color: blue;
+}
+
+
+
+
+
+.gradient-teal-purple {
+  background: linear-gradient(135deg, #14b8a6, #a855f7);
+}
+
+.gradient-purple-orange {
+  background: linear-gradient(135deg, #a855f7, #f97316);
+}
+
+.gradient-teal-orange {
+  background: linear-gradient(135deg, #14b8a6, #f97316);
+}
+
+@layer base {
+  :root {
+
+    /* Glass OS System Palette */
+    --background: 260 50% 3%;
+    /* #050308 - Deepvoid */
+    --foreground: 210 20% 98%;
+    /* Holographic White */
+
+    /* Glass Panels */
+    --card: 260 50% 3%;
+    --card-foreground: 210 20% 98%;
+    --popover: 260 50% 3%;
+    --popover-foreground: 210 20% 98%;
+
+    /* Neon Accents */
+    --primary: 180 100% 50%;
+    /* #00FFFF - Cyber Cyan */
+    --primary-foreground: 260 50% 3%;
+
+    --secondary: 300 100% 50%;
+    /* #FF00FF - Hyper Pink */
+    --secondary-foreground: 210 20% 98%;
+
+    --accent: 260 100% 65%;
+    /* #8A2BE2 - Electric Violet */
+    --accent-foreground: 210 20% 98%;
+
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 210 20% 98%;
+
+    /* UI Chrome */
+    --muted: 260 30% 15%;
+    --muted-foreground: 260 20% 60%;
+
+    --border: 260 30% 20%;
+    --input: 260 30% 20%;
+    --ring: 180 100% 50%;
+
+    --radius: 1rem;
+    /* OS-like 16px radius */
+  }
+
+  .dark {
+    /* Identical to root but defined for Shadcn compatibility */
+    --background: 260 50% 3%;
+    --foreground: 210 20% 98%;
+    --card: 260 50% 3%;
+    --card-foreground: 210 20% 98%;
+    --popover: 260 50% 3%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 180 100% 50%;
+    --primary-foreground: 260 50% 3%;
+    --secondary: 300 100% 50%;
+    --secondary-foreground: 210 20% 98%;
+    --accent: 260 100% 65%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 210 20% 98%;
+    --muted: 260 30% 15%;
+    --muted-foreground: 260 20% 60%;
+    --border: 260 30% 20%;
+    --input: 260 30% 20%;
+    --ring: 180 100% 50%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans overflow-x-hidden selection:bg-primary/30 selection:text-primary;
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 0% 0%, rgba(190, 24, 255, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 100% 0%, rgba(0, 255, 255, 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  /* Custom Scrollbar for Webkit */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-white/10 rounded-full hover:bg-white/20;
+  }
+}
+
+
+
+/* Added gradient utilities for vivid UI elements */
+@layer utilities {
+  .gradient-teal-purple {
+    background: linear-gradient(135deg, #16a2f9 0%, #d7607b 100%);
+  }
+
+  .gradient-purple-orange {
+    background: linear-gradient(135deg, #6855f7 0%, #2916f9 100%);
+  }
+
+  .gradient-teal-orange {
+    background: linear-gradient(135deg, #2916f9 0%, #3b82f6 50%, #d7607b 100%);
+  }
+
+  .dark .gradient-teal-purple {
+    background: linear-gradient(135deg, #3e47fb 0%, #84cafc 100%);
+  }
+
+  .dark .gradient-purple-orange {
+    background: linear-gradient(135deg, #60abd7 0%, #285dfe 100%);
+  }
+
+  .dark .gradient-teal-orange {
+    background: linear-gradient(135deg, #f889c4 0%, #d7607b 50%, #285dfe 100%);
+  }
+
+  /* Added custom animations for bold, impressive UX */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes gradient {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes pulse-slow {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(200%);
+    }
+  }
+
+  @keyframes shine {
+    0% {
+      box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+    }
+
+    50% {
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+    }
+
+    100% {
+      box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+    }
+  }
+
+  /* Added border gradient animation for cards */
+  @keyframes border-gradient {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+  }
+
+  .animate-gradient-shift {
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+
+  .animate-shine {
+    animation: shine 2s ease-in-out infinite;
+  }
+
+  /* Added animated border gradient utility */
+  .animate-border-gradient {
+    animation: border-gradient 3s ease infinite;
+  }
+
+  .delay-500 {
+    animation-delay: 0.5s;
+  }
+
+  .delay-1000 {
+    animation-delay: 1s;
+  }
+}
+
+/*  Utilities */
+@layer utilities {
+  .glass {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20 shadow-sm;
+  }
+
+  .dark .glass {
+    @apply bg-black/30 backdrop-blur-xl border border-white/10 shadow-sm;
+  }
+
+  .glass-card {
+    @apply bg-white/15 backdrop-blur-md border border-white/10 shadow-md rounded-xl transition-all duration-300;
+  }
+
+  .glass-card:hover {
+    @apply bg-white/10 border-white/20 shadow-lg transform -translate-y-1;
+  }
+
+  .dark .glass-card {
+    @apply bg-black/20 backdrop-blur-md border border-white/5 shadow-sm rounded-xl;
+  }
+
+  .dark .glass-card:hover {
+    @apply bg-black/30 border-white/10 shadow-lg transform -translate-y-1;
+  }
+
+  .glass-button {
+    @apply bg-white/10 backdrop-blur-sm border border-white/20 shadow-sm hover:bg-white/20 transition-all rounded-lg active:scale-95;
+  }
+
+  .dark .glass-button {
+    @apply bg-white/5 backdrop-blur-sm border border-white/10 shadow-sm hover:bg-white/10 transition-all rounded-lg active:scale-95;
+  }
+
+  .text-glass {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70;
+  }
+}
+
+/* Global Background */
+/* Global Background */
+.vivid-gradient-bg {
+  /* Default to Light Mode */
+  background:
+    radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.5), transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(244, 114, 182, 0.5), transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(96, 165, 250, 0.5), transparent 40%);
+  background-color: #f8fafc;
+  background-attachment: fixed;
+}
+
+/* Dark Mode Override */
+.dark .vivid-gradient-bg {
+  background:
+    radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.5), transparent 50%),
+    radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.5), transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(59, 130, 246, 0.5), transparent 50%);
+  background-color: #0e1629;
+  background-attachment: fixed;
+}
