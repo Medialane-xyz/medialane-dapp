@@ -125,7 +125,7 @@ export default function CollectionDetails({ collectionAddress }: CollectionDetai
     }
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background py-10">
             {/*  Header */}
             <div className="relative overflow-hidden -mt-[88px] pt-[150px] pb-24 min-h-[500px] flex flex-col justify-center">
                 {/* Background with gradient and blur */}

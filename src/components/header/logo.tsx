@@ -1,27 +1,49 @@
-import { Copyright } from 'lucide-react'
+"use client"
+
 import Link from 'next/link'
-import Image from "next/image";
+import Image from "next/image"
+import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 
 export function Logo() {
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="flex items-center space-x-2 ml-4">
+        <Link href="/">
+          <div className="w-[140px] h-[33px]" />
+        </Link>
+      </div>
+    )
+  }
+
   return (
     <div className="flex items-center space-x-2 ml-4">
-      <Link href="/">
-
-        <Image
-          className="hidden dark:block"
-          src="/medialane.png"
-          alt="Medialane"
-          width={140}
-          height={33}
-        />
-        <Image
-          className="block dark:hidden"
-          src="/medialane.png"
-          alt="Medialane"
-          width={140}
-          height={33}
-        />
-
+      <Link href="/" className="transition-opacity hover:opacity-80">
+        {resolvedTheme === "dark" ? (
+          <Image
+            src="/medialane-light-logo.png"
+            alt="Medialane"
+            width={140}
+            height={33}
+            priority
+          />
+        ) : (
+          <Image
+            src="/medialane-dark-logo.png"
+            alt="Medialane"
+            width={140}
+            height={33}
+            priority
+          />
+        )}
       </Link>
     </div>
   )

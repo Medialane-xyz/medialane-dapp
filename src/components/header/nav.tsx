@@ -7,307 +7,198 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import {
   Rocket,
-  LayoutDashboard,
-  FileText,
-  Bookmark,
-  Shield,
-  UserCircle,
-  PlayCircle,
-  Download,
-  Zap,
-  Briefcase,
-  BarChart3,
-  FileSignature,
-  Tags,
-  User,
   Box,
-  Grid,
-  Scroll,
-  FileTextIcon,
-  Diamond,
+  Grid3X3,
+  Boxes,
+  Activity,
+  ArrowRightLeft,
+  IterationCcw,
+  BookOpen,
+  ShoppingBag,
   FileCode,
   Layers,
-  Gem,
-  Blocks,
-  ShoppingBag,
-  Coins,
-  BoxIcon,
-  FileCode2,
-  Gauge,
-  Brain,
-  LayoutGrid,
-  ArrowRightLeft,
-  Building,
-  FileBadge,
-  Grid2X2,
-  Grid2X2Icon,
-  Grid3X3,
-  IterationCwIcon,
-  IterationCcw,
-  Activity,
-  Boxes,
-  BookOpen,
+  Sparkles,
 } from "lucide-react"
-import { Logo } from "@/components/header/logo"
+import { cn } from "@/lib/utils"
+
+// Custom styled navigation link for dropdowns
+const NavLink = ({
+  href,
+  icon: Icon,
+  title,
+  description,
+  featured = false,
+}: {
+  href: string
+  icon: React.ElementType
+  title: string
+  description: string
+  featured?: boolean
+}) => (
+  <NavigationMenuLink asChild>
+    <Link
+      href={href}
+      className={cn(
+        "group flex items-start gap-3 rounded-xl p-3 transition-all duration-200",
+        "hover:bg-white/10 dark:hover:bg-white/5",
+        featured && "bg-gradient-to-br from-violet-500/10 to-cyan-500/10 border border-white/10"
+      )}
+    >
+      <div className={cn(
+        "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors",
+        featured
+          ? "bg-gradient-to-br from-violet-500 to-cyan-500 text-white"
+          : "bg-white/10 dark:bg-white/5 text-foreground/70 group-hover:text-foreground group-hover:bg-white/20 dark:group-hover:bg-white/10"
+      )}>
+        <Icon className="h-4 w-4" />
+      </div>
+      <div className="flex-1 space-y-1">
+        <p className="text-sm font-medium leading-none text-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground line-clamp-2">{description}</p>
+      </div>
+    </Link>
+  </NavigationMenuLink>
+)
 
 export function MainNav() {
   return (
-    <div className="mr-4 hidden md:flex items-center space-x-4">
+    <NavigationMenu className="max-w-none">
+      <NavigationMenuList className="gap-1">
 
-      <Logo />
+        {/* MARKETPLACE */}
+        <NavigationMenuItem>
+          <NavigationMenuTrigger className="h-9 px-4 rounded-full bg-white/5 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-white/10 border border-white/10 dark:border-white/5 text-foreground/80 hover:text-foreground data-[state=open]:bg-white/15 dark:data-[state=open]:bg-white/10 transition-all duration-200">
+            <ShoppingBag className="mr-2 h-4 w-4" />
+            Marketplace
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="grid gap-2 p-4 w-[400px]">
+              <NavLink
+                href="/collections"
+                icon={Grid3X3}
+                title="Collections"
+                description="Browse and trade curated IP collections"
+                featured
+              />
+              <NavLink
+                href="/assets"
+                icon={Boxes}
+                title="IP Assets"
+                description="Buy, sell, and license tokenized IP assets"
+              />
+              <NavLink
+                href="/activities"
+                icon={Activity}
+                title="Trading Activity"
+                description="Real-time marketplace trades and transfers"
+              />
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
 
-      <NavigationMenu>
-        <NavigationMenuList>
+        {/* LAUNCHPAD */}
+        <NavigationMenuItem>
+          <NavigationMenuTrigger className="h-9 px-4 rounded-full bg-white/5 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-white/10 border border-white/10 dark:border-white/5 text-foreground/80 hover:text-foreground data-[state=open]:bg-white/15 dark:data-[state=open]:bg-white/10 transition-all duration-200">
+            <Rocket className="mr-2 h-4 w-4" />
+            Launchpad
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="grid gap-2 p-4 w-[400px]">
+              <NavLink
+                href="/create"
+                icon={Sparkles}
+                title="Creator Launchpad"
+                description="Launch IP Coins, collections, and more"
+                featured
+              />
+              <NavLink
+                href="/create/collection"
+                icon={Grid3X3}
+                title="New Collection"
+                description="Create an onchain IP collection"
+              />
+              <NavLink
+                href="/create/asset"
+                icon={Box}
+                title="Programmable IP"
+                description="Tokenize your intellectual property"
+              />
+              <NavLink
+                href="/create/templates"
+                icon={FileCode}
+                title="IP Templates"
+                description="Create IP using ready-made templates"
+              />
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
 
-          {/* MARKETPLACE */}
-          <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-transparent/0 hover:bg-accent/50 data-[state=open]:bg-accent/50 text-foreground/80 hover:text-foreground">
-              <ShoppingBag className="mr-2 h-4 w-4" />
-              Marketplace
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                <li className="row-span-3">
-                  <NavigationMenuLink asChild>
-                    <Link
-                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                      href="/collections"
-                    >
-                      <Grid3X3 className="h-6 w-6 text-blue-600" />
-                      <div className="mb-2 mt-4 text-lg font-medium">Collections</div>
-                      <p className="text-sm leading-tight text-muted-foreground">
-                        Browse and trade curated IP collections.
-                      </p>
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href="/assets"
-                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    >
-                      <div className="text-sm font-medium leading-none flex items-center">
-                        <Boxes className="mr-2 h-4 w-4 text-blue-600" />
-                        IP Assets</div>
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        Buy, sell, and license tokenized IP assets.
-                      </p>
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-                <li>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href="/activities"
-                      className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    >
-                      <div className="text-sm font-medium leading-none flex items-center">
-                        <Activity className="mr-2 h-4 w-4 text-blue-600" />
-                        Trading Activity</div>
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        Real-time marketplace trades and transfers.
-                      </p>
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
+        {/* PORTFOLIO */}
+        <NavigationMenuItem>
+          <NavigationMenuTrigger className="h-9 px-4 rounded-full bg-white/5 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-white/10 border border-white/10 dark:border-white/5 text-foreground/80 hover:text-foreground data-[state=open]:bg-white/15 dark:data-[state=open]:bg-white/10 transition-all duration-200">
+            <Boxes className="mr-2 h-4 w-4" />
+            Portfolio
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="grid gap-2 p-4 w-[450px] md:grid-cols-2">
+              <NavLink
+                href="/portfolio"
+                icon={Boxes}
+                title="Portfolio"
+                description="Your onchain IP portfolio"
+                featured
+              />
+              <NavLink
+                href="/portfolio/assets"
+                icon={Box}
+                title="My Assets"
+                description="Your tokenized assets"
+              />
+              <NavLink
+                href="/portfolio/collections"
+                icon={Layers}
+                title="My Collections"
+                description="Your IP collections"
+              />
+              <NavLink
+                href="/portfolio/activities"
+                icon={Activity}
+                title="Activities"
+                description="Track onchain history"
+              />
+              <NavLink
+                href="/transfer"
+                icon={ArrowRightLeft}
+                title="Transfer"
+                description="Transfer assets"
+              />
+              <NavLink
+                href="/create/remix"
+                icon={IterationCcw}
+                title="Remix"
+                description="Remix existing IP"
+              />
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
 
-          <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-background/10">
-              <Rocket className="mr-2 h-4 w-4" />
-              Launchpad
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <div className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                <div className="row-span-3">
-                  <NavigationMenuLink asChild>
-                    <Link
-                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                      href="/create"
-                    >
-                      <Rocket className="h-6 w-6 text-blue-600" />
-                      <div className="mb-2 mt-4 text-lg font-medium">Creator Launchpad</div>
-                      <p className="text-sm leading-tight text-muted-foreground">
-                        Launch IP Coins, collections, and more
-                      </p>
-                    </Link>
-                  </NavigationMenuLink>
-                </div>
-                <NavigationMenuLink asChild>
-                  <Link
-                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    href="/create/collection"
-                  >
-                    <div className="text-sm font-medium leading-none flex items-center">
-                      <Grid3X3 className="mr-2 h-4 w-4  text-blue-600" />
-                      Collections
-                    </div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
-                      Create a onchain collection
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link
-                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    href="/create/asset"
-                  >
-                    <div className="text-sm font-medium leading-none flex items-center">
-                      <Box className="mr-2 h-4 w-4  text-blue-600" />
-                      Programmable IP
-                    </div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
-                      Create your Programmable IP
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link
-                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    href="/create/templates"
-                  >
-                    <div className="text-sm font-medium leading-none flex items-center">
-                      <FileCode className="mr-2 h-4 w-4  text-blue-600" />
-                      IP Templates
-                    </div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
-                      Create your IP using templates
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-              </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
+        {/* DOCS - Simple Link */}
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild>
+            <Link
+              href="/docs"
+              className="h-9 px-4 rounded-full inline-flex items-center justify-center text-sm font-medium bg-white/5 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-white/10 border border-white/10 dark:border-white/5 text-foreground/80 hover:text-foreground transition-all duration-200"
+            >
+              <BookOpen className="mr-2 h-4 w-4" />
+              Docs
+            </Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
 
-
-
-          <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-background/10">
-              <Boxes className="mr-2 h-4 w-4" />
-              Portfolio
-            </NavigationMenuTrigger>
-
-            <NavigationMenuContent>
-              <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                <NavigationMenuLink asChild>
-                  <Link
-                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    href="/portfolio"
-                  >
-                    <div className="text-sm font-medium leading-none flex items-center">
-                      <Boxes className="mr-2 h-4 w-4  text-blue-600" />
-                      Portfolio
-                    </div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
-                      Your onchain IP portfolio
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-
-
-                <NavigationMenuLink asChild>
-                  <Link
-                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    href="/portfolio/assets"
-                  >
-                    <div className="text-sm font-medium leading-none flex items-center">
-                      <Box className="mr-2 h-4 w-4  text-blue-600" />
-                      My Assets
-                    </div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
-                      Your onchain assets
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-
-                <NavigationMenuLink asChild>
-                  <Link
-                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    href="/portfolio/collections"
-                  >
-                    <div className="text-sm font-medium leading-none flex items-center">
-                      <Layers className="mr-2 h-4 w-4  text-blue-600" />
-                      My Collections
-                    </div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
-                      Your onchain collections
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-
-                <NavigationMenuLink asChild>
-                  <Link
-                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    href="/portfolio/activities"
-                  >
-                    <div className="text-sm font-medium leading-none flex items-center">
-                      <Activity className="mr-2 h-4 w-4  text-blue-600" />
-                      Activities
-                    </div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
-                      Track onchain history
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-
-                <NavigationMenuLink asChild>
-                  <Link
-                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    href="/transfer"
-                  >
-                    <div className="text-sm font-medium leading-none flex items-center">
-                      <ArrowRightLeft className="mr-2 h-4 w-4  text-blue-600" />
-                      Transfer
-                    </div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
-                      Transfer assets
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-
-                <NavigationMenuLink asChild>
-                  <Link
-                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    href="/create/remix"
-                  >
-                    <div className="text-sm font-medium leading-none flex items-center">
-                      <IterationCcw className="mr-2 h-4 w-4  text-blue-600" />
-                      Remix
-                    </div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1">
-                      Remix IP
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-
-
-
-              </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-
-
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild>
-              <Link href="/docs" className={navigationMenuTriggerStyle() + " bg-background/10"}>
-                <BookOpen className="mr-2 h-4 w-4" />
-                Docs
-              </Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-
-
-
-        </NavigationMenuList>
-      </NavigationMenu>
-    </div>
+      </NavigationMenuList>
+    </NavigationMenu>
   )
 }
-

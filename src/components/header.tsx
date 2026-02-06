@@ -5,6 +5,7 @@ import { MainNav } from "@/components/header/nav"
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils"
+import { Search, Command } from "lucide-react";
 
 const WalletConnect = dynamic(() => import("./header/wallet-connect").then(mod => mod.WalletConnect), {
   ssr: false,
@@ -27,59 +28,51 @@ export function Header() {
   return (
     <header
       className={cn(
-        "fixed top-0 z-50 w-full transition-all duration-300",
+        "fixed top-0 z-50 w-full transition-all duration-500",
         isScrolled
-          ? "bg-transparent backdrop-blur-xl"
-          : "bg-transparent border-transparent"
+          ? "bg-white/10 dark:bg-slate-950/30 backdrop-blur-2xl backdrop-saturate-150 border-b border-white/10 dark:border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.2)]"
+          : "bg-transparent"
       )}
     >
+      <div className="container mx-auto flex items-center justify-between h-16 px-4">
 
-      <div className="container mx-auto flex items-center justify-between h-16">
-
-        <div className="flex items-center md:hidden">
+        {/* Left: Logo */}
+        <div className="flex items-center">
           <Logo />
         </div>
 
-        <MainNav />
-
-        <div className="flex items-center">
-
-          <div>
-            <WalletConnect />
-          </div>
-
-          <MobileSidebar />
-
-          <div className="mr-0 ">
-            <div className="block">
-              <Button
-                variant="outline"
-                size="icon"
-                className="glass"
-                onClick={() => document.dispatchEvent(new CustomEvent("openCommandMenu"))}
-                title="Open Command Menu (Cmd+K)"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="sr-only">Open Command Menu</span>
-                  <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded px-1.5">
-                    <span className="text-xs">⌘</span>K
-                  </kbd>
-                </div>
-              </Button>
-            </div>
-          </div>
-
-          <div className="mr-4 md:mr-0">
-            <div className="hidden md:block">
-              <ThemeToggle />
-            </div>
-          </div>
-
+        {/* Center: Navigation */}
+        <div className="hidden md:flex items-center justify-center flex-1">
+          <MainNav />
         </div>
 
-      </div>
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2">
 
+          {/* Wallet Connect */}
+          <WalletConnect />
+
+          {/* Command Menu Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden sm:flex h-9 w-9 rounded-full bg-white/5 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-white/10 border border-white/10 dark:border-white/5 transition-all duration-200"
+            onClick={() => document.dispatchEvent(new CustomEvent("openCommandMenu"))}
+            title="Open Command Menu (Cmd+K)"
+          >
+            <Command className="h-4 w-4 text-foreground/70" />
+            <span className="sr-only">Open Command Menu</span>
+          </Button>
+
+          {/* Theme Toggle */}
+          <div className="hidden md:flex">
+            <ThemeToggle />
+          </div>
+
+          {/* Mobile Menu */}
+          <MobileSidebar />
+        </div>
+      </div>
     </header>
   )
 }
-

@@ -3,58 +3,61 @@
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Play } from "lucide-react"
+import { ArrowRight, Sparkles, Rocket, Zap } from "lucide-react"
 import Link from "next/link"
 import { useFeaturedCollections } from "@/hooks/use-collection"
 
-// Fallback slides for loading or error states
-const FALLBACK_SLIDES = [
+// Vivid gradient combinations for slides
+const VIVID_GRADIENTS = [
     {
-        id: 1,
-        title: "Loading Media...",
-        description: "Connecting to the Integrity Web.",
-        category: "System",
-        image: "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?q=80&w=2940&auto=format&fit=crop",
-        gradient: "from-blue-900/80 to-purple-900/80"
+        bg: "from-violet-500/20 via-fuchsia-500/15 to-cyan-500/20",
+        accent: "from-violet-500 to-fuchsia-500",
+        glow: "violet"
+    },
+    {
+        bg: "from-cyan-500/20 via-blue-500/15 to-violet-500/20",
+        accent: "from-cyan-400 to-blue-500",
+        glow: "cyan"
+    },
+    {
+        bg: "from-rose-500/20 via-pink-500/15 to-violet-500/20",
+        accent: "from-rose-500 to-pink-500",
+        glow: "rose"
+    },
+    {
+        bg: "from-emerald-500/20 via-teal-500/15 to-cyan-500/20",
+        accent: "from-emerald-400 to-teal-500",
+        glow: "emerald"
     }
 ]
 
-// Deterministic gradients based on index
-const GRADIENTS = [
-    "from-blue-900/80 to-purple-900/80",
-    "from-fuchsia-900/80 to-indigo-900/80",
-    "from-amber-900/80 to-red-900/80",
-    "from-emerald-900/80 to-teal-900/80"
-]
-
 export function FullScreenHero() {
-    // Fetch featured collections (IDs 1, 2, 4 as per original FeaturedHero)
     const { collections, loading } = useFeaturedCollections([1, 2, 4]);
-
     const [currentSlide, setCurrentSlide] = React.useState(0)
 
-    // Use collections if available, otherwise fallback
+    // Only show real collections, no fallback mockups
     const slides = collections.length > 0 ? collections.map((col, idx) => ({
         id: col.id,
         title: col.name,
         description: col.description || "Discover this amazing collection on Medialane.",
-        category: col.type || "Mixed Media",
-        image: col.image || FALLBACK_SLIDES[0].image,
-        gradient: GRADIENTS[idx % GRADIENTS.length],
+        category: col.type || "Collection",
+        image: col.image,
+        gradient: VIVID_GRADIENTS[idx % VIVID_GRADIENTS.length],
         href: `/collections/${col.nftAddress || col.id}`
-    })) : FALLBACK_SLIDES
+    })) : []
 
     const nextSlide = React.useCallback(() => {
-        setCurrentSlide((prev) => (prev + 1) % slides.length)
+        if (slides.length > 1) {
+            setCurrentSlide((prev) => (prev + 1) % slides.length)
+        }
     }, [slides.length])
 
     React.useEffect(() => {
         if (slides.length <= 1) return
-        const timer = setInterval(nextSlide, 6000)
+        const timer = setInterval(nextSlide, 7000)
         return () => clearInterval(timer)
     }, [nextSlide, slides.length])
 
-    // If loading effectively, we show fallback, but let's automate transition once loaded
     React.useEffect(() => {
         if (!loading && collections.length > 0) {
             setCurrentSlide(0)
@@ -63,81 +66,189 @@ export function FullScreenHero() {
 
     const activeSlide = slides[currentSlide]
 
+    // Loading state - clean glassmorphism design
+    if (loading || slides.length === 0) {
+        return (
+            <div className="relative w-full h-[100svh] overflow-hidden">
+                {/* Vivid Gradient Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/30 via-fuchsia-500/20 to-cyan-500/30" />
+
+                {/* Animated Gradient Orbs */}
+                <div className="absolute inset-0 overflow-hidden">
+                    <motion.div
+                        animate={{
+                            x: [0, 100, 0],
+                            y: [0, -50, 0],
+                            scale: [1, 1.2, 1]
+                        }}
+                        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-gradient-radial from-violet-500/40 to-transparent rounded-full blur-3xl"
+                    />
+                    <motion.div
+                        animate={{
+                            x: [0, -80, 0],
+                            y: [0, 80, 0],
+                            scale: [1, 1.3, 1]
+                        }}
+                        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-gradient-radial from-cyan-500/40 to-transparent rounded-full blur-3xl"
+                    />
+                    <motion.div
+                        animate={{
+                            x: [0, 60, 0],
+                            y: [0, 60, 0],
+                            scale: [1, 1.1, 1]
+                        }}
+                        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute top-1/3 right-1/3 w-1/3 h-1/3 bg-gradient-radial from-fuchsia-500/30 to-transparent rounded-full blur-3xl"
+                    />
+                </div>
+
+                {/* Content */}
+                <div className="relative z-10 container mx-auto h-full flex flex-col justify-center items-center px-6 text-center">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="max-w-4xl"
+                    >
+                        {/* Badge */}
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8">
+                            <Sparkles className="w-4 h-4 text-violet-400" />
+                            <span className="text-sm font-medium text-foreground/90">The Integrity Web</span>
+                        </div>
+
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[1.05]">
+                            <span className="text-foreground">Create, Trade,</span>
+                            <br />
+                            <span className="bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent">
+                                Remix & Monetize
+                            </span>
+                        </h1>
+
+                        <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-light mb-10 leading-relaxed">
+                            The decentralized platform for intellectual property.
+                            Tokenize, license, and trade your creations on Starknet.
+                        </p>
+
+                        <div className="flex flex-wrap justify-center gap-4">
+                            <Button size="lg" className="rounded-full px-8 h-14 text-lg gradient-vivid-primary" asChild>
+                                <Link href="/create">
+                                    <Rocket className="w-5 h-5 mr-2" /> Start Creating
+                                </Link>
+                            </Button>
+
+                            <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-lg glass hover:bg-white/20 border-white/20" asChild>
+                                <Link href="/collections">
+                                    Explore <ArrowRight className="w-5 h-5 ml-2" />
+                                </Link>
+                            </Button>
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
+        )
+    }
+
     return (
-        <div className="relative w-full h-[100svh] overflow-hidden bg-black text-white">
+        <div className="relative w-full h-[100svh] overflow-hidden">
             <AnimatePresence mode="wait">
                 <motion.div
-                    key={loading ? 'loading' : activeSlide.id}
-                    initial={{ opacity: 0, scale: 1.05 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    key={activeSlide.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    transition={{ duration: 1, ease: "easeOut" }}
                     className="absolute inset-0 z-0"
                 >
-                    {/* Background Image */}
+                    {/* Background Image with Vivid Treatment */}
                     <div
-                        className="absolute inset-0 bg-cover bg-center"
+                        className="absolute inset-0 bg-cover bg-center scale-105"
                         style={{ backgroundImage: `url(${activeSlide.image})` }}
                     />
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-black/40" />
-                    <div className={`absolute inset-0 bg-gradient-to-t ${activeSlide.gradient} opacity-60 mix-blend-multiply`} />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90" />
+
+                    {/* Vivid Gradient Overlay - NO dark overlay */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${activeSlide.gradient.bg}`} />
+
+                    {/* Subtle Edge Gradients for Readability */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-background/40 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
                 </motion.div>
             </AnimatePresence>
 
+            {/* Floating Glow Orbs */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <motion.div
+                    animate={{
+                        x: [0, 50, 0],
+                        scale: [1, 1.1, 1]
+                    }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                    className={`absolute -top-20 -left-20 w-96 h-96 bg-${activeSlide.gradient.glow}-500/20 rounded-full blur-3xl`}
+                />
+                <motion.div
+                    animate={{
+                        y: [0, -30, 0],
+                        scale: [1, 1.15, 1]
+                    }}
+                    transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute -bottom-20 -right-20 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl"
+                />
+            </div>
+
             {/* Content */}
             <div className="relative z-10 container mx-auto h-full flex flex-col justify-center px-6 md:px-12 pt-20">
-                <motion.div
-                    key={`content-${activeSlide.id}`}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="max-w-4xl"
-                >
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sm font-medium text-white/90 mb-6">
-                        <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                        {activeSlide.category}
-                    </div>
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={`content-${activeSlide.id}`}
+                        initial={{ y: 40, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -20, opacity: 0 }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                        className="max-w-4xl"
+                    >
+                        {/* Category Badge */}
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6">
+                            <Zap className="w-4 h-4 text-yellow-400" />
+                            <span className="text-sm font-medium text-foreground/90">{activeSlide.category}</span>
+                        </div>
 
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[1.1] line-clamp-2">
-                        {activeSlide.title}
-                    </h1>
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[1.05] text-foreground drop-shadow-sm">
+                            {activeSlide.title}
+                        </h1>
 
-                    <p className="text-xl md:text-2xl text-white/80 max-w-2xl font-light mb-10 leading-relaxed line-clamp-3">
-                        {activeSlide.description}
-                    </p>
+                        <p className="text-xl md:text-2xl text-foreground/80 max-w-2xl font-light mb-10 leading-relaxed line-clamp-3 drop-shadow-sm">
+                            {activeSlide.description}
+                        </p>
 
-                    <div className="flex flex-wrap gap-4">
-                        {activeSlide.href ? (
-                            <Button size="lg" className="rounded-full px-8 h-14 text-lg bg-primary hover:bg-primary/90 text-primary-foreground border-none" asChild>
+                        <div className="flex flex-wrap gap-4">
+                            <Button size="lg" className="rounded-full px-8 h-14 text-lg gradient-vivid-accent" asChild>
                                 <Link href={activeSlide.href}>
-                                    <Play className="w-5 h-5 mr-2 fill-current" /> Explore Collection
+                                    <Sparkles className="w-5 h-5 mr-2" /> Explore Collection
                                 </Link>
                             </Button>
-                        ) : (
-                            <Button size="lg" className="rounded-full px-8 h-14 text-lg bg-primary hover:bg-primary/90 text-primary-foreground border-none" disabled>
-                                Loading...
-                            </Button>
-                        )}
 
-                        <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-lg border-white/20 bg-white/5 hover:bg-white/20 backdrop-blur-md text-white" asChild>
-                            <Link href="/collections">
-                                View All <ArrowRight className="w-5 h-5 ml-2" />
-                            </Link>
-                        </Button>
-                    </div>
-                </motion.div>
+                            <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-lg glass hover:bg-white/20 border-white/20" asChild>
+                                <Link href="/collections">
+                                    View All <ArrowRight className="w-5 h-5 ml-2" />
+                                </Link>
+                            </Button>
+                        </div>
+                    </motion.div>
+                </AnimatePresence>
             </div>
 
             {/* Navigation Dots */}
             {slides.length > 1 && (
-                <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-4">
-                    {slides.map((_, index) => (
+                <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+                    {slides.map((slide, index) => (
                         <button
                             key={index}
                             onClick={() => setCurrentSlide(index)}
-                            className={`group relative h-1.5 rounded-full transition-all duration-300 ${index === currentSlide ? "w-12 bg-white" : "w-4 bg-white/30 hover:bg-white/50"}`}
+                            className={`relative h-2 rounded-full transition-all duration-500 ${index === currentSlide
+                                ? `w-12 bg-gradient-to-r ${slide.gradient.accent}`
+                                : "w-2 bg-white/30 hover:bg-white/50"
+                                }`}
                         >
                             <span className="sr-only">Go to slide {index + 1}</span>
                         </button>
@@ -150,19 +261,18 @@ export function FullScreenHero() {
                 <>
                     <button
                         onClick={() => setCurrentSlide(prev => (prev === 0 ? slides.length - 1 : prev - 1))}
-                        className="absolute left-8 top-1/2 -translate-y-1/2 z-20 p-4 rounded-full bg-black/20 hover:bg-white/10 backdrop-blur-md text-white transition-all opacity-0 md:opacity-100 hover:scale-110"
+                        className="absolute left-6 md:left-8 top-1/2 -translate-y-1/2 z-20 p-4 rounded-full glass hover:bg-white/20 transition-all hover:scale-110"
                     >
-                        <ArrowRight className="w-6 h-6 rotate-180" />
+                        <ArrowRight className="w-6 h-6 rotate-180 text-foreground" />
                     </button>
                     <button
                         onClick={nextSlide}
-                        className="absolute right-8 top-1/2 -translate-y-1/2 z-20 p-4 rounded-full bg-black/20 hover:bg-white/10 backdrop-blur-md text-white transition-all opacity-0 md:opacity-100 hover:scale-110"
+                        className="absolute right-6 md:right-8 top-1/2 -translate-y-1/2 z-20 p-4 rounded-full glass hover:bg-white/20 transition-all hover:scale-110"
                     >
-                        <ArrowRight className="w-6 h-6" />
+                        <ArrowRight className="w-6 h-6 text-foreground" />
                     </button>
                 </>
             )}
-
         </div>
     )
 }

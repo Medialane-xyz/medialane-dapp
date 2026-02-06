@@ -2,7 +2,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 interface GlassPanelProps extends React.HTMLAttributes<HTMLDivElement> {
-    variant?: "default" | "hover" | "neon"
+    variant?: "default" | "hover" | "neon" | "vivid"
     intensity?: "low" | "medium" | "high"
 }
 
@@ -10,15 +10,16 @@ const GlassPanel = React.forwardRef<HTMLDivElement, GlassPanelProps>(
     ({ className, variant = "default", intensity = "medium", children, ...props }, ref) => {
 
         const intensityMap = {
-            low: "backdrop-blur-sm bg-white/5 border-white/5",
-            medium: "backdrop-blur-md bg-white/10 border-white/10",
-            high: "backdrop-blur-xl bg-white/15 border-white/20",
+            low: "backdrop-blur-sm bg-white/5 dark:bg-slate-900/20 border-white/10 dark:border-white/5",
+            medium: "backdrop-blur-xl bg-white/10 dark:bg-slate-900/30 border-white/20 dark:border-white/10",
+            high: "backdrop-blur-2xl bg-white/15 dark:bg-slate-900/40 border-white/25 dark:border-white/15",
         }
 
         const variantStyles = {
-            default: "shadow-glass",
-            hover: "shadow-glass hover:shadow-glass-hover hover:bg-white/15 transition-all duration-300",
-            neon: "shadow-neon-cyan border-primary/50 bg-primary/5",
+            default: "shadow-[0_8px_32px_0_rgba(31,38,135,0.1)] dark:shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]",
+            hover: "shadow-[0_8px_32px_0_rgba(31,38,135,0.1)] dark:shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:shadow-[0_12px_40px_0_rgba(31,38,135,0.2)] dark:hover:shadow-[0_12px_40px_0_rgba(31,38,135,0.5)] hover:bg-white/15 dark:hover:bg-slate-800/40 transition-all duration-300",
+            neon: "shadow-neon-cyan border-primary/50 bg-primary/5 dark:bg-primary/10",
+            vivid: "shadow-[0_8px_32px_0_rgba(139,92,246,0.2),0_0_60px_-15px_rgba(6,182,212,0.3)] dark:shadow-[0_8px_32px_0_rgba(139,92,246,0.4),0_0_60px_-15px_rgba(6,182,212,0.4)] border-violet-500/20 dark:border-cyan-500/20",
         }
 
         return (

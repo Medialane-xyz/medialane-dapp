@@ -52,7 +52,7 @@ export default function AssetsPage() {
     }, [assets, searchQuery])
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen py-10">
             <main className="container mx-auto px-4 py-8">
 
                 <div className="relative mb-12">
@@ -64,12 +64,9 @@ export default function AssetsPage() {
 
                     <div className="relative flex flex-col md:flex-row items-end justify-between gap-6">
                         <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-primary/80 mb-1">
-                                <Sparkles className="h-4 w-4" />
-                                <span className="text-xs font-semibold uppercase tracking-wider">Explore</span>
-                            </div>
-                            <h1 className="tracking-tight text-foreground text-3xl">
-                                IP Assets
+
+                            <h1 className="tracking-tight text-foreground text-2xl">
+                                Explore Onchain IP Assets
                             </h1>
 
                         </div>

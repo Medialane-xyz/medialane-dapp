@@ -310,63 +310,213 @@
   }
 }
 
-/*  Utilities */
+/*  Utilities - Vivid Glassmorphism */
+
+/* Base Glass Surface - works on both themes */
+.glass {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+.dark .glass {
+  background-color: rgba(15, 23, 42, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* Interactive Glass with hover effect */
+.glass-interactive {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  transition: all 0.3s ease-out;
+}
+
+.glass-interactive:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
+}
+
+.dark .glass-interactive {
+  background-color: rgba(15, 23, 42, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.dark .glass-interactive:hover {
+  background-color: rgba(30, 41, 59, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5);
+}
+
+/* Glass Card - for Card components */
+.glass-card {
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
+  transform: translateY(-4px);
+}
+
+.dark .glass-card {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.dark .glass-card:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5);
+}
+
+/* Glass Button - for interactive elements */
+.glass-button {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.1);
+  transition: all 0.3s ease;
+  border-radius: 0.5rem;
+}
+
+.glass-button:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.glass-button:active {
+  transform: scale(0.95);
+}
+
+.dark .glass-button {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.2);
+}
+
+.dark .glass-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Glass Panel - for sections and containers */
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(40px) saturate(1.8);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 8px 32px 0 rgba(31, 38, 135, 0.12),
+    inset 0 0 80px 0 rgba(255, 255, 255, 0.05);
+}
+
+.dark .glass-panel {
+  background-color: rgba(15, 23, 42, 0.4);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px 0 rgba(31, 38, 135, 0.4),
+    inset 0 0 80px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* Gradient Glass Text */
+.text-glass {
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-image: linear-gradient(to right, #0f172a, #475569);
+}
+
+.dark .text-glass {
+  background-image: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0.7));
+}
+
 @layer utilities {
-  .glass {
-    @apply bg-white/10 backdrop-blur-lg border border-white/20 shadow-sm;
+
+  /* Vivid Gradient Buttons */
+  .gradient-vivid-primary {
+    @apply bg-gradient-to-r from-blue-500 via-violet-500 to-purple-600;
+    @apply text-white font-medium;
+    @apply shadow-lg shadow-violet-500/30 dark:shadow-violet-500/40;
+    @apply hover:shadow-xl hover:shadow-violet-500/40 dark:hover:shadow-violet-500/50;
+    @apply transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
   }
 
-  .dark .glass {
-    @apply bg-black/30 backdrop-blur-xl border border-white/10 shadow-sm;
+  .gradient-vivid-accent {
+    @apply bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500;
+    @apply text-white font-medium;
+    @apply shadow-lg shadow-blue-500/30 dark:shadow-blue-500/40;
+    @apply hover:shadow-xl hover:shadow-blue-500/40 dark:hover:shadow-blue-500/50;
+    @apply transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
   }
 
-  .glass-card {
-    @apply bg-white/15 backdrop-blur-md border border-white/10 shadow-md rounded-xl transition-all duration-300;
+  .gradient-vivid-creative {
+    @apply bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400;
+    @apply text-white font-medium;
+    @apply shadow-lg shadow-pink-500/30 dark:shadow-pink-500/40;
+    @apply hover:shadow-xl hover:shadow-pink-500/40 dark:hover:shadow-pink-500/50;
+    @apply transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
   }
 
-  .glass-card:hover {
-    @apply bg-white/10 border-white/20 shadow-lg transform -translate-y-1;
-  }
-
-  .dark .glass-card {
-    @apply bg-black/20 backdrop-blur-md border border-white/5 shadow-sm rounded-xl;
-  }
-
-  .dark .glass-card:hover {
-    @apply bg-black/30 border-white/10 shadow-lg transform -translate-y-1;
-  }
-
-  .glass-button {
-    @apply bg-white/10 backdrop-blur-sm border border-white/20 shadow-sm hover:bg-white/20 transition-all rounded-lg active:scale-95;
-  }
-
-  .dark .glass-button {
-    @apply bg-white/5 backdrop-blur-sm border border-white/10 shadow-sm hover:bg-white/10 transition-all rounded-lg active:scale-95;
-  }
-
-  .text-glass {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70;
+  /* Rim Light Border Effect */
+  .rim-light {
+    @apply border border-white/20 dark:border-white/10;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
   }
 }
 
-/* Global Background */
-/* Global Background */
+/* ======================================
+   VIVID GLASSMORPHISM BACKGROUND SYSTEM
+   ====================================== */
+
+/* Global Mesh Gradient Background */
 .vivid-gradient-bg {
-  /* Default to Light Mode */
-  background:
-    radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.5), transparent 40%),
-    radial-gradient(circle at 85% 30%, rgba(244, 114, 182, 0.5), transparent 40%),
-    radial-gradient(circle at 50% 80%, rgba(96, 165, 250, 0.5), transparent 40%);
+  position: relative;
   background-color: #f8fafc;
   background-attachment: fixed;
 }
 
-/* Dark Mode Override */
-.dark .vivid-gradient-bg {
+/* Light Mode - Vivid mesh with Electric Blue, Cyan, Violet */
+.vivid-gradient-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background:
-    radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.5), transparent 50%),
-    radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.5), transparent 50%),
-    radial-gradient(circle at 50% 80%, rgba(59, 130, 246, 0.5), transparent 50%);
-  background-color: #0e1629;
-  background-attachment: fixed;
+    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(59, 130, 246, 0.4), transparent 50%),
+    radial-gradient(ellipse 60% 80% at 90% 80%, rgba(139, 92, 246, 0.35), transparent 50%),
+    radial-gradient(ellipse 70% 50% at 50% 50%, rgba(6, 182, 212, 0.3), transparent 50%),
+    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(236, 72, 153, 0.25), transparent 50%),
+    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(16, 185, 129, 0.2), transparent 50%);
+  pointer-events: none;
+}
+
+/* Dark Mode - Deep saturated colors */
+.dark .vivid-gradient-bg {
+  background-color: #030712;
+}
+
+.dark .vivid-gradient-bg::before {
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(37, 99, 235, 0.5), transparent 55%),
+    radial-gradient(ellipse 60% 80% at 90% 80%, rgba(124, 58, 237, 0.45), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 50% 50%, rgba(6, 182, 212, 0.35), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(219, 39, 119, 0.3), transparent 50%),
+    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(5, 150, 105, 0.25), transparent 50%);
 }
