@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { StarknetProvider } from "@/components/starknet-provider";
 import { CommandMenu } from "@/components/command-menu"
-import { FloatingHeader } from "@/components/layout/floating-header";
+import { Header } from "@/components/header"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space" });
@@ -37,7 +37,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <StarknetProvider>
-            <FloatingHeader />
+            <Header />
             <main className="min-h-screen">
               {children}
             </main>

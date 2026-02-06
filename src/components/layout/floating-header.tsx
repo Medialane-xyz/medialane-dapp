@@ -38,14 +38,19 @@ export function FloatingHeader() {
 
                 {/* Center Nav */}
                 <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-                    {["Explore", "Collections", "Creators", "Media", "New"].map((item) => (
+                    {[
+                        { name: "Marketplace", path: "/marketplace" },
+                        { name: "Collections", path: "/collections" },
+                        { name: "Creators", path: "/creator" },
+                        { name: "Launchpad", path: "/create" }
+                    ].map((item) => (
                         <Link
-                            key={item}
-                            href={`/${item.toLowerCase()}`}
+                            key={item.name}
+                            href={item.path}
                             className="text-sm font-medium text-white/70 hover:text-white transition-colors flex items-center gap-2"
                         >
-                            {item === "New" && <Plus className="w-3 h-3 text-primary" />}
-                            {item}
+                            {/* {item.name === "Launchpad" && <Plus className="w-3 h-3 text-primary" />} */}
+                            {item.name}
                         </Link>
                     ))}
                 </nav>
@@ -55,9 +60,11 @@ export function FloatingHeader() {
                     <button className="p-2 text-white/70 hover:text-white transition-colors">
                         <Search className="w-5 h-5" />
                     </button>
-                    <Button size="sm" className="bg-white text-black hover:bg-white/90 font-medium rounded-full px-6">
-                        + Create
-                    </Button>
+                    <Link href="/create">
+                        <Button size="sm" className="bg-white text-black hover:bg-white/90 font-medium rounded-full px-6">
+                            + Create
+                        </Button>
+                    </Link>
                     <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 rounded-full gap-2">
                         <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500" />
                         Sign In

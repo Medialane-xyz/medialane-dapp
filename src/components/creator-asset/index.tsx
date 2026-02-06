@@ -21,6 +21,7 @@ import { OwnerTab } from "@/components/asset/owner-tab";
 import { AssetTimelineTab } from "./creator-asset-timeline-tab";
 import { ReportAssetDialog } from "@/components/report-asset-dialog";
 import { useAsset } from "@/hooks/use-asset";
+import { AssetActionPanel } from "@/components/marketplace/asset/asset-action-panel";
 import { useGetCollection } from "@/hooks/use-collection";
 import { AssetLoadingState } from "@/components/asset/asset-loading-state";
 import { AssetErrorBoundary } from "@/components/asset/asset-error-boundary";
@@ -483,6 +484,9 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                 {/* Right Column: Ownership & CTA (Spans 1 col) */}
                 <div className="space-y-6 lg:pt-4">
                   <div className="sticky top-24 space-y-6">
+                    {/* Marketplace Actions */}
+                    <AssetActionPanel assetId={asset!.id} />
+
                     <Card className="border-border/50 bg-background/50 backdrop-blur-sm overflow-hidden">
                       <div className="p-5 border-b border-border/50 bg-muted/20">
                         <h3 className="font-semibold flex items-center gap-2">
@@ -506,27 +510,6 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                         </div>
                       </div>
                     </Card>
-
-                    <div className="bg-gradient-to-br from-purple-600/5 to-blue-600/5 p-1 rounded-2xl border border-purple-500/20">
-                      <div className="bg-background/80 backdrop-blur-xl rounded-xl p-5">
-                        <div className="space-y-4">
-                          <div>
-                            <h3 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 mb-2">
-                              Remix this IP
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              Create a derivative work based on this asset&apos;s license terms and earn royalties.
-                            </p>
-                          </div>
-                          <Link href={`/create/remix/${decodedSlug}`} className="block">
-                            <Button size="lg" className="w-full gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg shadow-purple-500/20">
-                              <Palette className="h-4 w-4" />
-                              Start Remixing
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

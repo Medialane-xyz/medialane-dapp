@@ -19,13 +19,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title: `IP Asset #${tokenId}`,
         description: `View IP Asset #${tokenId} from collection ${shortAddress} on Mediolano. Track provenance, ownership, and licensing details for this digital asset on Starknet.`,
         openGraph: {
-            title: `IP Asset #${tokenId} | Medialane`,
+            title: `IP Asset #${tokenId} | IP Creator`,
             description: `View IP Asset #${tokenId} from collection ${shortAddress}. Track provenance, ownership, and licensing details on Starknet.`,
             type: 'article',
         },
         twitter: {
             card: 'summary_large_image',
-            title: `IP Asset #${tokenId} | Medialane`,
+            title: `IP Asset #${tokenId} | IP Creator`,
             description: `View IP Asset #${tokenId} on Mediolano. Track provenance and ownership on Starknet.`,
         },
     }

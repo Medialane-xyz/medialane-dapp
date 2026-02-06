@@ -1,8 +1,11 @@
 "use client";
+import { useState, useEffect } from "react"
 import { MobileSidebar } from "@/components/header/sidebar"
 import { MainNav } from "@/components/header/nav"
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
+import { cn } from "@/lib/utils"
+
 const WalletConnect = dynamic(() => import("./header/wallet-connect").then(mod => mod.WalletConnect), {
   ssr: false,
 });
@@ -10,8 +13,25 @@ import { ThemeToggle } from "@/components/header/theme-toggle"
 import { Logo } from "@/components/header/logo"
 
 export function Header() {
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-background/60 backdrop-blur-xl supports-[backdrop-filter]:bg-background/5">
+    <header
+      className={cn(
+        "fixed top-0 z-50 w-full transition-all duration-300",
+        isScrolled
+          ? "bg-background/80 backdrop-blur-md border-b"
+          : "bg-transparent border-transparent"
+      )}
+    >
 
       <div className="container mx-auto flex items-center justify-between h-16">
 

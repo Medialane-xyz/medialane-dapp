@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: AssetPageProps): Promise<Meta
     openGraph: {
       title: title,
       description: description,
-      siteName: "Medialane",
+      siteName: "IP Creator",
       type: "website",
     },
     twitter: {

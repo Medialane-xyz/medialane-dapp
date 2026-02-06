@@ -26,6 +26,7 @@ import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CreationOptionCard } from "@/components/create/creation-option-card"
 import { CreationOptionDetails } from "@/components/create/creation-option-details"
+import { CreatorStatsBar } from "@/components/create/creator-stats-bar"
 
 const creationOptions = [
   {
@@ -263,10 +264,12 @@ export default function CreatePage() {
   const selectedOptionData = creationOptions.find((opt) => opt.id === selectedOption)
 
   return (
-    <div className="min-h-screen p-8">
-
+    <div className="min-h-screen pt-24 pb-8 px-4 md:px-8">
 
       <main className="container mx-auto max-w-10xl">
+
+        {/* Creator Stats */}
+        <CreatorStatsBar />
 
         {/* Search and Filters */}
         <div className="mb-8">
@@ -324,14 +327,14 @@ export default function CreatePage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex overflow-x-auto gap-2 pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:flex-wrap">
             {categories.map((category) => (
               <Button
                 key={category.id}
                 variant={selectedCategory === category.id ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedCategory(category.id)}
-                className="h-8"
+                className="h-8 whitespace-nowrap flex-shrink-0"
               >
                 {category.name}
                 <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-xs">
@@ -472,7 +475,7 @@ export default function CreatePage() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </main >
+    </div >
   )
 }

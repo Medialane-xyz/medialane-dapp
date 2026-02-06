@@ -60,68 +60,67 @@
 
 @layer base {
   :root {
+    /* Light Mode - Standard clean theme */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    /* Glass OS System Palette */
-    --background: 260 50% 3%;
-    /* #050308 - Deepvoid */
-    --foreground: 210 20% 98%;
-    /* Holographic White */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    /* Glass Panels */
-    --card: 260 50% 3%;
-    --card-foreground: 210 20% 98%;
-    --popover: 260 50% 3%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    /* Neon Accents */
-    --primary: 180 100% 50%;
-    /* #00FFFF - Cyber Cyan */
-    --primary-foreground: 260 50% 3%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 300 100% 50%;
-    /* #FF00FF - Hyper Pink */
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --accent: 260 100% 65%;
-    /* #8A2BE2 - Electric Violet */
-    --accent-foreground: 210 20% 98%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --destructive: 0 100% 60%;
-    --destructive-foreground: 210 20% 98%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
-    /* UI Chrome */
-    --muted: 260 30% 15%;
-    --muted-foreground: 260 20% 60%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 260 30% 20%;
-    --input: 260 30% 20%;
-    --ring: 180 100% 50%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
 
-    --radius: 1rem;
-    /* OS-like 16px radius */
+    --radius: 0.5rem;
   }
 
   .dark {
-    /* Identical to root but defined for Shadcn compatibility */
-    --background: 260 50% 3%;
-    --foreground: 210 20% 98%;
-    --card: 260 50% 3%;
-    --card-foreground: 210 20% 98%;
-    --popover: 260 50% 3%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 180 100% 50%;
-    --primary-foreground: 260 50% 3%;
-    --secondary: 300 100% 50%;
-    --secondary-foreground: 210 20% 98%;
-    --accent: 260 100% 65%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 100% 60%;
-    --destructive-foreground: 210 20% 98%;
-    --muted: 260 30% 15%;
-    --muted-foreground: 260 20% 60%;
-    --border: 260 30% 20%;
-    --input: 260 30% 20%;
-    --ring: 180 100% 50%;
+    /* Dark Mode - Slate 950 base */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
   }
 
   * {
@@ -130,11 +129,6 @@
 
   body {
     @apply bg-background text-foreground font-sans overflow-x-hidden selection:bg-primary/30 selection:text-primary;
-    background-image:
-      radial-gradient(circle at 50% 0%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 0% 0%, rgba(190, 24, 255, 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 100% 0%, rgba(0, 255, 255, 0.05) 0%, transparent 50%);
-    background-attachment: fixed;
   }
 
   /* Custom Scrollbar for Webkit */
@@ -148,7 +142,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-white/10 rounded-full hover:bg-white/20;
+    @apply bg-foreground/10 rounded-full hover:bg-foreground/20;
   }
 }
 

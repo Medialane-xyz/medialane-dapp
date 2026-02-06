@@ -20,6 +20,9 @@ import {
   Shield,
   ChevronRight,
   Coins,
+  Grid3X3,
+  RefreshCw,
+  BookOpen,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
@@ -148,6 +151,14 @@ export function CreationOptionCard({ option, viewMode, isSelected, onSelect }: C
 
 function getIconComponent(iconName: string) {
   switch (iconName) {
+    case "Shield":
+      return Shield
+    case "Grid3X3":
+      return Grid3X3
+    case "RefreshCw":
+      return RefreshCw
+    case "BookOpen":
+      return BookOpen
     case "FolderPlus":
       return FolderPlus
     case "FileText":
@@ -171,6 +182,14 @@ function getIconComponent(iconName: string) {
 
 function getColorClasses(gradient: string) {
   switch (gradient) {
+    case "from-blue-500 to-blue-700":
+      return { bgLight: "bg-blue-100 dark:bg-blue-900/30" }
+    case "from-green-500 to-green-700":
+      return { bgLight: "bg-green-100 dark:bg-green-900/30" }
+    case "from-purple-500 to-purple-700":
+      return { bgLight: "bg-purple-100 dark:bg-purple-900/30" }
+    case "from-rose-500 to-rose-700":
+      return { bgLight: "bg-rose-100 dark:bg-rose-900/30" }
     case "from-blue-500 to-cyan-500":
       return { bgLight: "bg-blue-100 dark:bg-blue-900/30" }
     case "from-purple-500 to-pink-500":
