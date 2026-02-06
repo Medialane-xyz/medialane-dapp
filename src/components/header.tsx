@@ -20,6 +20,7 @@ export function Header() {
       setIsScrolled(window.scrollY > 10)
     }
     window.addEventListener("scroll", handleScroll)
+    handleScroll() // Check initial scroll position
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
@@ -28,7 +29,7 @@ export function Header() {
       className={cn(
         "fixed top-0 z-50 w-full transition-all duration-300",
         isScrolled
-          ? "bg-background/80 backdrop-blur-md border-b"
+          ? "bg-transparent backdrop-blur-xl"
           : "bg-transparent border-transparent"
       )}
     >

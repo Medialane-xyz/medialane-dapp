@@ -22,6 +22,7 @@ import { AssetTimelineTab } from "./creator-asset-timeline-tab";
 import { ReportAssetDialog } from "@/components/report-asset-dialog";
 import { useAsset } from "@/hooks/use-asset";
 import { AssetActionPanel } from "@/components/marketplace/asset/asset-action-panel";
+import { AssetMonetizationActions } from "@/components/marketplace/asset/asset-monetization-actions";
 import { useGetCollection } from "@/hooks/use-collection";
 import { AssetLoadingState } from "@/components/asset/asset-loading-state";
 import { AssetErrorBoundary } from "@/components/asset/asset-error-boundary";
@@ -331,77 +332,12 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                       </div>
 
                       {/* Action Buttons Panel */}
-                      {/* Action Buttons Panel - Optimized for Mobile */}
-                      <div className="flex flex-row flex-wrap items-center justify-center lg:justify-start gap-2 mt-2 lg:mt-4 w-full px-1">
-                        {isOwner && (
-                          <Button
-                            variant="outline"
-                            size="lg"
-                            className="flex-1 sm:flex-none glass text-foreground transition-all gap-1.5 min-w-[90px] h-10 lg:h-11 text-xs lg:text-base px-3"
-                            onClick={() => setIsTransferOpen(true)}
-                          >
-                            <ArrowRightLeft className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
-                            Transfer
-                          </Button>
-                        )}
-
-                        <Link href={`/create/remix/${decodedSlug}`} className="flex-1 sm:flex-none">
-                          <Button
-                            variant="outline"
-                            size="lg"
-                            className="w-full glass transition-all gap-1.5 min-w-[90px] h-10 lg:h-11 text-xs lg:text-base text-foreground px-3"
-                          >
-                            <Palette className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
-                            Remix
-                          </Button>
-                        </Link>
-
-                        <Link href={`/provenance/${decodedSlug}`} className="flex-1 sm:flex-none">
-                          <Button
-                            variant="outline"
-                            size="lg"
-                            className="w-full glass transition-all gap-1.5 min-w-[90px] h-10 lg:h-11 text-xs lg:text-base text-foreground px-3"
-                          >
-                            <History className="h-3.5 w-3.5 lg:h-5 lg:w-5" />
-                            Provenance
-                          </Button>
-                        </Link>
-
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-10 w-10 glass rounded-full text-foreground"
-                          onClick={handleShare}
-                        >
-                          <Share2 className="h-5 w-5" />
-                        </Button>
-
-                        <div className="flex gap-2 shrink-0">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-10 w-10 glass rounded-full text-foreground"
-                            onClick={() => setIsReportOpen(true)}
-                            title="Report Asset"
-                          >
-                            <AlertTriangle className="h-5 w-5" />
-                          </Button>
-
-                          <Link
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href={`${EXPLORER_URL}/nft/${nftAddress}/${tokenId}`}
-                          >
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-10 w-10 glass rounded-full text-foreground"
-                              title="View on Explorer"
-                            >
-                              <ExternalLink className="h-5 w-5" />
-                            </Button>
-                          </Link>
-                        </div>
+                      <div className="mt-6 w-full">
+                        <AssetMonetizationActions
+                          assetId={asset.id}
+                          assetName={asset.name}
+                          slug={decodedSlug}
+                        />
                       </div>
                     </div>
                   </div>
@@ -484,8 +420,17 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                 {/* Right Column: Ownership & CTA (Spans 1 col) */}
                 <div className="space-y-6 lg:pt-4">
                   <div className="sticky top-24 space-y-6">
-                    {/* Marketplace Actions */}
-                    <AssetActionPanel assetId={asset!.id} />
+                    {/* Marketplace Actions / Utility Panel */}
+                    <AssetActionPanel
+                      assetId={asset!.id}
+                      slug={decodedSlug}
+                      isOwner={isOwner}
+                      nftAddress={nftAddress}
+                      tokenId={String(tokenId)}
+                      onTransferClick={() => setIsTransferOpen(true)}
+                      onReportClick={() => setIsReportOpen(true)}
+                      assetName={asset.name}
+                    />
 
                     <Card className="border-border/50 bg-background/50 backdrop-blur-sm overflow-hidden">
                       <div className="p-5 border-b border-border/50 bg-muted/20">
