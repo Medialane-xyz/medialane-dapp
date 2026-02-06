@@ -77,23 +77,29 @@ export function MainNav() {
           <NavigationMenuContent>
             <div className="grid gap-2 p-4 w-[400px]">
               <NavLink
+                href="/marketplace"
+                icon={ShoppingBag}
+                title="Marketplace"
+                description="Trade onchain Programmable IP assets"
+                featured
+              />
+              <NavLink
                 href="/collections"
                 icon={Grid3X3}
-                title="Collections"
+                title="Explore Collections"
                 description="Browse and trade curated IP collections"
-                featured
               />
               <NavLink
                 href="/assets"
                 icon={Boxes}
-                title="IP Assets"
+                title="Recent IP Assets"
                 description="Buy, sell, and license tokenized IP assets"
               />
               <NavLink
                 href="/activities"
                 icon={Activity}
-                title="Trading Activity"
-                description="Real-time marketplace trades and transfers"
+                title="Community Activity"
+                description="View recent activity on the platform"
               />
             </div>
           </NavigationMenuContent>

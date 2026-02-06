@@ -3,6 +3,7 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { TrendingUp, Users, Activity, Layers } from "lucide-react"
+import { motion } from "framer-motion"
 
 const stats = [
     {
@@ -10,54 +11,67 @@ const stats = [
         value: "2,345 STRK",
         change: "+12.5%",
         icon: Activity,
-        color: "text-blue-500",
+        gradient: "from-blue-500 to-cyan-500",
     },
     {
         label: "Active Listings",
         value: "1,234",
         change: "+5.2%",
         icon: Layers,
-        color: "text-purple-500",
+        gradient: "from-violet-500 to-purple-500",
     },
     {
         label: "Unique Creators",
         value: "450+",
         change: "+8.1%",
         icon: Users,
-        color: "text-green-500",
+        gradient: "from-emerald-500 to-teal-500",
     },
     {
         label: "Floor Price",
         value: "0.05 STRK",
         change: "+2.3%",
         icon: TrendingUp,
-        color: "text-yellow-500",
+        gradient: "from-amber-500 to-orange-500",
     },
 ]
 
 export function MarketplaceStats() {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4"
+        >
             {stats.map((stat, index) => (
-                <Card key={index} className="bg-white/5 border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors">
-                    <CardContent className="p-6">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <p className="text-sm font-medium text-muted-foreground mb-1">{stat.label}</p>
-                                <div className="flex items-center gap-2">
-                                    <h3 className="text-2xl font-bold">{stat.value}</h3>
-                                    <span className="text-xs font-medium text-green-500 bg-green-500/10 px-1.5 py-0.5 rounded-full">
-                                        {stat.change}
-                                    </span>
+                <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.1 + index * 0.05 }}
+                >
+                    <Card className="glass-card group cursor-default">
+                        <CardContent className="p-4 md:p-5">
+                            <div className="flex justify-between items-start gap-2">
+                                <div className="min-w-0">
+                                    <p className="text-xs md:text-sm font-medium text-muted-foreground mb-1 truncate">{stat.label}</p>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <h3 className="text-lg md:text-2xl font-bold truncate">{stat.value}</h3>
+                                        <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full shrink-0">
+                                            {stat.change}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className={`p-2 rounded-lg bg-gradient-to-br ${stat.gradient} text-white shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                                    <stat.icon className="h-4 w-4 md:h-5 md:w-5" />
                                 </div>
                             </div>
-                            <div className={`p-2 rounded-lg bg-background/50 border border-white/5 ${stat.color}`}>
-                                <stat.icon className="h-5 w-5" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                </motion.div>
             ))}
-        </div>
+        </motion.div>
     )
 }
+

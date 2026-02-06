@@ -93,8 +93,8 @@ export function FullScreenHero() {
                         </div>
 
                         {/* Title - matching slider shadow style */}
-                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 leading-[1.05] text-foreground">
-                            Getting onchain...
+                        <h1 className="text-5xl font-bold tracking-tight mb-8 leading-[1.05] text-foreground">
+                            loading...
                         </h1>
 
                         {/* Buttons - matching slider style */}

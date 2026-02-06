@@ -48,7 +48,7 @@ export function AssetCard({ asset }: { asset: MarketplaceAsset }) {
 
                 {/* Type Badge */}
                 <div className="absolute top-2 left-2">
-                    <Badge variant="secondary" className="bg-black/50 backdrop-blur text-xs font-normal border border-white/10 hover:bg-black/70">
+                    <Badge variant="secondary" className="bg-black/50 backdrop-blur text-xs font-normal border border-white/10">
                         {asset.type}
                     </Badge>
                 </div>
