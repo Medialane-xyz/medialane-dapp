@@ -113,7 +113,7 @@ export default function SettingsPage() {
 
   return (
     <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold mb-8">Settings</h1>
+      <h1 className="text-3xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">Settings</h1>
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-8">
         <Card className="flex flex-col glass-card">
           <CardHeader>
@@ -153,6 +153,7 @@ export default function SettingsPage() {
           </CardContent>
           <div className="flex justify-end p-5">
             <Button
+              className="gradient-vivid-outrun hover:shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all duration-200"
               onClick={async (e) => {
                 console.log(user);
                 await executeSettingsCall({
@@ -228,6 +229,7 @@ export default function SettingsPage() {
           </CardContent>
           <div className="flex justify-end p-5">
             <Button
+              className="gradient-vivid-outrun hover:shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all duration-200"
               onClick={async (e) => {
                 console.log("Saving new profile settings:", settings);
                 await executeSettingsCall({
@@ -290,14 +292,14 @@ export default function SettingsPage() {
         <CardContent>
           <ul className="space-y-4">
             <li className="flex items-start">
-              <CheckCircle className="mr-2 h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle className="mr-2 h-5 w-5 text-outrun-cyan flex-shrink-0 mt-0.5" />
               <div>
                 <strong>Secure Registration:</strong> Immutable blockchain
                 records ensure tamper-proof IP registration.
               </div>
             </li>
             <li className="flex items-start">
-              <CheckCircle className="mr-2 h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle className="mr-2 h-5 w-5 text-outrun-cyan flex-shrink-0 mt-0.5" />
               <div>
                 <strong>Enhanced Protection:</strong> Decentralized storage and
                 cryptographic techniques provide robust security for your
@@ -305,7 +307,7 @@ export default function SettingsPage() {
               </div>
             </li>
             <li className="flex items-start">
-              <CheckCircle className="mr-2 h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle className="mr-2 h-5 w-5 text-outrun-cyan flex-shrink-0 mt-0.5" />
               <div>
                 <strong>Streamlined Licensing:</strong> Smart contracts automate
                 and enforce licensing agreements, reducing administrative
@@ -313,14 +315,14 @@ export default function SettingsPage() {
               </div>
             </li>
             <li className="flex items-start">
-              <CheckCircle className="mr-2 h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle className="mr-2 h-5 w-5 text-outrun-cyan flex-shrink-0 mt-0.5" />
               <div>
                 <strong>Efficient Monetization:</strong> Tokenization enables
                 fractional ownership and new revenue streams for your IP assets.
               </div>
             </li>
             <li className="flex items-start">
-              <CheckCircle className="mr-2 h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle className="mr-2 h-5 w-5 text-outrun-cyan flex-shrink-0 mt-0.5" />
               <div>
                 <strong>Global Commercialization:</strong> Blockchain technology
                 facilitates borderless transactions and broader market access
@@ -328,7 +330,7 @@ export default function SettingsPage() {
               </div>
             </li>
             <li className="flex items-start">
-              <CheckCircle className="mr-2 h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle className="mr-2 h-5 w-5 text-outrun-cyan flex-shrink-0 mt-0.5" />
               <div>
                 <strong>Transparent Tracking:</strong> Real-time visibility into
                 IP usage, licensing, and royalty distributions.

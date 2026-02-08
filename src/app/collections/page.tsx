@@ -25,7 +25,7 @@ export default function CollectionsPage() {
     <main className="container mx-auto px-4">
 
       <div className="py-4 text-center">
-        <h1 className="text-4xl font-bold tracking-tight">Collections</h1>
+        <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-foreground/70">Collections</h1>
       </div>
 
       <div className="container">
@@ -54,7 +54,7 @@ export default function CollectionsPage() {
 
               {!hasMore && collections.length > 0 && (
                 <div className="mt-16 text-center text-muted-foreground pb-10">
-                  <Badge variant="outline" className="text-muted-foreground">You have reached the end of the Protocol</Badge>
+                  <Badge variant="outline" className="text-muted-foreground border-outrun-cyan/30 bg-outrun-cyan/5">You have reached the end of the Protocol</Badge>
                 </div>
               )}
 
@@ -65,11 +65,11 @@ export default function CollectionsPage() {
                     size="lg"
                     onClick={() => loadMore()}
                     disabled={loadingMore}
-                    className="min-w-[200px] h-12 text-md font-medium shadow-sm transition-all hover:shadow-md"
+                    className="min-w-[200px] h-12 text-md font-medium shadow-sm transition-all hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] hover:border-outrun-cyan/30"
                   >
                     {loadingMore ? (
                       <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin text-primary" />
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin text-outrun-cyan" />
                         Loading onchain...
                       </>
                     ) : (

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Layers, FolderOpen, TrendingUp, Sparkles } from "lucide-react"
 import { useAccount } from "@starknet-react/core"
 import { usePortfolio } from "@/hooks/use-portfolio"
+import { cn } from "@/lib/utils"
 
 export function CreatorStatsBar() {
     const { address } = useAccount()
@@ -18,12 +19,12 @@ export function CreatorStatsBar() {
     const hasActivity = stats.totalNFTs > 0
 
     return (
-        <Card className="glass-card p-4 mb-6 bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-950/10 dark:to-purple-950/10">
+        <Card className="glass-card p-4 mb-6 bg-gradient-to-r from-outrun-magenta/5 via-outrun-cyan/5 to-outrun-orange/5 border-white/10">
             <div className="flex flex-wrap items-center gap-6">
 
                 {/* Welcome Message */}
                 <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                    <Sparkles className="h-4 w-4 text-outrun-magenta" />
                     <span className="text-sm font-medium text-muted-foreground">Your Creator Dashboard</span>
                 </div>
 
@@ -31,7 +32,7 @@ export function CreatorStatsBar() {
                 <div className="flex flex-wrap items-center gap-4 md:gap-6">
                     {/* Total Assets */}
                     <div className="flex items-center gap-2">
-                        <Layers className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                        <Layers className="h-4 w-4 text-outrun-cyan" />
                         <div className="text-sm">
                             <span className="font-bold text-foreground">{stats.totalNFTs}</span>
                             <span className="text-muted-foreground ml-1">Assets</span>
@@ -40,7 +41,7 @@ export function CreatorStatsBar() {
 
                     {/* Collections */}
                     <div className="flex items-center gap-2">
-                        <FolderOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        <FolderOpen className="h-4 w-4 text-outrun-orange" />
                         <div className="text-sm">
                             <span className="font-bold text-foreground">{collections.length}</span>
                             <span className="text-muted-foreground ml-1">Collections</span>
@@ -50,7 +51,7 @@ export function CreatorStatsBar() {
                     {/* Top Collection */}
                     {stats.topCollection.name && (
                         <div className="flex items-center gap-2">
-                            <TrendingUp className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                            <TrendingUp className="h-4 w-4 text-outrun-magenta" />
                             <div className="text-sm min-w-0">
                                 <span className="font-medium text-foreground truncate inline-block max-w-[150px]">
                                     {stats.topCollection.name}
@@ -63,8 +64,11 @@ export function CreatorStatsBar() {
 
                 {/* Status Badge */}
                 <div className="ml-auto">
-                    <Badge variant={hasActivity ? "default" : "secondary"} className="gap-1.5 text-xs">
-                        <div className={`w-1.5 h-1.5 rounded-full ${hasActivity ? "bg-green-500 animate-pulse" : "bg-gray-400"}`} />
+                    <Badge variant={hasActivity ? "default" : "secondary"} className={cn(
+                        "gap-1.5 text-xs",
+                        hasActivity && "bg-gradient-to-r from-outrun-cyan to-outrun-magenta text-white border-none shadow-[0_0_10px_rgba(0,255,255,0.3)]"
+                    )}>
+                        <div className={`w-1.5 h-1.5 rounded-full ${hasActivity ? "bg-white animate-pulse" : "bg-gray-400"}`} />
                         {hasActivity ? "Active" : "New"}
                     </Badge>
                 </div>

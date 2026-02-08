@@ -32,6 +32,8 @@ export interface Activity {
     txHash: string;
     price?: string;
     blockNumber: number;
+    tokenId?: string;
+    collectionAddress?: string;
 }
 
 export interface UseActivitiesReturn {
@@ -92,6 +94,7 @@ interface ParsedEvent {
     txHash: string;
     blockNumber: number;
     rawTimestamp?: number; // Only present in transfers
+    baseUri?: string;
 }
 
 export function useActivities(pageSize: number = 20): UseActivitiesReturn {
@@ -190,13 +193,16 @@ export function useActivities(pageSize: number = 20): UseActivitiesReturn {
 
                             const owner = dataIter.next().value;
                             const collectionName = parseByteArray(dataIter);
+                            const symbol = parseByteArray(dataIter);
+                            const baseUri = parseByteArray(dataIter);
 
                             rangeEvents.push({
                                 id: `${event.transaction_hash}-${collectionId}`,
                                 type: "collection",
                                 collectionId,
-                                owner,
+                                owner: owner || "",
                                 descriptor: collectionName,
+                                baseUri,
                                 txHash: event.transaction_hash || "",
                                 blockNumber: event.block_number || 0
                             });
@@ -438,6 +444,24 @@ export function useActivities(pageSize: number = 20): UseActivitiesReturn {
                     if (activityType === "collection") {
                         details = "Created a new collection";
                         assetName = parsed.descriptor || `Collection #${parsed.collectionId}`;
+
+                        if (parsed.baseUri) {
+                            try {
+                                const ipfsUrl = processIPFSHashToUrl(parsed.baseUri, "/placeholder.svg");
+                                if (ipfsUrl !== "/placeholder.svg") {
+                                    const res = await fetch(ipfsUrl).catch(() => null);
+                                    if (res && res.ok) {
+                                        const metadata = await res.json();
+                                        if (metadata.image || metadata.cover_image || metadata.coverImage) {
+                                            const img = metadata.image || metadata.cover_image || metadata.coverImage;
+                                            assetImage = processIPFSHashToUrl(img, "/placeholder.svg");
+                                        }
+                                    }
+                                }
+                            } catch (e) {
+                                // Ignore error
+                            }
+                        }
                     } else if (activityType === "transfer") {
                         details = `Transferred asset to ${shortString.encodeShortString("")}`; // We don't have recipient name easily
                         if (parsed.recipient) {
@@ -493,7 +517,9 @@ export function useActivities(pageSize: number = 20): UseActivitiesReturn {
                         timestamp,
                         details,
                         txHash: parsed.txHash,
-                        blockNumber: parsed.blockNumber
+                        blockNumber: parsed.blockNumber,
+                        tokenId: parsed.tokenId,
+                        collectionAddress: parsed.collectionAddress
                     };
                 }));
             }

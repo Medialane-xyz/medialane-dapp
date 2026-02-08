@@ -18,7 +18,7 @@ export function Logo() {
     return (
       <div className="flex items-center space-x-2 ml-4">
         <Link href="/">
-          <div className="w-[140px] h-[33px]" />
+          <div className="w-[196px] h-[34px]" />
         </Link>
       </div>
     )
@@ -31,16 +31,16 @@ export function Logo() {
           <Image
             src="/medialane-light-logo.png"
             alt="Medialane"
-            width={140}
-            height={33}
+            width={196}
+            height={34}
             priority
           />
         ) : (
           <Image
             src="/medialane-dark-logo.png"
             alt="Medialane"
-            width={140}
-            height={33}
+            width={196}
+            height={34}
             priority
           />
         )}

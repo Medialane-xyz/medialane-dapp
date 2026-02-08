@@ -255,10 +255,10 @@ export default function TransferPage() {
               </div>
             )}
             {selectedAssets.length > 0 && (
-              <Button onClick={() => setTransferDialogOpen(true)} className="gap-2">
+              <Button onClick={() => setTransferDialogOpen(true)} className="gap-2 gradient-vivid-outrun hover:shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all duration-200">
                 <Send className="h-4 w-4" />
                 Transfer Selected
-                <Badge variant="secondary" className="ml-1">
+                <Badge variant="secondary" className="ml-1 bg-white/20 text-white">
                   {selectedAssets.length}
                 </Badge>
               </Button>
@@ -720,10 +720,10 @@ export default function TransferPage() {
       {/* Mobile Floating Action Button */}
       {selectedAssets.length > 0 && (
         <div className="fixed bottom-6 left-4 right-4 flex justify-center md:hidden z-10">
-          <Button onClick={() => setTransferDialogOpen(true)} size="lg" className="shadow-lg gap-2 w-full max-w-sm">
+          <Button onClick={() => setTransferDialogOpen(true)} size="lg" className="shadow-lg gap-2 w-full max-w-sm gradient-vivid-outrun hover:shadow-[0_0_25px_rgba(0,255,255,0.4)] transition-all duration-200">
             <Send className="h-4 w-4" />
             Transfer Selected
-            <Badge variant="secondary" className="ml-1">
+            <Badge variant="secondary" className="ml-1 bg-white/20 text-white">
               {selectedAssets.length}
             </Badge>
           </Button>
@@ -733,15 +733,15 @@ export default function TransferPage() {
       {/* Mobile Selection Summary */}
       {selectedAssets.length > 0 && (
         <div className="fixed bottom-20 left-4 right-4 md:hidden z-10">
-          <Card className="glass-card border-primary/20">
+          <Card className="glass-card border-outrun-cyan/30 shadow-[0_0_15px_rgba(0,255,255,0.15)]">
             <CardContent className="p-3">
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
-                  <Package className="h-4 w-4 text-primary" />
+                  <Package className="h-4 w-4 text-outrun-cyan" />
                   <span>{selectedAssets.length} selected</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Zap className="h-3 w-3 text-primary" />
+                  <Zap className="h-3 w-3 text-outrun-cyan" />
                   <span className="font-medium">{(selectedValue / 1000).toFixed(2)} ETH</span>
                 </div>
               </div>

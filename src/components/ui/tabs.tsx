@@ -37,10 +37,10 @@ const TabsTrigger = React.forwardRef<
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
       "disabled:pointer-events-none disabled:opacity-50",
       "hover:bg-white/10 dark:hover:bg-white/5",
-      "data-[state=active]:bg-white/20 dark:data-[state=active]:bg-white/10",
-      "data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+      "data-[state=active]:bg-outrun-cyan/10 dark:data-[state=active]:bg-outrun-cyan/15",
+      "data-[state=active]:text-foreground data-[state=active]:shadow-[0_0_10px_rgba(0,255,255,0.1)]",
       "data-[state=active]:backdrop-blur-md",
-      "data-[state=active]:border data-[state=active]:border-white/30 dark:data-[state=active]:border-white/20",
+      "data-[state=active]:border data-[state=active]:border-outrun-cyan/30 dark:data-[state=active]:border-outrun-cyan/40",
       className
     )}
     {...props}

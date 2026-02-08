@@ -51,8 +51,8 @@ export default function PortfolioClientPage() {
                                 <div className="space-y-8">
                                     <div className="flex flex-col items-center justify-center space-y-4 py-8 animate-in fade-in duration-500">
                                         <div className="relative">
-                                            <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
-                                            <Loader2 className="h-8 w-8 animate-spin text-primary relative z-10" />
+                                            <div className="absolute inset-0 bg-gradient-to-r from-outrun-magenta/30 via-outrun-cyan/30 to-outrun-orange/30 blur-xl rounded-full animate-pulse" />
+                                            <Loader2 className="h-8 w-8 animate-spin text-outrun-cyan relative z-10" />
                                         </div>
                                         <div className="text-center space-y-1">
                                             <p className="text-lg font-medium text-foreground">Loading Portfolio</p>
@@ -86,7 +86,7 @@ export default function PortfolioClientPage() {
 
                                         <div className="relative z-10 flex flex-col h-full justify-between space-y-6">
                                             <div className="space-y-4">
-                                                <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                                                <div className="h-12 w-12 rounded-xl bg-outrun-cyan/10 flex items-center justify-center text-outrun-cyan group-hover:bg-gradient-to-br group-hover:from-outrun-magenta group-hover:to-outrun-cyan group-hover:text-white group-hover:shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all duration-300">
                                                     <Grid3X3 size={24} />
                                                 </div>
                                                 <div>
@@ -114,7 +114,7 @@ export default function PortfolioClientPage() {
 
                                         <div className="relative z-10 flex flex-col h-full justify-between space-y-6">
                                             <div className="space-y-4">
-                                                <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                                                <div className="h-12 w-12 rounded-xl bg-outrun-magenta/10 flex items-center justify-center text-outrun-magenta group-hover:bg-gradient-to-br group-hover:from-outrun-cyan group-hover:to-outrun-magenta group-hover:text-white group-hover:shadow-[0_0_20px_rgba(255,0,255,0.3)] transition-all duration-300">
                                                     <Layers size={24} />
                                                 </div>
                                                 <div>
@@ -142,7 +142,7 @@ export default function PortfolioClientPage() {
 
                                         <div className="relative z-10 flex flex-col h-full justify-between space-y-6">
                                             <div className="space-y-4">
-                                                <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                                                <div className="h-12 w-12 rounded-xl bg-outrun-orange/10 flex items-center justify-center text-outrun-orange group-hover:bg-gradient-to-br group-hover:from-outrun-orange group-hover:to-outrun-magenta group-hover:text-white group-hover:shadow-[0_0_20px_rgba(255,153,0,0.3)] transition-all duration-300">
                                                     <Activity size={24} />
                                                 </div>
                                                 <div>

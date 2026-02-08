@@ -72,8 +72,8 @@ export default function AssetsPage() {
                         </div>
 
                         {totalCount > 0 && (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-secondary/30 backdrop-blur-md rounded-full border border-border/50">
-                                <Box className="h-4 w-4 text-blue-600" />
+                            <div className="flex items-center gap-2 px-4 py-2 bg-outrun-cyan/10 backdrop-blur-md rounded-full border border-outrun-cyan/20">
+                                <Box className="h-4 w-4 text-outrun-cyan" />
                                 <span className="font-semibold">{totalCount}</span>
                                 <span className="text-muted-foreground text-sm">Assets</span>
                             </div>
@@ -89,7 +89,7 @@ export default function AssetsPage() {
                                     placeholder="Search by name, ID, or collection..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-12 h-12 text-base bg-background/50 border-input/50 focus:border-primary/50 focus:ring-primary/20 rounded-xl shadow-sm transition-all"
+                                    className="pl-12 h-12 text-base bg-background/50 border-input/50 focus:border-outrun-cyan/50 focus:ring-outrun-cyan/20 focus:shadow-[0_0_15px_rgba(0,255,255,0.15)] rounded-xl shadow-sm transition-all"
                                 />
                             </div>
                         </div>
@@ -98,9 +98,9 @@ export default function AssetsPage() {
                             size="lg"
                             onClick={refresh}
                             disabled={loading}
-                            className="h-12 px-6 border-input/50 bg-background/50 hover:bg-secondary/50 backdrop-blur-sm rounded-xl"
+                            className="h-12 px-6 border-input/50 bg-background/50 hover:bg-outrun-cyan/10 hover:border-outrun-cyan/30 backdrop-blur-sm rounded-xl transition-all"
                         >
-                            <RefreshCw className={`h-5 w-5 mr-2 ${loading && !loadingMore ? "animate-spin" : ""}`} />
+                            <RefreshCw className={`h-5 w-5 mr-2 ${loading && !loadingMore ? "animate-spin text-outrun-cyan" : ""}`} />
                             Refresh
                         </Button>
                     </div>
@@ -121,7 +121,7 @@ export default function AssetsPage() {
                     {loading && !loadingMore && assets.length === 0 ? (
                         <Card className="border-dashed">
                             <div className="p-12 flex flex-col items-center justify-center text-center space-y-4 min-h-[300px]">
-                                <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                                <Loader2 className="h-10 w-10 text-outrun-cyan animate-spin" />
                                 <div className="space-y-2">
                                     <h3 className="text-lg font-medium">Retrieving onchain data...</h3>
                                     <p className="text-sm text-muted-foreground max-w-sm">
@@ -166,11 +166,11 @@ export default function AssetsPage() {
                                         size="lg"
                                         onClick={loadMore}
                                         disabled={loadingMore}
-                                        className="min-w-[200px]"
+                                        className="min-w-[200px] hover:border-outrun-cyan/30 hover:shadow-[0_0_20px_rgba(0,255,255,0.15)] transition-all"
                                     >
                                         {loadingMore ? (
                                             <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin text-outrun-cyan" />
                                                 Loading more...
                                             </>
                                         ) : (

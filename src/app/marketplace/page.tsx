@@ -35,7 +35,7 @@ export default function MarketplacePage() {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder="Search assets..."
-                                className="pl-10 bg-white/5 border-white/10 w-full focus:bg-white/10 focus:border-primary/50 transition-all h-10"
+                                className="pl-10 bg-white/5 border-white/10 w-full focus:bg-white/10 focus:border-outrun-cyan/50 focus:shadow-[0_0_15px_rgba(0,255,255,0.1)] transition-all h-10"
                             />
                         </div>
 
@@ -44,7 +44,7 @@ export default function MarketplacePage() {
                             {/* Filter Button */}
                             <Sheet>
                                 <SheetTrigger asChild>
-                                    <Button variant="outline" size="sm" className="gap-2 border-white/10 hover:bg-white/5 h-10 px-3">
+                                    <Button variant="outline" size="sm" className="gap-2 border-white/10 hover:bg-white/10 hover:border-outrun-cyan/30 hover:shadow-[0_0_10px_rgba(0,255,255,0.15)] transition-all duration-200 h-10 px-3">
                                         <Filter className="h-4 w-4" />
                                         <span className="hidden sm:inline">Filters</span>
                                     </Button>
@@ -62,7 +62,7 @@ export default function MarketplacePage() {
                             {/* Sort Dropdown */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm" className="gap-2 border-white/10 hover:bg-white/5 h-10 px-3">
+                                    <Button variant="outline" size="sm" className="gap-2 border-white/10 hover:bg-white/10 hover:border-outrun-cyan/30 hover:shadow-[0_0_10px_rgba(0,255,255,0.15)] transition-all duration-200 h-10 px-3">
                                         <SlidersHorizontal className="h-4 w-4" />
                                         <span className="hidden sm:inline">{sortOrder === "recent" ? "Recent" : "Oldest"}</span>
                                         <ChevronDown className="h-3 w-3 opacity-50" />

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useNetwork } from "@/components/starknet-provider";
 import { StarknetkitConnector, useStarknetkitConnectModal } from "starknetkit";
+import { Badge } from "../ui/badge";
 
 export function WalletConnect() {
   const { connectAsync, connectors } = useConnect();
@@ -60,15 +61,15 @@ export function WalletConnect() {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant={isWrongNetwork ? "destructive" : "outline"} className={`w-full glass ${isWrongNetwork ? "bg-red-500/20 border-red-500 text-red-500 hover:bg-red-500/30" : ""}`}>
+          <Button variant={isWrongNetwork ? "destructive" : "outline"} className={`w-full glass rounded-full ${isWrongNetwork ? "bg-red-500/20 border-red-500 text-red-500 hover:bg-red-500/30" : ""}`}>
             <Wallet className="h-4 w-4 mr-2" />
             {isWrongNetwork ? "Wrong Network" : displayAddress?.slice(0, 6)}
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] backdrop-blur-2xl">
           <DialogHeader>
-            <DialogTitle>Account</DialogTitle>
-            <DialogDescription className="text-sm text-blue-500">
+            <DialogTitle className="text-foreground">Account</DialogTitle>
+            <DialogDescription className="text-sm text-foreground">
               Connected: {displayAddress?.slice(0, 6)}...{displayAddress?.slice(-4)} on {networkConfig.name}
             </DialogDescription>
           </DialogHeader>
@@ -95,9 +96,9 @@ export function WalletConnect() {
               </Button>
             </div>
             <div className="alert alert-warning">
-              <p className="text-sm">
-                * Medialane is under development, use for testing purposes only.
-              </p>
+              <Badge variant="secondary" className="text-sm">
+                Live on Starknet Mainnet for testing.
+              </Badge>
             </div>
           </div>
         </DialogContent>
@@ -106,7 +107,7 @@ export function WalletConnect() {
   }
 
   return (
-    <Button variant="outline" className="w-full glass" onClick={handleConnect}>
+    <Button variant="outline" className="w-full glass rounded-full" onClick={handleConnect}>
       <Wallet className="h-4 w-4 mr-2" />
       Connect
     </Button>

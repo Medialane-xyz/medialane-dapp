@@ -280,7 +280,7 @@ export default function CreatePage() {
                 placeholder="Search creation options..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12"
+                className="pl-10 h-12 focus:border-outrun-cyan/50 focus:shadow-[0_0_15px_rgba(0,255,255,0.12)] transition-all"
               />
             </div>
             <div className="flex gap-2">
@@ -386,7 +386,7 @@ export default function CreatePage() {
                   <Card className="glass-card">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-base flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-primary" />
+                        <TrendingUp className="h-4 w-4 text-outrun-magenta" />
                         Popular Templates
                       </CardTitle>
                     </CardHeader>
@@ -409,8 +409,8 @@ export default function CreatePage() {
 
                         return (
                           <Link key={template.id} href={`/create/templates/${template.id}`}>
-                            <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                              <div className="p-1.5 rounded-md bg-primary/10 text-primary">
+                            <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-outrun-cyan/10 transition-colors cursor-pointer">
+                              <div className="p-1.5 rounded-md bg-outrun-cyan/10 text-outrun-cyan">
                                 {getIconComponent(template.icon)}
                               </div>
                               <div className="flex-1 min-w-0">
@@ -423,7 +423,7 @@ export default function CreatePage() {
                         )
                       })}
                       <Link href="/create/templates">
-                        <Button variant="outline" size="sm" className="w-full mt-2 bg-transparent">
+                        <Button variant="outline" size="sm" className="w-full mt-2 bg-transparent hover:bg-outrun-cyan/10 hover:border-outrun-cyan/30 transition-all">
                           View All Templates
                         </Button>
                       </Link>
@@ -452,19 +452,19 @@ export default function CreatePage() {
                       <h4 className="font-medium mb-3">Why tokenize with Mediolano?</h4>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <CheckCircle className="h-4 w-4 text-outrun-cyan" />
                           <span>Zero fees protocol and dapp</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <CheckCircle className="h-4 w-4 text-outrun-cyan" />
                           <span>Full ownership onchain</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <CheckCircle className="h-4 w-4 text-outrun-cyan" />
                           <span>Instant tokenization</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <CheckCircle className="h-4 w-4 text-outrun-cyan" />
                           <span>Powered on Starknet Blockchain</span>
                         </div>
                       </div>

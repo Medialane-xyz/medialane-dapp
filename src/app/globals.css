@@ -694,3 +694,107 @@
     transform: none;
   }
 }
+
+/* ======================================
+   SUBTLE OUTRUN UTILITY CLASSES
+   ====================================== */
+
+/* Input Focus with Subtle Cyan Glow */
+.input-focus-vivid:focus {
+  border-color: rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1), 0 0 10px rgba(0, 255, 255, 0.15);
+  outline: none;
+}
+
+/* Glass Toolbar Container */
+.glass-toolbar {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+}
+
+.dark .glass-toolbar {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Glass Sidebar Container */
+.glass-sidebar {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .glass-sidebar {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Subtle Card Hover (lighter than card-hover-vivid) */
+.card-hover-subtle {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover-subtle:hover {
+  border-color: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+}
+
+/* Loading Spinner with Outrun Colors */
+.loading-vivid {
+  color: #00FFFF;
+}
+
+.loading-vivid-bg {
+  background: linear-gradient(135deg,
+      rgba(255, 0, 255, 0.3),
+      rgba(0, 255, 255, 0.3),
+      rgba(255, 153, 0, 0.3));
+  filter: blur(20px);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Selection Highlight with Outrun Colors */
+.selection-vivid {
+  border-color: rgba(0, 255, 255, 0.5);
+  background: rgba(0, 255, 255, 0.05);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
+}
+
+/* FAB (Floating Action Button) with Outrun */
+.fab-vivid {
+  background: linear-gradient(135deg, #FF00FF, #00FFFF);
+  box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3), 0 0 30px rgba(255, 0, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.fab-vivid:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 255, 255, 0.4), 0 0 40px rgba(255, 0, 255, 0.3);
+}
+
+/* Accent Border Animation (subtle version) */
+.border-accent-subtle {
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.border-accent-subtle:hover {
+  border-color: rgba(0, 255, 255, 0.4);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+/* Mobile Touch States */
+@media (hover: none) {
+  .card-hover-subtle:active {
+    border-color: rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
+  }
+
+  .fab-vivid:active {
+    transform: scale(0.98);
+  }
+}

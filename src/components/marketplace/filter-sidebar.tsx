@@ -13,9 +13,14 @@ import { RotateCcw, Grid3X3, TrendingUp, Clock, Layers } from "lucide-react"
 export function FilterSidebar() {
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Filters</h3>
-                <Button variant="ghost" size="sm" className="h-auto p-1.5 gap-1.5 text-muted-foreground hover:text-primary text-xs">
+            {/* Header with subtle gradient accent */}
+            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                <h3 className="font-semibold text-lg text-gradient-vivid">Filters</h3>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto p-1.5 gap-1.5 text-muted-foreground hover:text-outrun-cyan hover:shadow-[0_0_10px_rgba(0,255,255,0.2)] transition-all duration-200 text-xs"
+                >
                     <RotateCcw className="h-3 w-3" />
                     Reset
                 </Button>
@@ -89,7 +94,7 @@ export function FilterSidebar() {
                                 <Badge
                                     key={cat}
                                     variant="outline"
-                                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors py-1.5 px-3"
+                                    className="cursor-pointer hover:bg-outrun-cyan/20 hover:text-outrun-cyan hover:border-outrun-cyan/50 hover:shadow-[0_0_8px_rgba(0,255,255,0.2)] transition-all duration-200 py-1.5 px-3"
                                 >
                                     {cat}
                                 </Badge>
@@ -103,11 +108,11 @@ export function FilterSidebar() {
                     <AccordionTrigger className="hover:no-underline py-3">Price (STRK)</AccordionTrigger>
                     <AccordionContent>
                         <div className="pt-4 px-1 space-y-4">
-                            <Slider defaultValue={[0, 100]} max={100} step={1} />
+                            <Slider defaultValue={[0, 100]} max={100} step={1} className="[&_[role=slider]]:bg-outrun-cyan [&_[role=slider]]:border-outrun-cyan [&_.range]:bg-gradient-to-r [&_.range]:from-outrun-magenta [&_.range]:to-outrun-cyan" />
                             <div className="flex items-center gap-3">
-                                <input className="flex-1 bg-white/5 border border-white/10 rounded-md py-2 px-3 text-sm text-center" placeholder="Min" />
+                                <input className="flex-1 bg-white/5 border border-white/10 rounded-md py-2 px-3 text-sm text-center focus:border-outrun-cyan/50 focus:shadow-[0_0_8px_rgba(0,255,255,0.15)] transition-all duration-200" placeholder="Min" />
                                 <span className="text-muted-foreground">—</span>
-                                <input className="flex-1 bg-white/5 border border-white/10 rounded-md py-2 px-3 text-sm text-center" placeholder="Max" />
+                                <input className="flex-1 bg-white/5 border border-white/10 rounded-md py-2 px-3 text-sm text-center focus:border-outrun-cyan/50 focus:shadow-[0_0_8px_rgba(0,255,255,0.15)] transition-all duration-200" placeholder="Max" />
                             </div>
                         </div>
                     </AccordionContent>

@@ -119,7 +119,7 @@ export function CollectionsGrid({ collections, onCollectionClick }: { collection
           <Input
             type="search"
             placeholder="Search collections..."
-            className="pl-8"
+            className="pl-8 focus:border-outrun-cyan/50 focus:shadow-[0_0_10px_rgba(0,255,255,0.15)] transition-all duration-200"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -171,7 +171,7 @@ export function CollectionsGrid({ collections, onCollectionClick }: { collection
           </DropdownMenu>
 
           <Link href="/create/collection">
-            <Button className="gap-1 ml-auto sm:ml-0">
+            <Button className="gap-1 ml-auto sm:ml-0 gradient-vivid-outrun hover:shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all duration-200">
               <Plus className="h-4 w-4" />
               <span className="hidden xs:inline">New Collection</span>
             </Button>
@@ -246,8 +246,9 @@ function CollectionCard({ collection, nftCount, onReportClick, onCollectionClick
   return (
     <Card
       className={cn(
-        "glass-card overflow-hidden transition-all cursor-pointer group",
-        onCollectionClick && "hover:ring-2 hover:ring-primary"
+        "glass-card overflow-hidden transition-all duration-300 cursor-pointer group",
+        "hover:shadow-[0_0_25px_rgba(0,255,255,0.15)] hover:border-outrun-cyan/30",
+        onCollectionClick && "hover:ring-2 hover:ring-outrun-cyan/50"
       )}
       onClick={onCollectionClick}
     >
@@ -271,7 +272,7 @@ function CollectionCard({ collection, nftCount, onReportClick, onCollectionClick
                 <div className="absolute top-2 left-2">
                   <Badge
                     variant="secondary"
-                    className="bg-yellow-500/90 hover:bg-yellow-500/80 dark:bg-yellow-500/80 dark:hover:bg-yellow-500/70 text-primary-foreground border-none"
+                    className="bg-gradient-to-r from-outrun-orange to-outrun-magenta text-white border-none shadow-[0_0_10px_rgba(255,153,0,0.3)]"
                   >
                     <Star className="h-3 w-3 mr-1 fill-current" />
                     Featured
@@ -298,7 +299,7 @@ function CollectionCard({ collection, nftCount, onReportClick, onCollectionClick
               <div className="absolute top-2 left-2">
                 <Badge
                   variant="secondary"
-                  className="bg-yellow-500/90 hover:bg-yellow-500/80 dark:bg-yellow-500/80 dark:hover:bg-yellow-500/70 text-primary-foreground border-none"
+                  className="bg-gradient-to-r from-outrun-orange to-outrun-magenta text-white border-none shadow-[0_0_10px_rgba(255,153,0,0.3)]"
                 >
                   <Star className="h-3 w-3 mr-1 fill-current" />
                   Featured
@@ -367,7 +368,7 @@ function CollectionListItem({ collection, nftCount, onReportClick, onCollectionC
                     {isFeatured && (
                       <Badge
                         variant="secondary"
-                        className="bg-yellow-500/90 hover:bg-yellow-500/80 dark:bg-yellow-500/80 dark:hover:bg-yellow-500/70 text-primary-foreground border-none"
+                        className="bg-gradient-to-r from-outrun-orange to-outrun-magenta text-white border-none shadow-[0_0_10px_rgba(255,153,0,0.3)]"
                       >
                         <Star className="h-3 w-3 mr-1 fill-current" />
                         Featured
@@ -414,7 +415,7 @@ function CollectionListItem({ collection, nftCount, onReportClick, onCollectionC
                     {isFeatured && (
                       <Badge
                         variant="secondary"
-                        className="bg-yellow-500/90 hover:bg-yellow-500/80 dark:bg-yellow-500/80 dark:hover:bg-yellow-500/70 text-primary-foreground border-none"
+                        className="bg-gradient-to-r from-outrun-orange to-outrun-magenta text-white border-none shadow-[0_0_10px_rgba(255,153,0,0.3)]"
                       >
                         <Star className="h-3 w-3 mr-1 fill-current" />
                         Featured
@@ -468,7 +469,7 @@ export function FeaturedCollectionCard({ collection, nftCount, onReportClick }: 
             <div className="absolute top-4 left-4">
               <Badge
                 variant="secondary"
-                className="bg-yellow-500/90 hover:bg-yellow-500/80 dark:bg-yellow-500/80 dark:hover:bg-yellow-500/70 text-primary-foreground border-none"
+                className="bg-gradient-to-r from-outrun-orange to-outrun-magenta text-white border-none shadow-[0_0_10px_rgba(255,153,0,0.3)]"
               >
                 <Star className="h-3 w-3 mr-1 fill-current" />
                 Featured Collection

@@ -47,7 +47,7 @@ export function AssetCardSkeleton() {
 
 function AssetCardItemComponent({ asset }: { asset: RecentAsset }) {
     return (
-        <Card className="overflow-hidden group hover:shadow-lg transition-all duration-300 border-muted-foreground/20">
+        <Card className="overflow-hidden group hover:shadow-[0_0_25px_rgba(0,255,255,0.12)] transition-all duration-300 border-muted-foreground/20 hover:border-outrun-cyan/30">
             <Link href={`/asset/${asset.collectionAddress}-${asset.tokenId}`}>
                 <div className="aspect-square relative bg-muted/50 overflow-hidden cursor-pointer">
                     <LazyImage
@@ -73,14 +73,14 @@ function AssetCardItemComponent({ asset }: { asset: RecentAsset }) {
                         <Link href={`/collections/${asset.collectionAddress}`} className="hover:underline truncate max-w-[60%] font-medium text-foreground/80">
                             {asset.collectionName || `Collection #${asset.collectionId}`}
                         </Link>
-                        <Badge variant="secondary" className="text-[10px] shrink-0 font-normal text-muted-foreground bg-secondary/50 hover:bg-secondary/70">
+                        <Badge variant="secondary" className="text-[10px] shrink-0 font-normal text-muted-foreground bg-outrun-cyan/10 hover:bg-outrun-cyan/20 border-outrun-cyan/20">
                             {asset.ipType || "Asset"}
                         </Badge>
                     </div>
                 </div>
 
                 <div className="pt-2 flex gap-2">
-                    <Button asChild variant="outline" size="sm" className="flex-1 h-8 text-xs gap-1">
+                    <Button asChild variant="outline" size="sm" className="flex-1 h-8 text-xs gap-1 hover:border-outrun-cyan/30 hover:shadow-[0_0_10px_rgba(0,255,255,0.1)] transition-all">
                         <Link href={`/asset/${asset.collectionAddress}-${asset.tokenId}`}>
                             <Box className="h-3 w-3" />
                             View Asset

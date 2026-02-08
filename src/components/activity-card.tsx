@@ -37,33 +37,33 @@ const getActivityColor = (type: string) => {
     case "creation":
     case "mint":
       return {
-        badge: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20",
-        icon: "text-emerald-600",
+        badge: "bg-outrun-cyan/10 text-outrun-cyan border-outrun-cyan/20 hover:bg-outrun-cyan/20",
+        icon: "text-outrun-cyan",
       }
     case "transfer":
       return {
-        badge: "bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500/20",
-        icon: "text-blue-600",
+        badge: "bg-outrun-magenta/10 text-outrun-magenta border-outrun-magenta/20 hover:bg-outrun-magenta/20",
+        icon: "text-outrun-magenta",
       }
     case "license":
       return {
-        badge: "bg-violet-500/10 text-violet-600 border-violet-500/20 hover:bg-violet-500/20",
-        icon: "text-violet-600",
+        badge: "bg-violet-500/10 text-violet-500 border-violet-500/20 hover:bg-violet-500/20",
+        icon: "text-violet-500",
       }
     case "remix":
       return {
-        badge: "bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500/20",
-        icon: "text-amber-600",
+        badge: "bg-outrun-orange/10 text-outrun-orange border-outrun-orange/20 hover:bg-outrun-orange/20",
+        icon: "text-outrun-orange",
       }
     case "collection":
       return {
-        badge: "bg-purple-500/10 text-purple-600 border-purple-500/20 hover:bg-purple-500/20",
-        icon: "text-purple-600",
+        badge: "bg-purple-500/10 text-purple-400 border-purple-500/20 hover:bg-purple-500/20",
+        icon: "text-purple-400",
       }
     default:
       return {
-        badge: "bg-neutral-500/10 text-neutral-600 border-neutral-500/20 hover:bg-neutral-500/20",
-        icon: "text-neutral-600",
+        badge: "bg-muted text-muted-foreground border-border/20",
+        icon: "text-muted-foreground",
       }
   }
 }
@@ -87,13 +87,26 @@ const formatTimeAgo = (timestamp: string) => {
   }
 }
 
+const getGradient = (name: string) => {
+  const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  const gradients = [
+    "from-outrun-cyan to-outrun-magenta",
+    "from-outrun-magenta to-outrun-orange",
+    "from-outrun-orange to-violet-500",
+    "from-violet-500 to-outrun-cyan",
+    "from-pink-500 to-rose-500",
+    "from-blue-500 to-cyan-400"
+  ]
+  return gradients[hash % gradients.length]
+}
+
 export function ActivityCard({ activity }: ActivityCardProps) {
   const Icon = getActivityIcon(activity.type)
   const colors = getActivityColor(activity.type)
   const timeAgo = formatTimeAgo(activity.timestamp)
 
   return (
-    <Card className="group flex flex-col h-full overflow-hidden border-border/40 bg-card/40 backdrop-blur-sm hover:border-primary/20 hover:shadow-lg transition-all duration-300">
+    <Card className="glass-card flex flex-col h-full overflow-hidden hover:shadow-[0_0_25px_rgba(0,255,255,0.1)] hover:scale-[1.02] transition-all duration-300 group">
 
       {/* Header: User & Action - Timeline Feel */}
       <div className="flex items-center gap-3 p-4 pb-3 border-b border-border/10">
@@ -117,13 +130,17 @@ export function ActivityCard({ activity }: ActivityCardProps) {
       </div>
 
       {/* Body: Full Width Image */}
-      <div className="relative w-full aspect-square bg-muted/20 border-y border-border/10">
-        <Image
-          src={activity.assetImage || `/placeholder.svg?height=400&width=400&text=${activity.assetName}`}
-          alt={activity.assetName}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-700"
-        />
+      <div className="relative w-full aspect-square bg-muted/20 border-y border-border/10 overflow-hidden">
+        {activity.type === 'collection' && (!activity.assetImage || activity.assetImage === '/placeholder.svg' || activity.assetImage.includes('placeholder')) ? (
+          <div className={`w-full h-full bg-gradient-to-br ${getGradient(activity.assetName)} opacity-80 group-hover:opacity-100 transition-opacity duration-500`} />
+        ) : (
+          <Image
+            src={activity.assetImage || `/placeholder.svg?height=400&width=400&text=${activity.assetName}`}
+            alt={activity.assetName}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-700"
+          />
+        )}
       </div>
 
       {/* Footer: Metadata */}
