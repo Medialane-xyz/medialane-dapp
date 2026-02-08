@@ -11,6 +11,7 @@ import {
     Sheet,
     SheetContent,
     SheetTrigger,
+    SheetTitle,
 } from "@/components/ui/sheet"
 import {
     DropdownMenu,
@@ -18,6 +19,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
 
 export default function MarketplacePage() {
     const [sortOrder, setSortOrder] = useState<"recent" | "oldest">("recent")
@@ -48,6 +50,9 @@ export default function MarketplacePage() {
                                     </Button>
                                 </SheetTrigger>
                                 <SheetContent side="left" className="w-[300px] sm:w-[360px] bg-black/95 border-r border-white/10 backdrop-blur-2xl">
+                                    <VisuallyHidden.Root>
+                                        <SheetTitle>Filters</SheetTitle>
+                                    </VisuallyHidden.Root>
                                     <div className="py-4">
                                         <FilterSidebar />
                                     </div>

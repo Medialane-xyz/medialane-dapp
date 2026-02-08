@@ -24,6 +24,10 @@ const buttonVariants = cva(
         vivid: "gradient-vivid-primary rounded-lg",
         "vivid-accent": "gradient-vivid-accent rounded-lg",
         "vivid-creative": "gradient-vivid-creative rounded-lg",
+        "vivid-outrun": "gradient-vivid-outrun rounded-lg border-0",
+        "neon-cyan": "bg-transparent border-2 border-outrun-cyan text-outrun-cyan hover:bg-outrun-cyan/10 hover:shadow-neon-cyan transition-all duration-300 font-mono uppercase tracking-wider",
+        "neon-magenta": "bg-transparent border-2 border-outrun-magenta text-outrun-magenta hover:bg-outrun-magenta/10 hover:shadow-neon-magenta transition-all duration-300 font-mono uppercase tracking-wider",
+        "neon-orange": "bg-transparent border-2 border-outrun-orange text-outrun-orange hover:bg-outrun-orange/10 hover:shadow-neon-orange transition-all duration-300 font-mono uppercase tracking-wider",
       },
       size: {
         default: "h-9 px-4 py-2",

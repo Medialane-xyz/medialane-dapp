@@ -1,11 +1,10 @@
 "use client";
 
-import { use, useMemo, useState, useEffect } from "react";
+import { use, useMemo, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card"; // Added missing import
-import { ArrowLeft, ArrowRightLeft } from "lucide-react";
-import Image from "next/image";
+import { Card } from "@/components/ui/card";
+import { ArrowRightLeft } from "lucide-react";
 import { LazyImage } from "@/components/ui/lazy-image";
 import Link from "next/link";
 import { useAccount } from "@starknet-react/core";
@@ -29,7 +28,7 @@ import { AssetErrorBoundary } from "@/components/asset/asset-error-boundary";
 import { normalizeStarknetAddress } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { isAssetReported } from "@/lib/reported-content"
-import { AlertTriangle, ShieldCheck, History, Palette, Share2, ExternalLink } from "lucide-react"
+import { AlertTriangle, ShieldCheck, Cpu, FileCode, Layers, Check } from "lucide-react"
 import { SimpleProvenance } from "@/components/asset-provenance/simple-provenance";
 import { useAssetProvenanceEvents } from "@/hooks/useEvents";
 
@@ -72,42 +71,13 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
   const { toast } = useToast();
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [isTransferOpen, setIsTransferOpen] = useState(false);
-  const [copied, setCopied] = useState(false)
   const [imageRatio, setImageRatio] = useState<number | null>(null)
 
-  const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL || "https://voyager.online";
   const tokenId = Number(tokenIdStr?.trim());
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: asset?.name || "Asset",
-          text: `Check out ${asset?.name} on Medialane`,
-          url: window.location.href,
-        })
-      } catch (error) {
-        console.error("Error sharing:", error)
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(window.location.href)
-        setCopied(true)
-        toast({
-          title: "Link Copied",
-          description: "Asset link copied to clipboard",
-        })
-        setTimeout(() => setCopied(false), 2000)
-      } catch (error) {
-        console.error("Failed to copy URL:", error)
-        toast({
-          title: "Error",
-          description: "Failed to copy link",
-          variant: "destructive",
-        })
-      }
-    }
-  }
+  // Memoized callbacks for child components
+  const handleReportOpen = useCallback(() => setIsReportOpen(true), []);
+  const handleTransferOpen = useCallback(() => setIsTransferOpen(true), []);
 
   const { displayAsset: asset, loading, loadingState, error, uiState, showSkeleton, notFound } = useAsset(
     nftAddress as `0x${string}`,
@@ -268,12 +238,11 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                   </Alert>
                 )}
 
-                <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-16">
-                  {/* Asset Image - Large Glass Card */}
-                  <div className="flex-shrink-0 relative group w-full max-w-[320px] lg:max-w-[400px] mx-auto lg:mx-0">
-                    <div className="absolute -inset-1 rounded-2xl" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                  {/* Asset Image - Large, Half-Screen on Desktop */}
+                  <div className="relative group w-full max-w-md lg:max-w-none mx-auto lg:mx-0">
                     <div
-                      className="relative w-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out border border-white/10 bg-black/20 backdrop-blur-sm"
+                      className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-black/20 backdrop-blur-sm"
                       style={{ aspectRatio: imageRatio || "1/1" }}
                     >
                       <LazyImage
@@ -353,19 +322,27 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                   {/* Quick Stats Grid */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 -mt-12 mb-12 relative z-30">
                     <div className="glass-card p-4 rounded-xl bg-background/50 backdrop-blur-md border border-border/50">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Blockchain</p>
-                      <p className="font-bold flex items-center gap-2">Starknet</p>
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <Cpu className="h-3 w-3" /> Blockchain
+                      </p>
+                      <p className="font-bold">Starknet</p>
                     </div>
                     <div className="glass-card p-4 rounded-xl bg-background/50 backdrop-blur-md border border-border/50">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Standard</p>
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <FileCode className="h-3 w-3" /> Standard
+                      </p>
                       <p className="font-bold">ERC-721</p>
                     </div>
                     <div className="glass-card p-4 rounded-xl bg-background/50 backdrop-blur-md border border-border/50">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">IP Type</p>
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <Layers className="h-3 w-3" /> IP Type
+                      </p>
                       <p className="font-bold truncate" title={asset?.type}>{asset?.type || "Generic"}</p>
                     </div>
                     <div className="glass-card p-4 rounded-xl bg-background/50 backdrop-blur-md border border-border/50">
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Status</p>
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <Check className="h-3 w-3" /> Status
+                      </p>
                       <Badge variant="secondary" className="text-foreground">Onchain</Badge>
                     </div>
                   </div>
@@ -427,8 +404,8 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                       isOwner={isOwner}
                       nftAddress={nftAddress}
                       tokenId={String(tokenId)}
-                      onTransferClick={() => setIsTransferOpen(true)}
-                      onReportClick={() => setIsReportOpen(true)}
+                      onTransferClick={handleTransferOpen}
+                      onReportClick={handleReportOpen}
                       assetName={asset.name}
                     />
 

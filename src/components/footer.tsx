@@ -88,7 +88,7 @@ export function Footer() {
                 href={feature.link}
                 className="group flex flex-col items-center p-4 rounded-xl bg-accent/5 hover:bg-accent/10 border border-transparent hover:border-accent/20 transition-all duration-300 transform hover:-translate-y-1"
               >
-                <div className="mb-3 p-3 rounded-full bg-blue-500/10 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors duration-300">
+                <div className="mb-3 p-3 rounded-full bg-outrun-cyan/10 text-outrun-cyan group-hover:bg-outrun-cyan group-hover:text-black group-hover:shadow-neon-cyan transition-all duration-300">
                   {feature.icon}
                 </div>
                 <h4 className="font-semibold text-sm mb-1">{feature.title}</h4>

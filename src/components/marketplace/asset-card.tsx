@@ -37,7 +37,7 @@ export interface MarketplaceAsset {
 
 export function AssetCard({ asset }: { asset: MarketplaceAsset }) {
     return (
-        <Card className="overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm hover:border-white/20 hover:bg-white/10 transition-all duration-300 group flex flex-col h-full">
+        <Card className="overflow-hidden border border-white/10 bg-black/20 backdrop-blur-sm hover:border-outrun-cyan/30 hover:bg-black/30 transition-all duration-500 group flex flex-col h-full hover:shadow-[0_0_30px_rgba(0,255,255,0.15)]">
             <Link href={`/asset/${asset.id}`} className="block relative aspect-square overflow-hidden bg-muted/20">
                 <Image
                     src={asset.image}
@@ -76,7 +76,7 @@ export function AssetCard({ asset }: { asset: MarketplaceAsset }) {
 
             <CardFooter className="p-4 pt-0 grid grid-cols-[1fr,1fr,auto] gap-2">
                 <Link href={`/asset/${asset.id}`} className="w-full">
-                    <Button className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white border-none gap-2 font-semibold px-2 shadow-lg shadow-indigo-500/20">
+                    <Button className="w-full gradient-vivid-outrun text-white border-none gap-2 font-semibold px-2">
                         <ShoppingBag className="h-4 w-4" />
                         <span className="hidden sm:inline">Trade</span>
                     </Button>

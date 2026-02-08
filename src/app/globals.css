@@ -514,9 +514,183 @@
 
 .dark .vivid-gradient-bg::before {
   background:
-    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(37, 99, 235, 0.5), transparent 55%),
-    radial-gradient(ellipse 60% 80% at 90% 80%, rgba(124, 58, 237, 0.45), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 50% 50%, rgba(6, 182, 212, 0.35), transparent 55%),
-    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(219, 39, 119, 0.3), transparent 50%),
-    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(5, 150, 105, 0.25), transparent 50%);
+    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(139, 0, 255, 0.35), transparent 55%),
+    radial-gradient(ellipse 60% 80% at 90% 80%, rgba(255, 0, 255, 0.3), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 50% 50%, rgba(0, 255, 255, 0.25), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(255, 153, 0, 0.2), transparent 50%),
+    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(255, 20, 147, 0.15), transparent 50%);
+}
+
+/* ======================================
+   VIVID OUTRUN GRADIENT SYSTEM
+   ====================================== */
+
+/* Animated Gradient Border */
+.border-gradient-vivid {
+  position: relative;
+  background: transparent;
+}
+
+.border-gradient-vivid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(90deg,
+      #FF00FF,
+      #00FFFF,
+      #FF9900,
+      #FF00FF);
+  background-size: 300% 100%;
+  animation: gradient-x 4s ease infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Vivid Gradient Text */
+.text-gradient-vivid {
+  background: linear-gradient(135deg, #FF00FF, #00FFFF, #FF9900);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-x 4s ease infinite;
+}
+
+/* Vivid Button Styles */
+.gradient-vivid-outrun {
+  background: linear-gradient(135deg, #FF00FF 0%, #8B00FF 25%, #00FFFF 50%, #FF9900 100%);
+  background-size: 200% 200%;
+  animation: gradient-x 4s ease infinite;
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(255, 0, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.gradient-vivid-outrun:hover {
+  box-shadow: 0 6px 30px rgba(255, 0, 255, 0.5), 0 0 60px rgba(0, 255, 255, 0.2);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.gradient-vivid-outrun:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Cyan/Magenta Gradient */
+.gradient-cyan-magenta {
+  background: linear-gradient(135deg, #00FFFF 0%, #FF00FF 100%);
+}
+
+/* Orange/Magenta Gradient */
+.gradient-orange-magenta {
+  background: linear-gradient(135deg, #FF9900 0%, #FF00FF 100%);
+}
+
+/* Cyan/Orange Gradient */
+.gradient-cyan-orange {
+  background: linear-gradient(135deg, #00FFFF 0%, #FF9900 100%);
+}
+
+/* Vivid Glass Card with Animated Border */
+.glass-vivid {
+  background: rgba(13, 2, 33, 0.6);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border: 1px solid rgba(255, 0, 255, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 0 60px rgba(0, 255, 255, 0.03);
+  transition: all 0.4s ease;
+}
+
+.glass-vivid:hover {
+  border-color: rgba(0, 255, 255, 0.4);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(255, 0, 255, 0.15),
+    inset 0 0 80px rgba(0, 255, 255, 0.05);
+}
+
+/* Neon Text Glow */
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.8), 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
+}
+
+.text-glow-magenta {
+  text-shadow: 0 0 10px rgba(255, 0, 255, 0.8), 0 0 20px rgba(255, 0, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3);
+}
+
+.text-glow-orange {
+  text-shadow: 0 0 10px rgba(255, 153, 0, 0.8), 0 0 20px rgba(255, 153, 0, 0.5), 0 0 40px rgba(255, 153, 0, 0.3);
+}
+
+/* Animated Accent Line */
+.accent-line-vivid {
+  height: 2px;
+  background: linear-gradient(90deg, #FF00FF, #00FFFF, #FF9900, #FF00FF);
+  background-size: 300% 100%;
+  animation: gradient-x 3s ease infinite;
+}
+
+/* Vivid Card Hover Effect */
+.card-hover-vivid {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover-vivid:hover {
+  border-color: rgba(0, 255, 255, 0.3);
+  box-shadow:
+    0 0 30px rgba(0, 255, 255, 0.15),
+    0 0 60px rgba(255, 0, 255, 0.1);
+  transform: translateY(-4px);
+}
+
+/* Outrun Button Glow Effects */
+.btn-glow-cyan {
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+  transition: box-shadow 0.3s ease;
+}
+
+.btn-glow-cyan:hover {
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.6), 0 0 50px rgba(0, 255, 255, 0.3);
+}
+
+.btn-glow-magenta {
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
+  transition: box-shadow 0.3s ease;
+}
+
+.btn-glow-magenta:hover {
+  box-shadow: 0 0 25px rgba(255, 0, 255, 0.6), 0 0 50px rgba(255, 0, 255, 0.3);
+}
+
+.btn-glow-orange {
+  box-shadow: 0 0 15px rgba(255, 153, 0, 0.4);
+  transition: box-shadow 0.3s ease;
+}
+
+.btn-glow-orange:hover {
+  box-shadow: 0 0 25px rgba(255, 153, 0, 0.6), 0 0 50px rgba(255, 153, 0, 0.3);
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+
+  .border-gradient-vivid::before,
+  .text-gradient-vivid,
+  .gradient-vivid-outrun,
+  .accent-line-vivid {
+    animation: none;
+  }
+
+  .gradient-vivid-outrun:hover,
+  .card-hover-vivid:hover {
+    transform: none;
+  }
 }

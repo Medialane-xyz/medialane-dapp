@@ -10,10 +10,10 @@ import { useFeaturedCollections } from "@/hooks/use-collection"
 
 // Vivid accent colors for navigation dots
 const ACCENT_COLORS = [
-    { accent: "from-violet-500 to-fuchsia-500" },
-    { accent: "from-cyan-400 to-blue-500" },
-    { accent: "from-rose-500 to-pink-500" },
-    { accent: "from-emerald-400 to-teal-500" }
+    { accent: "from-outrun-magenta to-outrun-purple" },
+    { accent: "from-outrun-cyan to-blue-400" },
+    { accent: "from-outrun-orange to-outrun-pink" },
+    { accent: "from-outrun-cyan to-outrun-magenta" }
 ]
 
 export function FullScreenHero() {
@@ -65,17 +65,17 @@ export function FullScreenHero() {
                     <motion.div
                         animate={{ x: [0, 100, 0], y: [0, -50, 0], scale: [1, 1.2, 1] }}
                         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-gradient-radial from-violet-500/40 to-transparent rounded-full blur-3xl"
+                        className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-gradient-radial from-outrun-magenta/40 to-transparent rounded-full blur-3xl"
                     />
                     <motion.div
                         animate={{ x: [0, -80, 0], y: [0, 80, 0], scale: [1, 1.3, 1] }}
                         transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-gradient-radial from-cyan-500/40 to-transparent rounded-full blur-3xl"
+                        className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-gradient-radial from-outrun-cyan/40 to-transparent rounded-full blur-3xl"
                     />
                     <motion.div
                         animate={{ x: [0, 60, 0], y: [0, 60, 0], scale: [1, 1.1, 1] }}
                         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute top-1/3 right-1/3 w-1/3 h-1/3 bg-gradient-radial from-fuchsia-500/30 to-transparent rounded-full blur-3xl"
+                        className="absolute top-1/3 right-1/3 w-1/3 h-1/3 bg-gradient-radial from-outrun-orange/30 to-transparent rounded-full blur-3xl"
                     />
                 </div>
 

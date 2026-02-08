@@ -2,8 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ShoppingBag, HandCoins, RefreshCw } from "lucide-react"
+import { ShoppingBag, HandCoins, RefreshCw, Sparkles } from "lucide-react"
 import { PurchaseDialog } from "@/components/marketplace/checkout/purchase-dialog"
 import { OfferDialog } from "@/components/marketplace/checkout/offer-dialog"
 import Link from "next/link"
@@ -15,67 +14,82 @@ interface AssetMonetizationActionsProps {
 }
 
 export function AssetMonetizationActions({ assetId, assetName, slug }: AssetMonetizationActionsProps) {
-    // Mock state
     const [listingPrice] = useState<string | null>("0.45 ETH")
+    const [usdPrice] = useState<string>("~$1,245")
 
     return (
-        <div className="flex flex-col gap-4 w-full">
-            {/* Price & Actions Row */}
-            <div className="flex flex-wrap items-center gap-3 w-full">
-
-                {/* Price Badge - Optional/Integrated */}
-                {listingPrice && (
-                    <div className="flex items-baseline gap-1 bg-black/20 backdrop-blur-md px-3 py-2 rounded-lg border border-white/5 mr-1">
-                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Price</span>
-                        <span className="text-lg font-bold text-white">{listingPrice}</span>
+        <div className="w-full space-y-6">
+            {/* --- Purchase Section --- */}
+            <div className="glass-card p-4 sm:p-5 space-y-4">
+                {/* Price Display */}
+                {listingPrice ? (
+                    <div className="flex items-baseline gap-2 flex-wrap">
+                        <span className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{listingPrice}</span>
+                        <span className="text-sm text-muted-foreground">{usdPrice}</span>
                     </div>
+                ) : (
+                    <p className="text-lg text-muted-foreground">Not listed for sale</p>
                 )}
 
-                {/* Buy Button */}
-                {listingPrice ? (
-                    <PurchaseDialog
+                {/* Buy / Offer Actions */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                    {listingPrice ? (
+                        <PurchaseDialog
+                            asset={{
+                                id: assetId,
+                                name: assetName,
+                                price: "0.45",
+                                currency: "ETH",
+                                image: "/placeholder.svg",
+                                collectionName: "Collection"
+                            }}
+                            trigger={
+                                <Button className="flex-1 h-11 gradient-vivid-primary rounded-lg">
+                                    <ShoppingBag className="mr-2 h-4 w-4" />
+                                    Buy Now
+                                </Button>
+                            }
+                        />
+                    ) : (
+                        <Button className="flex-1 h-11 glass-button text-muted-foreground cursor-not-allowed rounded-lg" disabled>
+                            Not Listed
+                        </Button>
+                    )}
+
+                    <OfferDialog
                         asset={{
                             id: assetId,
                             name: assetName,
-                            price: "0.45",
+                            floorPrice: "0.45",
                             currency: "ETH",
                             image: "/placeholder.svg",
                             collectionName: "Collection"
                         }}
                         trigger={
-                            <Button size="lg" className="flex-1 sm:flex-none min-w-[140px] bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg shadow-blue-900/20 border-0 h-11">
-                                <ShoppingBag className="mr-2 h-4 w-4" /> Buy Now
+                            <Button variant="outline" className="flex-1 h-11 glass-button text-foreground hover:text-foreground rounded-lg">
+                                <HandCoins className="mr-2 h-4 w-4" />
+                                Make Offer
                             </Button>
                         }
                     />
-                ) : (
-                    <Button size="lg" className="flex-1 sm:flex-none bg-white/10 text-white/50 h-11" disabled>Not Listed</Button>
-                )}
-
-                {/* Make Offer */}
-                <OfferDialog
-                    asset={{
-                        id: assetId,
-                        name: assetName,
-                        floorPrice: "0.45",
-                        currency: "ETH",
-                        image: "/placeholder.svg",
-                        collectionName: "Collection"
-                    }}
-                    trigger={
-                        <Button variant="outline" size="lg" className="flex-1 sm:flex-none min-w-[140px] glass h-11 border-white/20 hover:bg-white/10 hover:text-white text-white font-semibold">
-                            <HandCoins className="mr-2 h-4 w-4" /> Make Offer
-                        </Button>
-                    }
-                />
-
-                {/* Create Remix */}
-                <Link href={`/create/remix/${slug}`} className="flex-1 sm:flex-none">
-                    <Button size="lg" className="w-full sm:w-auto min-w-[140px] bg-purple-600 hover:bg-purple-500 text-white font-bold shadow-lg shadow-purple-900/20 border-0 h-11">
-                        <RefreshCw className="mr-2 h-4 w-4" /> Create Remix
-                    </Button>
-                </Link>
+                </div>
             </div>
+
+            {/* --- Remix Section (Separate Visual) --- */}
+            <Link href={`/create/remix/${slug}`} className="block">
+                <div className="glass-interactive p-4 sm:p-5 rounded-xl flex items-center justify-between group cursor-pointer">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center">
+                            <RefreshCw className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                            <p className="font-semibold text-foreground">Create a Remix</p>
+                            <p className="text-xs text-muted-foreground">Custom licensing & pricing</p>
+                        </div>
+                    </div>
+                    <Sparkles className="h-5 w-5 text-muted-foreground group-hover:text-pink-500 transition-colors" />
+                </div>
+            </Link>
         </div>
     )
 }

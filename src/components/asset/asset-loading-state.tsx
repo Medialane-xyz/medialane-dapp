@@ -33,10 +33,10 @@ export function AssetLoadingState({ loadingState, error }: AssetLoadingStateProp
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      {/* Hero Section Skeleton */}
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+      {/* Hero Section Skeleton - 50/50 Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
         {/* Left: Image */}
-        <div className="w-full lg:w-[450px] flex-shrink-0">
+        <div className="w-full max-w-md lg:max-w-none mx-auto">
           <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 bg-muted/10">
             <Skeleton className="h-full w-full" />
 
@@ -60,12 +60,9 @@ export function AssetLoadingState({ loadingState, error }: AssetLoadingStateProp
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap gap-2 pt-2">
-            <Skeleton className="h-11 w-32 rounded-md" />
-            <Skeleton className="h-11 w-32 rounded-md" />
-            <Skeleton className="h-11 w-32 rounded-md" />
-            <Skeleton className="h-10 w-10 rounded-full" />
-            <Skeleton className="h-10 w-10 rounded-full" />
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Skeleton className="h-11 flex-1 rounded-lg" />
+            <Skeleton className="h-11 w-28 rounded-lg" />
           </div>
         </div>
       </div>

@@ -1,11 +1,8 @@
-
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { ArrowRightLeft, History, Palette, Share2, AlertTriangle, ExternalLink, ShieldCheck } from "lucide-react"
+import { ArrowRightLeft, History, Palette, Share2, AlertTriangle, ExternalLink, Check } from "lucide-react"
 import Link from "next/link"
-import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
 import { useState } from "react"
 
@@ -49,10 +46,7 @@ export function AssetActionPanel({
             try {
                 await navigator.clipboard.writeText(window.location.href)
                 setCopied(true)
-                toast({
-                    title: "Link Copied",
-                    description: "Asset link copied to clipboard",
-                })
+                toast({ title: "Link Copied", description: "Asset link copied to clipboard" })
                 setTimeout(() => setCopied(false), 2000)
             } catch (error) {
                 console.error("Failed to copy URL:", error)
@@ -60,81 +54,59 @@ export function AssetActionPanel({
         }
     }
 
+    const actionButtonClass = "h-10 justify-start glass-button text-foreground hover:text-foreground rounded-lg text-sm font-normal"
+
     return (
-        <Card className="border-border/50 bg-background/50 backdrop-blur-sm overflow-hidden sticky top-24">
-            <div className="p-5 border-b border-border/50 bg-muted/20">
-                <h3 className="font-semibold flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-primary" />
-                    Actions
-                </h3>
-            </div>
-            <CardContent className="p-5 space-y-4">
+        <div className="sticky top-24 space-y-4">
+            {/* Actions Card */}
+            <div className="glass-card p-4 space-y-2">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-1">Actions</h3>
 
-                {/* Main Actions */}
-                <div className="grid grid-cols-1 gap-3">
-                    {isOwner && (
-                        <Button
-                            variant="outline"
-                            size="lg"
-                            className="w-full justify-start h-12 border-border/50 hover:bg-muted/50"
-                            onClick={onTransferClick}
-                        >
-                            <ArrowRightLeft className="mr-3 h-4 w-4 text-muted-foreground" />
-                            Transfer Asset
-                        </Button>
-                    )}
+                {isOwner && (
+                    <Button variant="ghost" className={actionButtonClass} onClick={onTransferClick}>
+                        <ArrowRightLeft className="mr-2.5 h-4 w-4 text-cyan-500" />
+                        Transfer Asset
+                    </Button>
+                )}
 
-                    <Link href={`/create/remix/${slug}`} className="w-full">
-                        <Button variant="outline" size="lg" className="w-full justify-start h-12 border-border/50 hover:bg-muted/50">
-                            <Palette className="mr-3 h-4 w-4 text-muted-foreground" />
-                            Remix Studio
-                        </Button>
-                    </Link>
+                <Link href={`/create/remix/${slug}`} className="block">
+                    <Button variant="ghost" className={`w-full ${actionButtonClass}`}>
+                        <Palette className="mr-2.5 h-4 w-4 text-pink-500" />
+                        Remix Studio
+                    </Button>
+                </Link>
 
-                    <Link href={`/provenance/${slug}`} className="w-full">
-                        <Button variant="outline" size="lg" className="w-full justify-start h-12 border-border/50 hover:bg-muted/50">
-                            <History className="mr-3 h-4 w-4 text-muted-foreground" />
-                            View Provenance
-                        </Button>
-                    </Link>
-                </div>
+                <Link href={`/provenance/${slug}`} className="block">
+                    <Button variant="ghost" className={`w-full ${actionButtonClass}`}>
+                        <History className="mr-2.5 h-4 w-4 text-amber-500" />
+                        View Provenance
+                    </Button>
+                </Link>
 
-                <Separator className="bg-border/50" />
+                <div className="h-px bg-border/50 my-2" />
 
-                {/* Secondary Actions */}
-                <div className="grid grid-cols-2 gap-3">
-                    <Button
-                        variant="ghost"
-                        className="w-full justify-start border border-border/30 hover:bg-muted/30"
-                        onClick={handleShare}
-                    >
-                        <Share2 className="mr-2 h-4 w-4" />
+                <div className="grid grid-cols-2 gap-2">
+                    <Button variant="ghost" className={actionButtonClass} onClick={handleShare}>
+                        {copied ? <Check className="mr-2 h-4 w-4 text-green-500" /> : <Share2 className="mr-2 h-4 w-4" />}
                         Share
                     </Button>
 
-                    <Link
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href={`${EXPLORER_URL}/nft/${nftAddress}/${tokenId}`}
-                        className="w-full"
-                    >
-                        <Button variant="ghost" className="w-full justify-start border border-border/30 hover:bg-muted/30">
+                    <Link target="_blank" rel="noopener noreferrer" href={`${EXPLORER_URL}/nft/${nftAddress}/${tokenId}`} className="block">
+                        <Button variant="ghost" className={`w-full ${actionButtonClass}`}>
                             <ExternalLink className="mr-2 h-4 w-4" />
                             Explorer
                         </Button>
                     </Link>
                 </div>
+            </div>
 
-                <Button
-                    variant="ghost"
-                    className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                    onClick={onReportClick}
-                >
-                    <AlertTriangle className="mr-2 h-4 w-4" />
+            {/* Report Link */}
+            <div className="flex justify-center">
+                <Button variant="link" size="sm" className="text-xs text-muted-foreground/60 hover:text-destructive h-auto py-1" onClick={onReportClick}>
+                    <AlertTriangle className="mr-1.5 h-3 w-3" />
                     Report Issue
                 </Button>
-
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     )
 }

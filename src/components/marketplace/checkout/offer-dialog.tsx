@@ -1,7 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -11,17 +19,19 @@ import {
     Loader2,
     AlertCircle,
     HandCoins,
-    Wallet,
     Shield,
-    Check,
+    CheckCircle2,
     ExternalLink,
     Clock,
     TrendingUp,
-    Info
+    Info,
+    Sparkles
 } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
+import { Card, CardContent } from "@/components/ui/card"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
+import { cn } from "@/lib/utils"
 
 interface OfferDialogProps {
     trigger?: React.ReactNode
@@ -67,10 +77,7 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
         setErrorMsg("")
 
         try {
-            // Mock transaction delay
             await new Promise(resolve => setTimeout(resolve, 2000))
-
-            // Success state
             setTxHash("0x07c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6")
             setStage("success")
         } catch (err) {
@@ -98,154 +105,135 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
             }
         }}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-            <DialogContent className="sm:max-w-lg p-0 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 border-white/10 shadow-2xl">
-                <AnimatePresence mode="wait">
+            <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden border-none shadow-2xl bg-transparent sm:rounded-2xl">
+                {/* Main Content Container with Subtle Glassmorphism */}
+                <div className="relative bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-2xl overflow-hidden">
+
+                    {/* Vivid Top Gradient Accent - Animated Outrun */}
+                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-outrun-cyan via-outrun-magenta to-outrun-orange bg-[length:200%_100%] animate-gradient-x" />
+
+                    <VisuallyHidden>
+                        <DialogTitle>Make an Offer</DialogTitle>
+                    </VisuallyHidden>
+
                     {stage === "success" ? (
-                        <motion.div
-                            key="success"
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="p-8"
-                        >
-                            {/* Success State */}
-                            <div className="flex flex-col items-center text-center space-y-6">
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ type: "spring", duration: 0.6, delay: 0.1 }}
-                                    className="w-24 h-24 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-full flex items-center justify-center border-2 border-green-500/30 shadow-lg shadow-green-500/10"
-                                >
-                                    <Check className="w-12 h-12 text-green-400" />
-                                </motion.div>
-
-                                <div className="space-y-2">
-                                    <h2 className="text-2xl font-bold text-white">Offer Submitted!</h2>
-                                    <p className="text-slate-400 max-w-xs mx-auto">
-                                        Your offer of <span className="font-semibold text-white">{offerAmount} {asset.currency}</span> for{" "}
-                                        <span className="font-semibold text-white">{asset.name}</span> has been submitted.
-                                    </p>
+                        <div className="p-8 flex flex-col items-center text-center">
+                            <div className="mb-6 relative">
+                                <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full animate-pulse-slow"></div>
+                                <div className="relative bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full p-4 shadow-lg shadow-cyan-500/30 text-white">
+                                    <CheckCircle2 className="h-10 w-10" />
                                 </div>
+                            </div>
 
-                                <div className="w-full bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 space-y-3">
-                                    <div className="flex items-center justify-between text-sm">
-                                        <span className="text-slate-400">Offer Amount</span>
-                                        <span className="font-semibold text-white">{offerAmount} {asset.currency}</span>
-                                    </div>
-                                    <div className="flex items-center justify-between text-sm">
-                                        <span className="text-slate-400">Expires In</span>
-                                        <span className="text-slate-300">{EXPIRATION_OPTIONS.find(o => o.value === expiration)?.label}</span>
-                                    </div>
-                                    <Separator className="bg-slate-700/50" />
-                                    <div className="flex items-center justify-between text-sm">
-                                        <span className="text-slate-400">Transaction</span>
-                                        <div className="flex items-center gap-2">
-                                            <code className="text-xs text-slate-300 bg-slate-700/50 px-2 py-1 rounded">
-                                                {txHash.slice(0, 8)}...{txHash.slice(-6)}
-                                            </code>
-                                            <Link href={`https://starkscan.co/tx/${txHash}`} target="_blank" className="text-blue-400 hover:text-blue-300">
-                                                <ExternalLink className="w-4 h-4" />
-                                            </Link>
-                                        </div>
-                                    </div>
+                            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600 dark:from-cyan-400 dark:to-blue-400 mb-2">
+                                Offer Submitted!
+                            </h2>
+
+                            <p className="text-muted-foreground mb-8">
+                                Your offer of <span className="font-semibold text-foreground">{offerAmount} {asset.currency}</span> is now live.
+                            </p>
+
+                            <div className="w-full bg-muted/50 rounded-xl p-4 border border-border/50 mb-8 text-sm">
+                                <div className="flex justify-between items-center mb-3">
+                                    <span className="text-muted-foreground">Expires In</span>
+                                    <span className="font-medium text-foreground">{EXPIRATION_OPTIONS.find(o => o.value === expiration)?.label}</span>
                                 </div>
-
-                                <div className="grid grid-cols-2 gap-3 w-full pt-2">
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setIsOpen(false)}
-                                        className="border-slate-600 hover:bg-slate-800 text-slate-300"
-                                    >
-                                        Close
-                                    </Button>
-                                    <Link href={`/portfolio/offers`} className="w-full">
-                                        <Button className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white">
-                                            View My Offers
-                                        </Button>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-muted-foreground">Transaction</span>
+                                    <Link href={`https://starkscan.co/tx/${txHash}`} target="_blank" className="flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors">
+                                        <span className="font-mono text-xs">{txHash.slice(0, 8)}...{txHash.slice(-6)}</span>
+                                        <ExternalLink className="w-3 h-3" />
                                     </Link>
                                 </div>
                             </div>
-                        </motion.div>
+
+                            <div className="flex flex-col sm:flex-row gap-3 w-full">
+                                <Button variant="outline" onClick={() => setIsOpen(false)} className="flex-1 rounded-xl h-11">
+                                    Close
+                                </Button>
+                                <Link href={`/portfolio/offers`} className="flex-1">
+                                    <Button className="w-full rounded-xl h-11 gradient-vivid-accent border-0">
+                                        View Offers
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    ) : stage === "processing" ? (
+                        <div className="p-12 flex flex-col items-center text-center justify-center min-h-[400px]">
+                            <div className="relative mb-6">
+                                <div className="absolute inset-0 bg-cyan-500/20 blur-2xl rounded-full"></div>
+                                <Loader2 className="relative h-16 w-16 animate-spin text-cyan-500" />
+                            </div>
+
+                            <h2 className="text-xl font-bold mb-2">Submitting Strategy</h2>
+                            <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-8">
+                                Processing your offer on the blockchain. Your funds will be securely escrowed.
+                            </p>
+
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground/80 bg-muted/50 px-3 py-1.5 rounded-full">
+                                <Shield className="w-3 h-3" />
+                                <span>Verified Transaction</span>
+                            </div>
+                        </div>
                     ) : (
-                        <motion.div
-                            key="form"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                        >
-                            {/* Header with Asset Preview */}
-                            <div className="relative h-32 overflow-hidden">
-                                <div
-                                    className="absolute inset-0 bg-cover bg-center blur-xl opacity-50"
-                                    style={{ backgroundImage: `url(${asset.image})` }}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/50 to-slate-900" />
-                                <div className="relative h-full flex items-end pb-4 px-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white/20 shadow-xl flex-shrink-0">
-                                            <img
-                                                src={asset.image}
-                                                alt={asset.name}
-                                                className="w-full h-full object-cover"
-                                            />
+                        <>
+                            <div className="p-6 pb-0">
+                                <div className="flex items-start gap-5">
+                                    <div className="relative group shrink-0">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
+                                        <div className="relative h-24 w-24 rounded-xl overflow-hidden border border-border shadow-sm">
+                                            <img src={asset.image} alt={asset.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                         </div>
-                                        <div>
-                                            <h3 className="font-bold text-lg text-white">{asset.name}</h3>
-                                            <p className="text-sm text-slate-400">{asset.collectionName}</p>
+                                    </div>
+
+                                    <div className="pt-1 min-w-0 flex-1">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <Badge variant="secondary" className="bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20 text-[10px] items-center gap-1 px-2">
+                                                <TrendingUp className="w-3 h-3" />
+                                                High Demand
+                                            </Badge>
+                                            <div className="text-right">
+                                                <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Floor</p>
+                                                <p className="text-xs font-bold">{floorPrice} {asset.currency}</p>
+                                            </div>
                                         </div>
+                                        <h2 className="text-xl font-bold truncate pr-2 mb-1">{asset.name}</h2>
+                                        <p className="text-sm text-muted-foreground truncate font-medium">{asset.collectionName}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Content */}
                             <div className="p-6 space-y-6">
-                                {/* Floor Price Reference */}
-                                <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
-                                            <TrendingUp className="w-5 h-5 text-white" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-white">Floor Price</p>
-                                            <p className="text-xs text-slate-400">Collection average</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="font-bold text-white">{floorPrice} {asset.currency}</p>
-                                        <p className="text-xs text-slate-400">≈ $1,532.45 USD</p>
-                                    </div>
-                                </div>
-
-                                {/* Offer Input */}
+                                {/* Offer Form */}
                                 <div className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Your Offer</Label>
-                                        <div className="relative">
+                                        <Label htmlFor="offer-amount" className="text-sm font-semibold text-foreground/80">Your Offer Amount</Label>
+                                        <div className="relative group">
                                             <Input
+                                                id="offer-amount"
                                                 type="number"
                                                 placeholder="0.00"
                                                 value={offerAmount}
                                                 onChange={(e) => setOfferAmount(e.target.value)}
-                                                className="h-14 text-2xl font-bold bg-slate-800/50 border-slate-700/50 text-white placeholder:text-slate-500 pr-20 focus:border-cyan-500/50 focus:ring-cyan-500/20"
+                                                className="h-14 pl-4 pr-20 text-xl font-bold bg-muted/30 border-border/60 focus:bg-background focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/10 transition-all rounded-xl"
                                             />
-                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                                                <Badge className="bg-slate-700 text-slate-300 border-slate-600">
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                <Badge variant="outline" className="bg-background/50 backdrop-blur-sm px-2 py-1 h-7 text-xs font-medium">
                                                     {asset.currency}
                                                 </Badge>
                                             </div>
                                         </div>
                                         {offerAmount && parseFloat(offerAmount) < parseFloat(floorPrice) && (
-                                            <div className="flex items-center gap-2 text-amber-400 text-xs">
-                                                <Info className="w-3 h-3" />
-                                                <span>Your offer is below the floor price</span>
+                                            <div className="flex items-center gap-1.5 text-amber-500 text-xs font-medium px-1 animate-in fade-in slide-in-from-top-1">
+                                                <Info className="h-3.5 w-3.5" />
+                                                <span>Below floor price ({floorPrice} {asset.currency})</span>
                                             </div>
                                         )}
                                     </div>
 
-                                    {/* Expiration Select */}
                                     <div className="space-y-2">
-                                        <Label className="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                                            <Clock className="w-4 h-4" />
+                                        <Label className="text-sm font-semibold text-foreground/80 flex items-center gap-2">
+                                            <Clock className="w-3.5 h-3.5 text-muted-foreground" />
                                             Offer Expiration
                                         </Label>
                                         <div className="grid grid-cols-5 gap-2">
@@ -253,10 +241,13 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
                                                 <button
                                                     key={option.value}
                                                     onClick={() => setExpiration(option.value)}
-                                                    className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${expiration === option.value
-                                                            ? "bg-cyan-500/20 border-cyan-500/50 text-cyan-400 border"
-                                                            : "bg-slate-800/50 border-slate-700/50 text-slate-400 border hover:bg-slate-700/50"
-                                                        }`}
+                                                    type="button"
+                                                    className={cn(
+                                                        "py-2 px-1 rounded-lg text-xs font-medium transition-all duration-200 border",
+                                                        expiration === option.value
+                                                            ? "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30 shadow-sm scale-[1.02]"
+                                                            : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted hover:text-foreground"
+                                                    )}
                                                 >
                                                     {option.label}
                                                 </button>
@@ -265,49 +256,48 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
                                     </div>
                                 </div>
 
-                                {/* Error State */}
+                                {/* Info Card */}
+                                <div className="bg-blue-500/5 border border-blue-500/10 rounded-xl p-3 flex gap-3 items-start">
+                                    <div className="p-1.5 bg-blue-500/10 rounded-full shrink-0 mt-0.5">
+                                        <Shield className="w-3.5 h-3.5 text-blue-500" />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-medium text-foreground/90 mb-0.5">Escrow Protection</p>
+                                        <p className="text-[11px] text-muted-foreground leading-relaxed">
+                                            Your offer amount will be securely locked in the smart contract until accepted, expired, or cancelled.
+                                        </p>
+                                    </div>
+                                </div>
+
                                 {stage === "error" && (
-                                    <Alert variant="destructive" className="bg-red-500/10 border-red-500/30 text-red-400">
+                                    <Alert variant="destructive" className="animate-in fade-in zoom-in-95 duration-200">
                                         <AlertCircle className="h-4 w-4" />
+                                        <AlertTitle>Error</AlertTitle>
                                         <AlertDescription>{errorMsg}</AlertDescription>
                                     </Alert>
                                 )}
-
-                                {/* Info Notice */}
-                                <div className="flex items-start gap-3 p-3 bg-cyan-500/5 rounded-xl border border-cyan-500/20">
-                                    <Shield className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
-                                    <p className="text-xs text-slate-400">
-                                        Your offer will be escrowed securely. If accepted, the asset will be transferred to your wallet automatically.
-                                    </p>
-                                </div>
-
-                                {/* Action Button */}
-                                <Button
-                                    size="lg"
-                                    className="w-full h-14 text-lg font-bold bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:via-blue-500 hover:to-indigo-500 text-white shadow-xl shadow-cyan-500/20 transition-all duration-300"
-                                    onClick={handleSubmitOffer}
-                                    disabled={stage === "processing" || !offerAmount}
-                                >
-                                    {stage === "processing" ? (
-                                        <div className="flex items-center gap-3">
-                                            <Loader2 className="h-5 w-5 animate-spin" />
-                                            <span>Submitting Offer...</span>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-2">
-                                            <HandCoins className="h-5 w-5" />
-                                            <span>Submit Offer</span>
-                                        </div>
-                                    )}
-                                </Button>
-
-                                <p className="text-xs text-center text-slate-500">
-                                    The owner will be notified of your offer.
-                                </p>
                             </div>
-                        </motion.div>
+
+                            <DialogFooter className="p-6 pt-0 sm:justify-between gap-3 bg-muted/10">
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => setIsOpen(false)}
+                                    className="flex-1 rounded-xl h-12 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={handleSubmitOffer}
+                                    disabled={!offerAmount}
+                                    className="flex-[2] rounded-xl h-12 gradient-vivid-accent border-0 font-semibold shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100 disabled:shadow-none"
+                                >
+                                    <HandCoins className="w-4 h-4 mr-2" />
+                                    Submit Offer
+                                </Button>
+                            </DialogFooter>
+                        </>
                     )}
-                </AnimatePresence>
+                </div>
             </DialogContent>
         </Dialog>
     )

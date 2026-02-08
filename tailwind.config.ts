@@ -23,6 +23,12 @@ const config: Config = {
 				'glass-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1), inset 0 0 20px 0 rgba(255, 255, 255, 0.1)',
 				'neon-cyan': '0 0 10px rgba(0, 243, 255, 0.5), 0 0 20px rgba(0, 243, 255, 0.3)',
 				'neon-pink': '0 0 10px rgba(255, 0, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.3)',
+				'neon-magenta': '0 0 15px rgba(255, 0, 255, 0.6), 0 0 30px rgba(255, 0, 255, 0.3)',
+				'neon-orange': '0 0 15px rgba(255, 153, 0, 0.6), 0 0 30px rgba(255, 153, 0, 0.3)',
+				'neon-multi': '0 0 20px rgba(255, 0, 255, 0.4), 0 0 40px rgba(0, 255, 255, 0.2)',
+				'glow-sm': '0 0 10px currentColor',
+				'glow-md': '0 0 20px currentColor',
+				'glow-lg': '0 0 40px currentColor',
 			},
 			colors: {
 				medi: {
@@ -73,6 +79,14 @@ const config: Config = {
 				'neon-pink': '#ff00ff',
 				'neon-purple': '#bd00ff',
 				'deep-space': '#0a0513',
+				// Vivid Outrun Palette
+				'outrun-magenta': '#FF00FF',
+				'outrun-cyan': '#00FFFF',
+				'outrun-orange': '#FF9900',
+				'outrun-purple': '#8B00FF',
+				'outrun-pink': '#FF1493',
+				'outrun-yellow': '#FFFF00',
+				'outrun-dark': '#0D0221',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -95,13 +109,34 @@ const config: Config = {
 				'float': {
 					'0%, 100%': { transform: 'translateY(0)' },
 					'50%': { transform: 'translateY(-10px)' }
+				},
+				'gradient-x': {
+					'0%, 100%': { backgroundPosition: '0% 50%' },
+					'50%': { backgroundPosition: '100% 50%' }
+				},
+				'border-glow': {
+					'0%, 100%': { borderColor: 'rgba(255, 0, 255, 0.5)' },
+					'33%': { borderColor: 'rgba(0, 255, 255, 0.5)' },
+					'66%': { borderColor: 'rgba(255, 153, 0, 0.5)' }
+				},
+				'shimmer-vivid': {
+					'0%': { backgroundPosition: '-200% 0' },
+					'100%': { backgroundPosition: '200% 0' }
+				},
+				'glow-pulse-vivid': {
+					'0%, 100%': { boxShadow: '0 0 10px rgba(0, 255, 255, 0.4)' },
+					'50%': { boxShadow: '0 0 25px rgba(255, 0, 255, 0.6)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-				'float': 'float 3s ease-in-out infinite'
+				'float': 'float 3s ease-in-out infinite',
+				'gradient-x': 'gradient-x 4s ease infinite',
+				'border-glow': 'border-glow 4s ease infinite',
+				'shimmer-vivid': 'shimmer-vivid 3s linear infinite',
+				'glow-pulse-vivid': 'glow-pulse-vivid 3s ease-in-out infinite'
 			}
 		}
 	},

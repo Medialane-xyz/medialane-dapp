@@ -1,14 +1,23 @@
 "use client"
 
 import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Loader2, AlertCircle, ShoppingBag, Wallet, Shield, Sparkles, Check, ExternalLink } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Loader2, AlertCircle, Wallet, Shield, Sparkles, CheckCircle2, ExternalLink, Zap } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
+import { Card, CardContent } from "@/components/ui/card"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 
 interface PurchaseDialogProps {
     trigger?: React.ReactNode
@@ -38,10 +47,7 @@ export function PurchaseDialog({ trigger, asset, isOpen: controlledOpen, onOpenC
         setErrorMsg("")
 
         try {
-            // Mock transaction delay
             await new Promise(resolve => setTimeout(resolve, 2500))
-
-            // Success state
             setTxHash("0x04a8b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9")
             setStage("success")
         } catch (err) {
@@ -65,185 +71,179 @@ export function PurchaseDialog({ trigger, asset, isOpen: controlledOpen, onOpenC
             }
         }}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-            <DialogContent className="sm:max-w-lg p-0 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 border-white/10 shadow-2xl">
-                <AnimatePresence mode="wait">
+            <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden border-none shadow-2xl bg-transparent sm:rounded-2xl">
+                {/* Main Content Container with Subtle Glassmorphism */}
+                <div className="relative bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-2xl overflow-hidden">
+
+                    {/* Vivid Top Gradient Accent - Animated Outrun */}
+                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-outrun-magenta via-outrun-cyan to-outrun-orange bg-[length:200%_100%] animate-gradient-x" />
+
+                    <VisuallyHidden>
+                        <DialogTitle>Purchase Asset</DialogTitle>
+                    </VisuallyHidden>
+
                     {stage === "success" ? (
-                        <motion.div
-                            key="success"
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="p-8"
-                        >
-                            {/* Success State */}
-                            <div className="flex flex-col items-center text-center space-y-6">
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ type: "spring", duration: 0.6, delay: 0.1 }}
-                                    className="w-24 h-24 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-full flex items-center justify-center border-2 border-green-500/30 shadow-lg shadow-green-500/10"
-                                >
-                                    <Check className="w-12 h-12 text-green-400" />
-                                </motion.div>
-
-                                <div className="space-y-2">
-                                    <h2 className="text-2xl font-bold text-white">Asset Acquired!</h2>
-                                    <p className="text-slate-400 max-w-xs mx-auto">
-                                        You are now the owner of <span className="font-semibold text-white">{asset.name}</span>.
-                                    </p>
+                        <div className="p-8 flex flex-col items-center text-center">
+                            <div className="mb-6 relative">
+                                <div className="absolute inset-0 bg-green-500/20 blur-xl rounded-full animate-pulse-slow"></div>
+                                <div className="relative bg-gradient-to-br from-green-500 to-emerald-600 rounded-full p-4 shadow-lg shadow-green-500/30 text-white">
+                                    <CheckCircle2 className="h-10 w-10" />
                                 </div>
+                            </div>
 
-                                <div className="w-full bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-                                    <div className="flex items-center justify-between text-sm">
-                                        <span className="text-slate-400">Transaction</span>
-                                        <div className="flex items-center gap-2">
-                                            <code className="text-xs text-slate-300 bg-slate-700/50 px-2 py-1 rounded">
-                                                {txHash.slice(0, 8)}...{txHash.slice(-6)}
-                                            </code>
-                                            <Link href={`https://starkscan.co/tx/${txHash}`} target="_blank" className="text-blue-400 hover:text-blue-300">
-                                                <ExternalLink className="w-4 h-4" />
-                                            </Link>
-                                        </div>
-                                    </div>
+                            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 mb-2">
+                                Purchase Successful!
+                            </h2>
+
+                            <p className="text-muted-foreground mb-8">
+                                You are now the owner of <span className="font-semibold text-foreground">{asset.name}</span>
+                            </p>
+
+                            <div className="w-full bg-muted/50 rounded-xl p-4 border border-border/50 mb-8 text-sm">
+                                <div className="flex justify-between items-center mb-3">
+                                    <span className="text-muted-foreground">Status</span>
+                                    <Badge variant="outline" className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20">
+                                        Confirmed
+                                    </Badge>
                                 </div>
-
-                                <div className="grid grid-cols-2 gap-3 w-full pt-2">
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setIsOpen(false)}
-                                        className="border-slate-600 hover:bg-slate-800 text-slate-300"
-                                    >
-                                        Close
-                                    </Button>
-                                    <Link href={`/asset/${asset.id}`} className="w-full">
-                                        <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white">
-                                            View Asset
-                                        </Button>
+                                <div className="flex justify-between items-center mb-3">
+                                    <span className="text-muted-foreground">Amount</span>
+                                    <span className="font-medium">{asset.price} {asset.currency}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-muted-foreground">Transaction</span>
+                                    <Link href={`https://starkscan.co/tx/${txHash}`} target="_blank" className="flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors">
+                                        <span className="font-mono text-xs">{txHash.slice(0, 8)}...{txHash.slice(-6)}</span>
+                                        <ExternalLink className="w-3 h-3" />
                                     </Link>
                                 </div>
                             </div>
-                        </motion.div>
+
+                            <div className="flex flex-col sm:flex-row gap-3 w-full">
+                                <Button variant="outline" onClick={() => setIsOpen(false)} className="flex-1 rounded-xl h-11">
+                                    Close
+                                </Button>
+                                <Link href={`/asset/${asset.id}`} className="flex-1">
+                                    <Button className="w-full rounded-xl h-11 gradient-vivid-primary border-0">
+                                        View Asset
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    ) : stage === "processing" ? (
+                        <div className="p-12 flex flex-col items-center text-center justify-center min-h-[400px]">
+                            <div className="relative mb-6">
+                                <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full"></div>
+                                <Loader2 className="relative h-16 w-16 animate-spin text-primary" />
+                            </div>
+
+                            <h2 className="text-xl font-bold mb-2">Processing Update</h2>
+                            <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-8">
+                                Securing your transaction on the blockchain. This may take a moment.
+                            </p>
+
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground/80 bg-muted/50 px-3 py-1.5 rounded-full">
+                                <Shield className="w-3 h-3" />
+                                <span>Blockchain Secured</span>
+                            </div>
+                        </div>
                     ) : (
-                        <motion.div
-                            key="checkout"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                        >
-                            {/* Header with Asset Preview */}
-                            <div className="relative h-32 overflow-hidden">
-                                <div
-                                    className="absolute inset-0 bg-cover bg-center blur-xl opacity-50"
-                                    style={{ backgroundImage: `url(${asset.image})` }}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/50 to-slate-900" />
-                                <div className="relative h-full flex items-end pb-4 px-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white/20 shadow-xl flex-shrink-0">
-                                            <img
-                                                src={asset.image}
-                                                alt={asset.name}
-                                                className="w-full h-full object-cover"
-                                            />
+                        <>
+                            <div className="p-6 pb-0">
+                                <div className="flex items-start gap-5">
+                                    <div className="relative group shrink-0">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-violet-500 rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
+                                        <div className="relative h-24 w-24 rounded-xl overflow-hidden border border-border shadow-sm">
+                                            <img src={asset.image} alt={asset.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                         </div>
-                                        <div>
-                                            <h3 className="font-bold text-lg text-white">{asset.name}</h3>
-                                            <p className="text-sm text-slate-400">{asset.collectionName}</p>
+                                    </div>
+
+                                    <div className="pt-1 min-w-0">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <Badge variant="secondary" className="bg-primary/5 text-primary hover:bg-primary/10 transition-colors text-[10px] items-center gap-1 px-2">
+                                                <Sparkles className="w-3 h-3" />
+                                                Verified Asset
+                                            </Badge>
                                         </div>
+                                        <h2 className="text-xl font-bold truncate pr-2 mb-1">{asset.name}</h2>
+                                        <p className="text-sm text-muted-foreground truncate font-medium">{asset.collectionName}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Content */}
-                            <div className="p-6 space-y-6">
-                                {/* Wallet Status */}
-                                <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
-                                            <Wallet className="w-5 h-5 text-white" />
-                                        </div>
+                            <div className="p-6 space-y-5">
+                                {/* Theme Aware Price Card */}
+                                <div className="bg-muted/30 rounded-xl p-4 border border-border/50 relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-violet-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:from-blue-500/10 group-hover:to-violet-500/10 transition-colors duration-500"></div>
+
+                                    <div className="relative flex justify-between items-end">
                                         <div>
-                                            <p className="text-sm font-medium text-white">Wallet Connected</p>
-                                            <p className="text-xs text-slate-400">0x02b4...7a9f</p>
-                                        </div>
-                                    </div>
-                                    <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
-                                        <span className="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse" />
-                                        Active
-                                    </Badge>
-                                </div>
-
-                                {/* Price Breakdown */}
-                                <div className="space-y-4">
-                                    <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Order Summary</h4>
-
-                                    <div className="space-y-3 bg-slate-800/30 rounded-xl p-4 border border-slate-700/30">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-slate-400">Asset Price</span>
-                                            <span className="font-medium text-white">{asset.price} {asset.currency}</span>
-                                        </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-slate-400">Creator Royalty</span>
-                                            <span className="font-medium text-slate-300">2.5%</span>
-                                        </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-slate-400">Network Fee</span>
-                                            <span className="font-medium text-slate-300">~0.001 ETH</span>
-                                        </div>
-                                        <Separator className="bg-slate-700/50 my-2" />
-                                        <div className="flex justify-between">
-                                            <span className="font-semibold text-white">Total</span>
-                                            <div className="text-right">
-                                                <span className="font-bold text-xl text-white">{asset.price} {asset.currency}</span>
-                                                <p className="text-xs text-slate-400">≈ $1,532.45 USD</p>
+                                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Total Price</p>
+                                            <div className="flex items-baseline gap-1">
+                                                <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70">
+                                                    {asset.price}
+                                                </span>
+                                                <span className="text-lg font-bold text-muted-foreground">{asset.currency}</span>
                                             </div>
                                         </div>
+                                        <div className="text-right">
+                                            <p className="text-xs font-medium text-muted-foreground mb-1">≈ $1,532.45 USD</p>
+                                        </div>
+                                    </div>
+
+                                    <Separator className="my-3 bg-border/50" />
+
+                                    <div className="flex justify-between items-center text-xs text-muted-foreground">
+                                        <span>Network Fee</span>
+                                        <span className="font-mono">~0.001 ETH</span>
                                     </div>
                                 </div>
 
-                                {/* Error State */}
+                                {/* Wallet Status */}
+                                <div className="flex items-center justify-between px-1">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-600 dark:text-orange-400">
+                                            <Wallet className="w-4 h-4" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-xs font-medium text-muted-foreground">Connected Wallet</span>
+                                            <span className="text-xs font-bold font-mono text-foreground/80">0x02b4...7a9f</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/10">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                                        <span className="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-wide">Ready</span>
+                                    </div>
+                                </div>
+
                                 {stage === "error" && (
-                                    <Alert variant="destructive" className="bg-red-500/10 border-red-500/30 text-red-400">
+                                    <Alert variant="destructive" className="animate-in fade-in zoom-in-95 duration-200">
                                         <AlertCircle className="h-4 w-4" />
+                                        <AlertTitle>Error</AlertTitle>
                                         <AlertDescription>{errorMsg}</AlertDescription>
                                     </Alert>
                                 )}
-
-                                {/* Security Notice */}
-                                <div className="flex items-start gap-3 p-3 bg-blue-500/5 rounded-xl border border-blue-500/20">
-                                    <Shield className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                                    <p className="text-xs text-slate-400">
-                                        This transaction is secured by the Starknet blockchain. Your ownership will be verified and immutable.
-                                    </p>
-                                </div>
-
-                                {/* Action Button */}
-                                <Button
-                                    size="lg"
-                                    className="w-full h-14 text-lg font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 text-white shadow-xl shadow-indigo-500/20 transition-all duration-300"
-                                    onClick={handlePurchase}
-                                    disabled={stage === "processing"}
-                                >
-                                    {stage === "processing" ? (
-                                        <div className="flex items-center gap-3">
-                                            <Loader2 className="h-5 w-5 animate-spin" />
-                                            <span>Processing Transaction...</span>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-2">
-                                            <Sparkles className="h-5 w-5" />
-                                            <span>Confirm Purchase</span>
-                                        </div>
-                                    )}
-                                </Button>
-
-                                <p className="text-xs text-center text-slate-500">
-                                    By confirming, you agree to the Medialane Terms of Service.
-                                </p>
                             </div>
-                        </motion.div>
+
+                            <DialogFooter className="p-6 pt-0 sm:justify-between gap-3 bg-muted/10">
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => setIsOpen(false)}
+                                    className="flex-1 rounded-xl h-12 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={handlePurchase}
+                                    className="flex-[2] rounded-xl h-12 gradient-vivid-primary border-0 font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                >
+                                    <Zap className="w-4 h-4 mr-2 fill-current" />
+                                    Confirm Purchase
+                                </Button>
+                            </DialogFooter>
+                        </>
                     )}
-                </AnimatePresence>
+                </div>
             </DialogContent>
         </Dialog>
     )
