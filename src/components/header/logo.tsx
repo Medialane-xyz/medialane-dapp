@@ -25,7 +25,7 @@ export function Logo() {
   }
 
   return (
-    <div className="flex items-center space-x-2 ml-4">
+    <div className="flex items-center space-x-2">
       <Link href="/" className="transition-opacity hover:opacity-80">
         {resolvedTheme === "dark" ? (
           <Image

@@ -130,6 +130,12 @@ export function MainNav() {
                 description="Create an onchain IP collection"
               />
               <NavLink
+                href="/create/collection-drop"
+                icon={Rocket}
+                title="Collection Drop"
+                description="Launch a premium NFT drop"
+              />
+              <NavLink
                 href="/create/asset"
                 icon={Box}
                 title="Programmable IP"
