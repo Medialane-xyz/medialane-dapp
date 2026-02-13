@@ -553,7 +553,7 @@
 
 /* Vivid Gradient Text */
 .text-gradient-vivid {
-  background: linear-gradient(135deg, #FF00FF, #00FFFF, #FF9900);
+  background: linear-gradient(135deg, #b150cf, #00FFFF, #0066ff);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -563,22 +563,43 @@
 
 /* Vivid Button Styles */
 .gradient-vivid-outrun {
-  background: linear-gradient(135deg, #FF00FF 0%, #8B00FF 25%, #00FFFF 50%, #FF9900 100%);
+  background: linear-gradient(135deg, #2b00ff 0%, #8529c7 25%, #00FFFF 50%, #d53673 100%);
   background-size: 200% 200%;
   animation: gradient-x 4s ease infinite;
   color: white;
   font-weight: 600;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: 0 4px 20px rgba(255, 0, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 145, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.1);
   transition: all 0.3s ease;
 }
 
 .gradient-vivid-outrun:hover {
-  box-shadow: 0 6px 30px rgba(255, 0, 255, 0.5), 0 0 60px rgba(0, 255, 255, 0.2);
+  box-shadow: 0 6px 30px rgba(0, 55, 255, 0.5), 0 0 60px rgba(0, 255, 255, 0.2);
   transform: translateY(-2px) scale(1.02);
 }
 
 .gradient-vivid-outrun:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Medialane Brand Gradient (Blue-500 to Rose-400) */
+.gradient-medialane {
+  background: linear-gradient(135deg, #3b82f6 0%, #fb7185 100%);
+  background-size: 200% 200%;
+  animation: gradient 4s ease infinite;
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(251, 113, 133, 0.2);
+  transition: all 0.3s ease;
+}
+
+.gradient-medialane:hover {
+  box-shadow: 0 6px 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(251, 113, 133, 0.4);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.gradient-medialane:active {
   transform: translateY(0) scale(0.98);
 }
 

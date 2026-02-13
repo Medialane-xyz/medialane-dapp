@@ -66,10 +66,10 @@ export function AssetGrid({ sortOrder = "recent" }: AssetGridProps) {
                         asset={{
                             id: asset.id, // This is collectionAddress-tokenId
                             title: asset.name,
-                            creator: asset.owner, // We might want to shorten this
+                            creator: asset.owner,
                             image: asset.image,
-                            price: "0.45", // Placeholder until listing data is real
-                            currency: "ETH",
+                            collectionAddress: asset.collectionAddress,
+                            tokenId: asset.tokenId,
                             type: asset.ipType || "Asset",
                             verified: true
                         }}

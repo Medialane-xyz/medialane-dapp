@@ -8,7 +8,8 @@ import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { RotateCcw, Grid3X3, TrendingUp, Clock, Layers } from "lucide-react"
+import { RotateCcw, Grid3X3, TrendingUp, Clock, Layers, ExternalLink } from "lucide-react"
+import Link from "next/link"
 
 export function FilterSidebar() {
     return (
@@ -55,10 +56,10 @@ export function FilterSidebar() {
                             </div>
                             <div className="flex items-center space-x-3">
                                 <RadioGroupItem value="collections" id="view-collections" />
-                                <Label htmlFor="view-collections" className="flex items-center gap-2 cursor-pointer">
-                                    <Layers className="h-4 w-4 text-muted-foreground" />
-                                    Collections
-                                </Label>
+                                <Link href="/collections" className="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors group">
+                                    <span className="text-sm font-medium">Collections</span>
+                                    <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-50 transition-opacity" />
+                                </Link>
                             </div>
                         </RadioGroup>
                     </AccordionContent>

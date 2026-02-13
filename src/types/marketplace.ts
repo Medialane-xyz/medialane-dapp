@@ -61,6 +61,17 @@ export interface OrderParameters {
   totalOriginalConsiderationItems: number;
 }
 
+export type Fulfillment = {
+  fulfiller: string;
+  order_hash: string;
+  nonce: string;
+}
+
+export type Cancelation = {
+  order_hash: string;
+  offerer: string;
+}
+
 /**
  * The full order structure including signature
  */
@@ -88,17 +99,11 @@ export type DerivativeRights = {
   max_derivatives: number;
 };
 
-// Legacy/Simple listing type for backward compatibility or simple UI views
+// Simplified Listing for UI
 export type Listing = {
-  assetContract: string;
-  tokenId: string;
-  startTime: string;
-  secondsUntilEndTime: string;
-  quantityToList: string;
-  currencyToAccept: string;
-  buyoutPricePerToken: string;
-  tokenTypeOfListing: string;
-  endTime: string;
-  // New: link to the underlying Seaport Order hash if available
   orderHash?: string;
+  start_amount: string;
+  currency: string;
+  // ... other fields if needed for UI ...
+  parameters?: OrderParameters; // Optional full details
 };

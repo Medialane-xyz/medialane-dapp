@@ -24,8 +24,19 @@ export default function CollectionsPage() {
   return (
     <main className="container mx-auto px-4">
 
-      <div className="py-4 text-center">
-        <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-foreground/70">Collections</h1>
+      <div className="relative py-12 md:py-20 mb-8 text-center overflow-hidden">
+        {/* Ambient Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-blue-500/20 rounded-full blur-[100px] -z-10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[300px] bg-rose-500/10 rounded-full blur-[80px] -z-10" />
+
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-rose-400">
+            Collections
+          </span>
+        </h1>
+        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-5 duration-700 delay-100">
+          Explore and collect verified IP assets from the Medialane protocol.
+        </p>
       </div>
 
       <div className="container">

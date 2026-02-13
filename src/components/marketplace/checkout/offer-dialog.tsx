@@ -42,6 +42,8 @@ interface OfferDialogProps {
         currency: string
         image: string
         collectionName: string
+        nftAddress: string
+        tokenId: string
     }
     isOpen?: boolean
     onOpenChange?: (open: boolean) => void
@@ -55,44 +57,90 @@ const EXPIRATION_OPTIONS = [
     { value: "30d", label: "1 Month" },
 ]
 
+import { useMarketplace } from "@/hooks/useMarketplace"
+import { ItemType, OrderType } from "@/types/marketplace"
+import { useAccount } from "@starknet-react/core"
+import { AVNU_PAYMASTER_CONFIG } from "@/lib/constants"
+
 export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChange: setControlledOpen }: OfferDialogProps) {
+    const { address } = useAccount()
+    const { createListing, isProcessing, txHash, error, resetState } = useMarketplace()
+
     const [internalOpen, setInternalOpen] = useState(false)
     const isOpen = controlledOpen ?? internalOpen
     const setIsOpen = setControlledOpen ?? setInternalOpen
 
-    const [stage, setStage] = useState<"form" | "processing" | "success" | "error">("form")
-    const [errorMsg, setErrorMsg] = useState("")
     const [offerAmount, setOfferAmount] = useState("")
     const [expiration, setExpiration] = useState("7d")
-    const [txHash, setTxHash] = useState("")
+
+    // Derived state
+    const stage = txHash ? "success" : isProcessing ? "processing" : error ? "error" : "form"
 
     const handleSubmitOffer = async () => {
-        if (!offerAmount || parseFloat(offerAmount) <= 0) {
-            setErrorMsg("Please enter a valid offer amount")
-            setStage("error")
-            return
+        if (!offerAmount || parseFloat(offerAmount) <= 0) return
+        if (!address) return
+
+        // Construct Offer Parameters (Reverse of Listing)
+        // Offer: ERC20 (User gives)
+        // Consideration: NFT (User wants)
+
+        const now = Math.floor(Date.now() / 1000)
+        // Parse expiration string to seconds
+        const durationSeconds = {
+            "1d": 86400,
+            "3d": 259200,
+            "7d": 604800,
+            "14d": 1209600,
+            "30d": 2592000
+        }[expiration] || 604800
+
+        const startTime = now
+        const endTime = now + durationSeconds
+        const salt = Math.floor(Math.random() * 1000000).toString()
+
+        // Currency (ERC20)
+        const currencySymbol = asset.currency || "USDC"
+        const currencyConfig = AVNU_PAYMASTER_CONFIG.SUPPORTED_GAS_TOKENS.find(t => t.symbol === currencySymbol)
+        const currencyAddress = currencyConfig?.address || AVNU_PAYMASTER_CONFIG.SUPPORTED_GAS_TOKENS[0].address
+
+        const decimals = currencyConfig?.decimals || 18
+        const priceWei = BigInt(Math.floor(parseFloat(offerAmount) * Math.pow(10, decimals))).toString()
+
+        const orderParameters = {
+            offerer: address,
+            zone: "0x0",
+            offer: [{
+                item_type: ItemType.ERC20,
+                token: currencyAddress,
+                identifier_or_criteria: "0",
+                start_amount: priceWei,
+                end_amount: priceWei
+            }],
+            consideration: [{
+                item_type: ItemType.ERC721,
+                token: asset.nftAddress,
+                identifier_or_criteria: asset.tokenId,
+                start_amount: "1",
+                end_amount: "1",
+                recipient: address
+            }],
+            order_type: OrderType.FULL_OPEN,
+            start_time: startTime,
+            end_time: endTime,
+            zone_hash: "0",
+            salt: salt,
+            conduit_key: "0",
+            total_original_consideration_items: 1,
+            nonce: "0"
         }
 
-        setStage("processing")
-        setErrorMsg("")
-
-        try {
-            await new Promise(resolve => setTimeout(resolve, 2000))
-            setTxHash("0x07c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6")
-            setStage("success")
-        } catch (err) {
-            console.error(err)
-            setErrorMsg("Failed to submit offer. Please try again.")
-            setStage("error")
-        }
+        await createListing(orderParameters) // reused for Offer creation (same register_order)
     }
 
     const reset = () => {
-        setStage("form")
-        setErrorMsg("")
+        resetState()
         setOfferAmount("")
         setExpiration("7d")
-        setTxHash("")
     }
 
     const floorPrice = asset.floorPrice || "0.45"
@@ -141,7 +189,7 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
                                 <div className="flex justify-between items-center">
                                     <span className="text-muted-foreground">Transaction</span>
                                     <Link href={`https://starkscan.co/tx/${txHash}`} target="_blank" className="flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors">
-                                        <span className="font-mono text-xs">{txHash.slice(0, 8)}...{txHash.slice(-6)}</span>
+                                        <span className="font-mono text-xs">{txHash ? `${txHash.slice(0, 8)}...${txHash.slice(-6)}` : ""}</span>
                                         <ExternalLink className="w-3 h-3" />
                                     </Link>
                                 </div>
@@ -273,7 +321,7 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
                                     <Alert variant="destructive" className="animate-in fade-in zoom-in-95 duration-200">
                                         <AlertCircle className="h-4 w-4" />
                                         <AlertTitle>Error</AlertTitle>
-                                        <AlertDescription>{errorMsg}</AlertDescription>
+                                        <AlertDescription>{error || "Offer failed. Please try again."}</AlertDescription>
                                     </Alert>
                                 )}
                             </div>

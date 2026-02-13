@@ -44,6 +44,7 @@
     "@starknet-io/get-starknet-core": "4.0.7",
     "@starknet-react/chains": "^5.0.3",
     "@starknet-react/core": "^5.0.3",
+    "@tanstack/react-query": "^5.90.21",
     "@types/canvas-confetti": "^1.9.0",
     "axios": "^1.7.9",
     "canvas-confetti": "^1.9.4",

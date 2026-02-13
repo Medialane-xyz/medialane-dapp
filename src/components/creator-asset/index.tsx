@@ -21,7 +21,7 @@ import { AssetTimelineTab } from "./creator-asset-timeline-tab";
 import { ReportAssetDialog } from "@/components/report-asset-dialog";
 import { useAsset } from "@/hooks/use-asset";
 import { AssetActionPanel } from "@/components/marketplace/asset/asset-action-panel";
-import { AssetMonetizationActions } from "@/components/marketplace/asset/asset-monetization-actions";
+import { MarketplaceActions } from "@/components/marketplace/marketplace-actions";
 import { useGetCollection } from "@/hooks/use-collection";
 import { AssetLoadingState } from "@/components/asset/asset-loading-state";
 import { AssetErrorBoundary } from "@/components/asset/asset-error-boundary";
@@ -302,10 +302,13 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
 
                       {/* Action Buttons Panel */}
                       <div className="mt-6 w-full">
-                        <AssetMonetizationActions
+                        <MarketplaceActions
                           assetId={asset.id}
                           assetName={asset.name}
                           slug={decodedSlug}
+                          isOwner={isOwner}
+                          nftAddress={nftAddress || ""}
+                          tokenId={String(tokenId)}
                         />
                       </div>
                     </div>
