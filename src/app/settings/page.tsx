@@ -10,7 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Settings, User, Zap, CheckCircle } from "lucide-react";
 import { useAccount } from "@starknet-react/core";
 import { shortString } from "starknet";
-import { useUsersSettings } from "@/hooks/useUsersSettings";
+import { useUsersSettings } from "@/hooks/use-users-settings";
 import { toEpochTime } from "@/lib/utils";
 
 // Mockup data with booleans replaced by numbers

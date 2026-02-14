@@ -10,7 +10,7 @@ import {
   Coins,
   ExternalLink,
 } from "lucide-react";
-import { useMyTransferEventsForTokenId } from "@/hooks/useEvents";
+import { useMyTransferEventsForTokenId } from "@/hooks/use-events";
 import { toHexString } from "@/lib/utils";
 
 const ZERO_ADDRESS = "0x0";

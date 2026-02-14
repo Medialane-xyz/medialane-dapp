@@ -7,7 +7,7 @@ import {
 import { Abi } from "starknet";
 import { ipCollectionAbi } from "@/abis/ip_collection";
 import { COLLECTION_CONTRACT_ADDRESS } from "@/lib/constants";
-import { fetchOneByOne } from "@/lib/utils";
+import { fetchWithRateLimit } from "@/lib/utils";
 import { isCollectionReported } from "@/lib/reported-content";
 
 import { fetchIPFSMetadata, processIPFSHashToUrl } from "@/utils/ipfs";
@@ -518,7 +518,7 @@ export function useGetCollections(walletAddress?: `0x${string}`): UseGetCollecti
 
       const filteredIds = ids;
 
-      const results = await fetchOneByOne(
+      const results = await fetchWithRateLimit(
         filteredIds.map((id) => () => fetchCollection(id)),
         700
       );

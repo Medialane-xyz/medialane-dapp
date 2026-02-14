@@ -25,7 +25,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useListing } from "@/hooks/useListing"
+import { useListing } from "@/hooks/use-listing"
 import { cn } from "@/lib/utils"
 
 export interface MarketplaceAsset {

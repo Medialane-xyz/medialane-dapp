@@ -30,7 +30,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { isAssetReported } from "@/lib/reported-content"
 import { AlertTriangle, ShieldCheck, Cpu, FileCode, Layers, Check } from "lucide-react"
 import { SimpleProvenance } from "@/components/asset-provenance/simple-provenance";
-import { useAssetProvenanceEvents } from "@/hooks/useEvents";
+import { useAssetProvenanceEvents } from "@/hooks/use-events";
 
 interface AssetPageProps {
   params: Promise<{

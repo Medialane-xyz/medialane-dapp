@@ -7,7 +7,7 @@ import Link from "next/link"
 import { ProofCertificate } from "@/components/proof-of-ownership/proof-certificate"
 import { useMemo, use } from "react"
 import { useAsset } from "@/hooks/use-asset"
-import { useAssetProvenanceEvents } from "@/hooks/useEvents"
+import { useAssetProvenanceEvents } from "@/hooks/use-events"
 
 interface ProofOfOwnershipPageProps {
   params: Promise<{

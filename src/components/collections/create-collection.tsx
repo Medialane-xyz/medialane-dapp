@@ -35,7 +35,7 @@ import {
   CoverImageUploader,
   CoverImageUploaderRef,
 } from "@/components/media-uploader";
-import { useIpfsUpload } from "@/hooks/useIpfs";
+import { useIpfsUpload } from "@/hooks/use-ipfs";
 import { COLLECTION_CONTRACT_ADDRESS } from "@/lib/constants";
 import { MintSuccessDrawer, MintDrawerStep } from "@/components/mint-success-drawer";
 import { useProvider } from "@starknet-react/core";

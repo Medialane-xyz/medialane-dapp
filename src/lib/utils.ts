@@ -125,33 +125,6 @@ export async function fetchInBatches<T>(
   return results;
 }
 
-export async function fetchOneByOne<T>(
-  tasks: (() => Promise<T>)[],
-  delayMs = 1000
-): Promise<T[]> {
-  const results: T[] = [];
-
-  for (const task of tasks) {
-    try {
-      const result = await task();
-      results.push(result);
-    } catch (err) {
-      console.warn("Fetch failed:", err);
-      // If it's a rate limit error, wait longer
-      if (err instanceof Error && err.message.includes('429')) {
-        console.log("Rate limit hit, waiting 5 seconds...");
-        await new Promise((res) => setTimeout(res, 5000));
-      }
-    }
-
-    if (delayMs > 0) {
-      await new Promise((res) => setTimeout(res, delayMs));
-    }
-  }
-
-  return results;
-}
-
 // Enhanced rate limiting with exponential backoff
 export async function fetchWithRateLimit<T>(
   tasks: (() => Promise<T>)[],
@@ -176,10 +149,12 @@ export async function fetchWithRateLimit<T>(
         await new Promise((res) => setTimeout(res, currentDelay));
         // Exponential backoff: double the delay, but cap it
         currentDelay = Math.min(currentDelay * 2, maxDelayMs);
+
+        // Retry logic could be added here if needed, but for now we just skip and log
       }
     }
 
-    // Always wait between requests
+    // Always wait between requests to be polite
     await new Promise((res) => setTimeout(res, baseDelayMs));
   }
 

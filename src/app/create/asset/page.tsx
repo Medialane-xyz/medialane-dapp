@@ -19,7 +19,7 @@ import { TemplateInfoCard } from "@/components/asset-creation/template-info-card
 import { Card, CardContent } from "@/components/ui/card";
 import { useAssetForm } from "@/hooks/use-asset-form";
 import { templates, getTemplateById } from "@/lib/templates";
-import { useIpfsUpload } from "@/hooks/useIpfs";
+import { useIpfsUpload } from "@/hooks/use-ipfs";
 import { useCreateAsset } from "@/hooks/use-create-asset";
 import { useAccount } from "@starknet-react/core";
 import { useToast } from "@/hooks/use-toast";

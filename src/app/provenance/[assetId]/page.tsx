@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 
 import { useMemo, useState, use } from "react"
 import { useAsset } from "@/hooks/use-asset"
-import { useAssetProvenanceEvents } from "@/hooks/useEvents"
+import { useAssetProvenanceEvents } from "@/hooks/use-events"
 
 interface ProvenancePageProps {
   params: Promise<{

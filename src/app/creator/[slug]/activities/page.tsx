@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ActivityCard } from "@/components/activity-card"
-import { useUserActivities } from "@/hooks/useUserActivities"
+import { useUserActivities } from "@/hooks/use-user-activities"
 import { useCreatorData } from "@/components/creator/creator-data-context"
 import {
     Activity,

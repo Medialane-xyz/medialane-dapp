@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowUpRight, TrendingUp, Wallet, BarChart3, LayoutGrid } from "lucide-react"
-import { useBlockchainPortfolio } from "@/hooks/useBlockchainPortfolio"
+import { useBlockchainPortfolio } from "@/hooks/use-blockchain-portfolio"
 import { useMIP } from "@/hooks/contracts/use-mip"
 import { pinataClient } from "@/utils/pinataClient"
 import { useReadContract } from "@starknet-react/core";

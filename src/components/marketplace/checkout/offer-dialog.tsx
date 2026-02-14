@@ -57,7 +57,7 @@ const EXPIRATION_OPTIONS = [
     { value: "30d", label: "1 Month" },
 ]
 
-import { useMarketplace } from "@/hooks/useMarketplace"
+import { useMarketplace } from "@/hooks/use-marketplace"
 import { ItemType, OrderType } from "@/types/marketplace"
 import { useAccount } from "@starknet-react/core"
 import { AVNU_PAYMASTER_CONFIG } from "@/lib/constants"

@@ -14,7 +14,7 @@ import { Loader2, AlertCircle, CheckCircle2, ShoppingBag, ExternalLink } from "l
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import Link from "next/link"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
-import { useMarketplace } from "@/hooks/useMarketplace"
+import { useMarketplace } from "@/hooks/use-marketplace"
 import { Listing, Fulfillment } from "@/types/marketplace"
 
 interface PurchaseDialogProps {

@@ -29,10 +29,10 @@ import {
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
-import { useIPLicensing } from '@/hooks/useIPLicensing'
+import { useIPLicensing } from '@/hooks/use-ip-licensing'
 import { useAccount } from '@starknet-react/core'
-import { useUserNFTs } from '@/hooks/useUserNft'
-import { type NFT as IP } from '@/hooks/useUserNft'
+import { useUserNFTs } from '@/hooks/use-user-nft'
+import { type NFT as IP } from '@/hooks/use-user-nft'
 import Link from "next/link"
 const steps = ["Select IP", "Licensing Details", "Review & Submit"]
 

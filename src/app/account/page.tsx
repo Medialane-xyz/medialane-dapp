@@ -9,8 +9,8 @@ import {
   type PersonalInfo,
   type SocialMediaLinks as ContractSocialLinks,
   type ProfileSettings,
-} from "@/hooks/useAccount";
-import { useIpfsUpload } from "@/hooks/useIpfs";
+} from "@/hooks/use-account";
+import { useIpfsUpload } from "@/hooks/use-ipfs";
 import { useToast } from "@/hooks/use-toast";
 import {
   PersonalInfoSection,

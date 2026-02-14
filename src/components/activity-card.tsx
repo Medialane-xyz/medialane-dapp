@@ -8,7 +8,7 @@ import { AddressLink } from "@/components/ui/address-link"
 import Image from "next/image"
 import { format } from "date-fns"
 
-import { Activity } from "@/hooks/useActivities"
+import { Activity } from "@/hooks/use-activities"
 
 interface ActivityCardProps {
   activity: Activity

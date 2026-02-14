@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { ActivityCard } from "@/components/activity-card"
-import { useActivities } from "@/hooks/useActivities"
+import { useActivities } from "@/hooks/use-activities"
 import {
   Activity,
   Search,

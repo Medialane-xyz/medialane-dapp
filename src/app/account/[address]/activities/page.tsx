@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 
 import { ActivityCard } from "@/components/activity-card"
-import { useUserActivities } from "@/hooks/useUserActivities"
+import { useUserActivities } from "@/hooks/use-user-activities"
 import {
     Activity,
     Search,

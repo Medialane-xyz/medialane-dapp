@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ActivityCard } from "@/components/activity-card"
-import { useUserActivities } from "@/hooks/useUserActivities"
+import { useUserActivities } from "@/hooks/use-user-activities"
 import { useAccount } from "@starknet-react/core"
 import {
     Activity,
