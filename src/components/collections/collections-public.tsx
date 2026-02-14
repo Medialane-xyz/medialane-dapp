@@ -5,11 +5,11 @@ import Link from "next/link"
 import Image from "next/image"
 import type { Collection } from "@/lib/types"
 import { cn } from "@/lib/utils"
-import { AnimatedBorderButton } from "@/components/ui/animated-border-button"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -172,10 +172,10 @@ export function CollectionsGrid({ collections, onCollectionClick }: { collection
           </DropdownMenu>
 
           <Link href="/create/collection">
-            <AnimatedBorderButton className="gap-1 ml-auto sm:ml-0">
+            <Button className="gap-1 ml-auto sm:ml-0">
               <Plus className="h-4 w-4" />
               <span className="hidden xs:inline">New Collection</span>
-            </AnimatedBorderButton>
+            </Button>
           </Link>
         </div>
       </div>

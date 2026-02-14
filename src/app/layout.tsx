@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { StarknetProvider } from "@/components/starknet-provider";
 import { CommandMenu } from "@/components/command-menu"
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space" });
@@ -29,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${spaceGrotesk.variable} ${inter.variable} font-sans antialiased vivid-gradient-bg text-foreground overflow-x-hidden`}>
+      <body className={`${spaceGrotesk.variable} ${inter.variable} font-sans antialiased text-foreground overflow-x-hidden`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -41,6 +42,7 @@ export default function RootLayout({
             <main className="min-h-screen">
               {children}
             </main>
+            <Footer />
             <CommandMenu />
             <Toaster />
           </StarknetProvider>

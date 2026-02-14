@@ -61,9 +61,12 @@ export function WalletConnect() {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant={isWrongNetwork ? "destructive" : "outline"} className={`w-full glass rounded-full ${isWrongNetwork ? "bg-red-500/20 border-red-500 text-red-500 hover:bg-red-500/30" : ""}`}>
-            <Wallet className="h-4 w-4 mr-2" />
-            {isWrongNetwork ? "Wrong Network" : displayAddress?.slice(0, 6)}
+          <Button
+            variant="ghost"
+            size="icon"
+            className={`rounded-full h-9 w-9 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/5 transition-all ${isWrongNetwork ? "text-red-500 hover:text-red-600 hover:bg-red-500/10" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            <Wallet className="h-4 w-4" />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] backdrop-blur-2xl">
@@ -107,9 +110,13 @@ export function WalletConnect() {
   }
 
   return (
-    <Button variant="outline" className="w-full glass rounded-full" onClick={handleConnect}>
-      <Wallet className="h-4 w-4 mr-2" />
-      Connect
+    <Button
+      variant="ghost"
+      size="icon"
+      className="rounded-full h-9 w-9 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/5 transition-all text-foreground"
+      onClick={handleConnect}
+    >
+      <Wallet className="h-4 w-4" />
     </Button>
   );
 }

@@ -1,17 +1,15 @@
 "use client";
 import { useState, useEffect } from "react"
-import { MobileSidebar } from "@/components/header/sidebar"
-import { MainNav } from "@/components/header/nav"
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils"
-import { Search, Command } from "lucide-react";
+import { ShoppingBag, Rocket, User, ChevronDown, Command } from "lucide-react";
+import { Logo } from "@/components/header/logo"
+import { ThemeToggle } from "@/components/header/theme-toggle"
 
 const WalletConnect = dynamic(() => import("./header/wallet-connect").then(mod => mod.WalletConnect), {
   ssr: false,
 });
-import { ThemeToggle } from "@/components/header/theme-toggle"
-import { Logo } from "@/components/header/logo"
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -25,25 +23,57 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  const openCommandMenu = (filter?: string) => {
+    document.dispatchEvent(new CustomEvent("openCommandMenu", { detail: { filter } }))
+  }
+
   return (
     <header
       className={cn(
         "fixed top-0 z-50 w-full transition-all duration-500",
         isScrolled
-          ? "bg-transparent backdrop-blur-2xl backdrop-saturate-150 border-b border-outrun-magenta/10 shadow-[0_4px_40px_rgba(255,0,255,0.05),0_0_60px_rgba(0,255,255,0.03)]"
+          ? "bg-transparent backdrop-blur-2xl backdrop-saturate-150"
           : "bg-transparent"
       )}
     >
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
 
         {/* Left: Logo */}
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <Logo />
         </div>
 
-        {/* Center: Navigation */}
-        <div className="hidden md:flex items-center justify-center flex-1">
-          <MainNav />
+        {/* Center: Desktop Smart Navigation Triggers */}
+        <div className="hidden md:flex items-center gap-1 bg-black/5 dark:bg-white/5 p-1 rounded-full backdrop-blur-md">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => openCommandMenu("marketplace")}
+            className="h-8 gap-2 rounded-full px-4 text-xs font-medium hover:bg-white/50 dark:hover:bg-white/10 text-foreground transition-all"
+          >
+            <ShoppingBag className="w-3.5 h-3.5" />
+            <span>Marketplace</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => openCommandMenu("launchpad")}
+            className="h-8 gap-2 rounded-full px-4 text-xs font-medium hover:bg-white/50 dark:hover:bg-white/10 text-foreground transition-all"
+          >
+            <Rocket className="w-3.5 h-3.5" />
+            <span>Launchpad</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => openCommandMenu("portfolio")}
+            className="h-8 gap-2 rounded-full px-4 text-xs font-medium hover:bg-white/50 dark:hover:bg-white/10 text-foreground transition-all"
+          >
+            <User className="w-3.5 h-3.5" />
+            <span>Portfolio</span>
+          </Button>
         </div>
 
         {/* Right: Actions */}
@@ -52,25 +82,34 @@ export function Header() {
           {/* Wallet Connect */}
           <WalletConnect />
 
-          {/* Command Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden sm:flex h-9 w-9 rounded-full bg-white/5 dark:bg-white/5 hover:bg-white/15 dark:hover:bg-white/10 border border-white/10 dark:border-white/5 transition-all duration-200"
-            onClick={() => document.dispatchEvent(new CustomEvent("openCommandMenu"))}
-            title="Open Command Menu (Cmd+K)"
-          >
-            <Command className="h-4 w-4 text-foreground/70" />
-            <span className="sr-only">Open Command Menu</span>
-          </Button>
-
-          {/* Theme Toggle */}
+          {/* Theme Toggle (Desktop Only) */}
           <div className="hidden md:flex">
             <ThemeToggle />
           </div>
 
-          {/* Mobile Menu */}
-          <MobileSidebar />
+          {/* Command Menu Trigger (Desktop) */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="hidden sm:flex h-9 gap-2 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-all text-foreground px-3"
+            onClick={() => document.dispatchEvent(new CustomEvent("openCommandMenu"))}
+          >
+            <Command className="h-3.5 w-3.5" />
+            <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 px-1.5 font-mono text-[10px] font-medium opacity-100">
+              <span className="text-xs">K</span>
+            </kbd>
+          </Button>
+
+          {/* Mobile CMD Trigger */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="flex md:hidden h-9 w-9 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 backdrop-blur-sm transition-all text-foreground"
+            onClick={() => document.dispatchEvent(new CustomEvent("openCommandMenu"))}
+          >
+            <Command className="h-4 w-4" />
+          </Button>
+
         </div>
       </div>
     </header>

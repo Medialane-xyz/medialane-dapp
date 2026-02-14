@@ -7,9 +7,9 @@ import Link from "next/link"
 import { useListing } from "@/hooks/useListing"
 import { useMarketplace } from "@/hooks/useMarketplace"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AnimatedBorderButton } from "@/components/ui/animated-border-button"
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
+
 import { ShoppingBag, HandCoins, RefreshCw, Sparkles, Tag, XCircle, Loader2 } from "lucide-react"
 
 interface MarketplaceActionsProps {
@@ -91,10 +91,10 @@ export function MarketplaceActions({
                                     tokenId: tokenId
                                 }}
                                 trigger={
-                                    <AnimatedBorderButton className="flex-1 w-full">
+                                    <Button className="flex-1 w-full">
                                         <Tag className="mr-2 h-4 w-4" />
                                         List for Sale
-                                    </AnimatedBorderButton>
+                                    </Button>
                                 }
                             />
                         )
@@ -112,10 +112,10 @@ export function MarketplaceActions({
                                         listing: listing
                                     }}
                                     trigger={
-                                        <AnimatedBorderButton className="flex-1 w-full">
+                                        <Button className="flex-1 w-full">
                                             <ShoppingBag className="mr-2 h-4 w-4" />
                                             Buy Now
-                                        </AnimatedBorderButton>
+                                        </Button>
                                     }
                                 />
                             ) : (
