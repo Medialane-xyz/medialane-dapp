@@ -22,7 +22,10 @@ import {
   Home,
   ArrowLeft,
   Wallet,
-  LogOut
+  LogOut,
+  Book,
+  ShoppingBag,
+  Rocket
 } from "lucide-react"
 import { useConnect, useAccount, useDisconnect } from "@starknet-react/core"
 import { StarknetkitConnector, useStarknetkitConnectModal } from "starknetkit"
@@ -42,6 +45,7 @@ import { navigation } from "@/config/navigation"
 export function CommandMenu() {
   const [open, setOpen] = React.useState(false)
   const [activePage, setActivePage] = React.useState<string | null>(null)
+  const [search, setSearch] = React.useState("")
   const router = useRouter()
   const { setTheme } = useTheme()
 
@@ -54,6 +58,18 @@ export function CommandMenu() {
     connectors: connectors as StarknetkitConnector[],
     modalTheme: "dark",
   })
+
+  // Flatten navigation for Global Search
+  const allItems = React.useMemo(() => {
+    const items: { category: string; title: string; href: string; icon: any }[] = []
+    Object.entries(navigation).forEach(([key, value]) => {
+      // @ts-ignore
+      value.forEach((item: any) => {
+        items.push({ category: key, ...item })
+      })
+    })
+    return items
+  }, [])
 
   const handleConnect = async () => {
     try {
@@ -71,6 +87,7 @@ export function CommandMenu() {
         e.preventDefault()
         setOpen((open) => !open)
         setActivePage(null) // Reset to root on toggle
+        setSearch("")
       }
     }
 
@@ -81,6 +98,7 @@ export function CommandMenu() {
       } else {
         setActivePage(null)
       }
+      setSearch("")
     }
 
     document.addEventListener("keydown", down)
@@ -97,12 +115,47 @@ export function CommandMenu() {
     command()
   }, [])
 
-  // Render content based on active page
+  // Handle Backspace to go up a level
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !search && activePage) {
+      e.preventDefault()
+      setActivePage(null)
+    }
+  }
+
+  // Dynamic Content Rendering
   const renderContent = () => {
-    if (activePage === "marketplace") {
+    // 1. If searching, show global results flattened (grouped by category)
+    if (search) {
       return (
-        <CommandGroup heading="Marketplace">
-          {navigation.marketplace.map((navItem) => (
+        <>
+          {Object.keys(navigation).map((group) => {
+            const groupItems = allItems.filter((item) => item.category === group && item.title.toLowerCase().includes(search.toLowerCase()))
+            if (groupItems.length === 0) return null
+            return (
+              <CommandGroup key={group} heading={group.charAt(0).toUpperCase() + group.slice(1)}>
+                {groupItems.map((item) => (
+                  <CommandItem key={item.href} onSelect={() => runCommand(() => router.push(item.href))}>
+                    <item.icon className="mr-2 h-4 w-4" />
+                    <span>{item.title}</span>
+                    <span className="ml-auto text-xs text-muted-foreground capitalize">{item.category}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )
+          })}
+        </>
+      )
+    }
+
+    // 2. If activePage is set, show that category
+    if (activePage) {
+      const categoryItems = (navigation as any)[activePage]
+      if (!categoryItems) return null
+
+      return (
+        <CommandGroup heading={activePage.charAt(0).toUpperCase() + activePage.slice(1)}>
+          {categoryItems.map((navItem: any) => (
             <CommandItem key={navItem.href} onSelect={() => runCommand(() => router.push(navItem.href))}>
               <navItem.icon className="mr-2 h-4 w-4" />
               <span>{navItem.title}</span>
@@ -112,105 +165,16 @@ export function CommandMenu() {
           <CommandItem onSelect={() => setActivePage(null)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             <span>Back to Main Menu</span>
+            <CommandShortcut>⌫</CommandShortcut>
           </CommandItem>
         </CommandGroup>
       )
     }
 
-    if (activePage === "launchpad") {
-      return (
-        <CommandGroup heading="Launchpad">
-          {navigation.launchpad.map((navItem) => (
-            <CommandItem key={navItem.href} onSelect={() => runCommand(() => router.push(navItem.href))}>
-              <navItem.icon className="mr-2 h-4 w-4" />
-              <span>{navItem.title}</span>
-            </CommandItem>
-          ))}
-          <CommandSeparator className="my-2" />
-          <CommandItem onSelect={() => setActivePage(null)}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            <span>Back to Main Menu</span>
-          </CommandItem>
-        </CommandGroup>
-      )
-    }
-
-    if (activePage === "portfolio") {
-      return (
-        <CommandGroup heading="Portfolio">
-          {navigation.portfolio.map((navItem) => (
-            <CommandItem key={navItem.href} onSelect={() => runCommand(() => router.push(navItem.href))}>
-              <navItem.icon className="mr-2 h-4 w-4" />
-              <span>{navItem.title}</span>
-            </CommandItem>
-          ))}
-          <CommandSeparator className="my-2" />
-          <CommandItem onSelect={() => setActivePage(null)}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            <span>Back to Main Menu</span>
-          </CommandItem>
-        </CommandGroup>
-      )
-    }
-
-    if (activePage === "create") {
-      return (
-        <CommandGroup heading="Create">
-          {navigation.create.map((navItem) => (
-            <CommandItem key={navItem.href} onSelect={() => runCommand(() => router.push(navItem.href))}>
-              <navItem.icon className="mr-2 h-4 w-4" />
-              <span>{navItem.title}</span>
-            </CommandItem>
-          ))}
-          <CommandSeparator className="my-2" />
-          <CommandItem onSelect={() => setActivePage(null)}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            <span>Back to Main Menu</span>
-          </CommandItem>
-        </CommandGroup>
-      )
-    }
-
-    if (activePage === "discover") {
-      return (
-        <CommandGroup heading="Discover">
-          {navigation.discover.map((navItem) => (
-            <CommandItem key={navItem.href} onSelect={() => runCommand(() => router.push(navItem.href))}>
-              <navItem.icon className="mr-2 h-4 w-4" />
-              <span>{navItem.title}</span>
-            </CommandItem>
-          ))}
-          <CommandSeparator className="my-2" />
-          <CommandItem onSelect={() => setActivePage(null)}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            <span>Back to Main Menu</span>
-          </CommandItem>
-        </CommandGroup>
-      )
-    }
-
-    if (activePage === "resources") {
-      return (
-        <CommandGroup heading="Resources">
-          {navigation.resources.map((navItem) => (
-            <CommandItem key={navItem.href} onSelect={() => runCommand(() => router.push(navItem.href))}>
-              <navItem.icon className="mr-2 h-4 w-4" />
-              <span>{navItem.title}</span>
-            </CommandItem>
-          ))}
-          <CommandSeparator className="my-2" />
-          <CommandItem onSelect={() => setActivePage(null)}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            <span>Back to Main Menu</span>
-          </CommandItem>
-        </CommandGroup>
-      )
-    }
-
-    // Default Root View (All Categories)
+    // 3. Root View (Default)
     return (
       <>
-        {/* Wallet Section - Top Priority if disconnected */}
+        {/* Wallet Section */}
         {!isConnected && (
           <CommandGroup heading="Wallet">
             <CommandItem onSelect={() => runCommand(handleConnect)}>
@@ -231,6 +195,7 @@ export function CommandMenu() {
 
         <CommandSeparator />
 
+        {/* Main Navigation (Always visible) */}
         <CommandGroup heading="Main">
           {navigation.main.map((navItem) => (
             <CommandItem key={navItem.href} onSelect={() => runCommand(() => router.push(navItem.href))}>
@@ -242,52 +207,32 @@ export function CommandMenu() {
 
         <CommandSeparator />
 
-        <CommandGroup heading="Marketplace">
-          {navigation.marketplace.map((navItem) => (
-            <CommandItem key={navItem.href} onSelect={() => runCommand(() => router.push(navItem.href))}>
-              <navItem.icon className="mr-2 h-4 w-4" />
-              <span>{navItem.title}</span>
-            </CommandItem>
-          ))}
-        </CommandGroup>
-
-        <CommandSeparator />
-
-        <CommandGroup heading="Launchpad">
-          {navigation.launchpad.map((navItem) => (
-            <CommandItem key={navItem.href} onSelect={() => runCommand(() => router.push(navItem.href))}>
-              <navItem.icon className="mr-2 h-4 w-4" />
-              <span>{navItem.title}</span>
-            </CommandItem>
-          ))}
-        </CommandGroup>
-
-        <CommandSeparator />
-
-        <CommandGroup heading="Details">
-          <CommandItem onSelect={() => runCommand(() => setActivePage("discover"))}>
-            <Search className="mr-2 h-4 w-4" />
-            <span>Discover...</span>
+        {/* Drill-down Categories */}
+        <CommandGroup heading="Categories">
+          <CommandItem onSelect={() => setActivePage("marketplace")}>
+            <ShoppingBag className="mr-2 h-4 w-4" />
+            <span>Marketplace...</span>
           </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => setActivePage("create"))}>
+          <CommandItem onSelect={() => setActivePage("launchpad")}>
+            <Rocket className="mr-2 h-4 w-4" />
+            <span>Launchpad...</span>
+          </CommandItem>
+          <CommandItem onSelect={() => setActivePage("portfolio")}>
+            <User className="mr-2 h-4 w-4" />
+            <span>Portfolio...</span>
+          </CommandItem>
+          <CommandItem onSelect={() => setActivePage("create")}>
             <PlusCircle className="mr-2 h-4 w-4" />
             <span>Create...</span>
           </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => setActivePage("resources"))}>
-            <ArrowRightLeft className="mr-2 h-4 w-4" />
+          <CommandItem onSelect={() => setActivePage("discover")}>
+            <Search className="mr-2 h-4 w-4" />
+            <span>Discover...</span>
+          </CommandItem>
+          <CommandItem onSelect={() => setActivePage("resources")}>
+            <Book className="mr-2 h-4 w-4" />
             <span>Resources...</span>
           </CommandItem>
-        </CommandGroup>
-
-        <CommandSeparator />
-
-        <CommandGroup heading="Socials">
-          {navigation.socials.map((navItem) => (
-            <CommandItem key={navItem.href} onSelect={() => runCommand(() => window.open(navItem.href, '_blank'))}>
-              <navItem.icon className="mr-2 h-4 w-4" />
-              <span>{navItem.title}</span>
-            </CommandItem>
-          ))}
         </CommandGroup>
 
         <CommandSeparator />
@@ -306,6 +251,15 @@ export function CommandMenu() {
             <span>System</span>
           </CommandItem>
         </CommandGroup>
+
+        <CommandGroup heading="Socials">
+          {navigation.socials.map((navItem) => (
+            <CommandItem key={navItem.href} onSelect={() => runCommand(() => window.open(navItem.href, '_blank'))}>
+              <navItem.icon className="mr-2 h-4 w-4" />
+              <span>{navItem.title}</span>
+            </CommandItem>
+          ))}
+        </CommandGroup>
       </>
     )
 
@@ -313,7 +267,12 @@ export function CommandMenu() {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder={activePage ? `Search ${activePage}...` : "Type a command or search..."} />
+      <CommandInput
+        placeholder={activePage ? `Search ${activePage}...` : "Type to search all commands..."}
+        value={search}
+        onValueChange={setSearch}
+        onKeyDown={handleKeyDown}
+      />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         {renderContent()}

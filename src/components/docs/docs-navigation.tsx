@@ -29,7 +29,7 @@ const protocolLinks = [
     { title: "Developers", href: "/docs/developers", icon: Terminal, desc: "Contracts, SDKs, and tools" },
     { title: "Permissionless Setup", href: "/docs/permissionless-setup", icon: Terminal, desc: "Run and deploy locally" },
     { title: "How does Mediolano protect IP?", href: "/docs/ip-protection", icon: ShieldCheck, desc: "Built for the Integrity Web" },
-    { title: "Mediolano Protocol", href: "/docs/protocol", icon: Network, desc: "Technical architecture" },
+    { title: "Mediolano Protocol", href: "/docs/mediolano-protocol", icon: Network, desc: "Technical architecture" },
     { title: "Programmable Licensing", href: "/docs/programmable-licensing", icon: Scroll, desc: "Decentralized IP Rights" },
     { title: "Security", href: "/docs/security", icon: Shield, desc: "Security and Verification" },
     { title: "FAQ", href: "/docs/faq", icon: HelpCircle, desc: "Common questions" },

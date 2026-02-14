@@ -1,6 +1,6 @@
 
 import type { Metadata } from "next"
-import ProtocolContent from "@/app/docs/protocol/ProtocolContent"
+import ProtocolContent from "@/app/docs/mediolano-protocol/ProtocolContent"
 
 export const metadata: Metadata = {
     title: "Mediolano Protocol | Medialane",
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Mediolano Protocol | Medialane",
         description: "Architecture, Smart Contracts, and Decentralization.",
-        url: 'https://dapp.medialane.xyz/docs/protocol',
+        url: 'https://dapp.medialane.xyz/docs/mediolano-protocol',
         siteName: 'Medialane',
         images: [
             {

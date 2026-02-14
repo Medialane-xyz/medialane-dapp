@@ -202,7 +202,7 @@ export default function DocsLandingClient() {
 
                         {/* Protocol */}
                         <motion.div variants={item} className="group relative overflow-hidden rounded-[2rem] border border-border/50 bg-background/30 backdrop-blur-md hover:bg-background/50 transition-all duration-500">
-                            <Link href="/docs/protocol" className="absolute inset-0 z-20" />
+                            <Link href="/docs/mediolano-protocol" className="absolute inset-0 z-20" />
                             <div className="p-8">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="p-3 bg-orange-500/10 rounded-xl text-orange-500">
