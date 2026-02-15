@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils"
 import { useMarketplace } from "@/hooks/use-marketplace"
 import { ItemType, OrderType } from "@/types/marketplace"
 import { useAccount } from "@starknet-react/core"
-import { AVNU_PAYMASTER_CONFIG } from "@/lib/constants"
+import { AVNU_PAYMASTER_CONFIG, EXPLORER_URL } from "@/lib/constants"
 import { constants } from "starknet"
 
 interface ListingDialogProps {
@@ -162,7 +162,7 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                             <p className="text-muted-foreground mb-8">
                                 Your asset is now listed for <span className="text-foreground font-semibold">{price} {currency}</span>
                             </p>
-                            <Link href={`https://starkscan.co/tx/${txHash}`} target="_blank" className="text-primary text-sm flex items-center gap-1 hover:underline mb-6">
+                            <Link href={`${EXPLORER_URL}/tx/${txHash}`} target="_blank" className="text-primary text-sm flex items-center gap-1 hover:underline mb-6">
                                 View Transaction <ExternalLink className="w-3 h-3" />
                             </Link>
                             <Button onClick={() => setOpen(false)} className="w-full">Close</Button>

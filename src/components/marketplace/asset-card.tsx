@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useListing } from "@/hooks/use-listing"
 import { cn } from "@/lib/utils"
+import { EXPLORER_URL } from "@/lib/constants"
 
 export interface MarketplaceAsset {
     id: string
@@ -154,7 +155,7 @@ export function AssetCard({ asset }: { asset: MarketplaceAsset }) {
                             <FileText className="mr-2 h-4 w-4" /> View Provenance
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-white/10" />
-                        <div onClick={() => window.open(`https://starkscan.co/contract/${asset.collectionAddress}`, '_blank')}>
+                        <div onClick={() => window.open(`${EXPLORER_URL}/contract/${asset.collectionAddress}`, '_blank')}>
                             <DropdownMenuItem className="focus:bg-white/10 cursor-pointer">
                                 <ExternalLink className="mr-2 h-4 w-4" /> View on Explorer
                             </DropdownMenuItem>

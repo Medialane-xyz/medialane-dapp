@@ -38,6 +38,9 @@ import { IMintResult } from "@/hooks/use-create-asset";
 import { normalizeStarknetAddress } from "@/lib/utils";
 import { useProvider } from "@starknet-react/core";
 import { num, hash } from "starknet";
+import { useMarketplace } from "@/hooks/use-marketplace";
+import { ItemType, OrderType } from "@/types/marketplace";
+import { AVNU_PAYMASTER_CONFIG } from "@/lib/constants";
 
 export default function CreateAssetPage() {
   const { toast } = useToast();
@@ -62,6 +65,8 @@ export default function CreateAssetPage() {
   // Initialize form
   const { formState, updateFormField, handleFileChange, handleFeaturedImageChange, canSubmit } =
     useAssetForm();
+  const { createListing } = useMarketplace();
+  const usdcToken = AVNU_PAYMASTER_CONFIG.SUPPORTED_GAS_TOKENS.find(t => t.symbol === "USDC");
   const {
     collections,
     loading: collection_loading,
@@ -220,6 +225,77 @@ export default function CreateAssetPage() {
       }
 
       setMintProgress(90);
+
+      // --- AUTO-LIST ON MARKETPLACE ---
+      if (formState.listOnMarketplace && formState.listingPrice && parseFloat(formState.listingPrice) > 0) {
+        try {
+          setMintStep("listing");
+          setMintProgress(92);
+
+          const tokenId = mintResultData.tokenId;
+          const nftAddress = contractHex;
+          const usdcAddress = usdcToken?.address || "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8";
+          const usdcDecimals = usdcToken?.decimals || 6;
+
+          // Convert price to smallest unit (e.g., 10 USDC = 10_000_000)
+          const priceInSmallestUnit = BigInt(
+            Math.round(parseFloat(formState.listingPrice) * Math.pow(10, usdcDecimals))
+          ).toString();
+
+          const now = Math.floor(Date.now() / 1000);
+          const duration = 30 * 24 * 60 * 60; // 30 days default
+
+          // Build Seaport-style OrderParameters
+          const orderParams = {
+            offerer: walletAddress,
+            offer: [
+              {
+                item_type: ItemType.ERC721,
+                token: nftAddress,
+                identifier_or_criteria: tokenId,
+                start_amount: "1",
+                end_amount: "1",
+              }
+            ],
+            consideration: [
+              {
+                item_type: ItemType.ERC20,
+                token: usdcAddress,
+                identifier_or_criteria: "0",
+                start_amount: priceInSmallestUnit,
+                end_amount: priceInSmallestUnit,
+                recipient: walletAddress,
+              }
+            ],
+            order_type: OrderType.FULL_OPEN,
+            start_time: now.toString(),
+            end_time: (now + duration).toString(),
+            zone: "0x0",
+            zone_hash: "0x0",
+            salt: `0x${Math.floor(Math.random() * 0xFFFFFFFF).toString(16)}`,
+            conduit_key: "0x0",
+            nonce: "0",
+          };
+
+          setMintProgress(95);
+          const listingTxHash = await createListing(orderParams);
+
+          if (listingTxHash) {
+            toast({
+              title: "🏷️ Listed on Marketplace!",
+              description: `Your asset is now listed for ${formState.listingPrice} USDC.`,
+            });
+          }
+        } catch (listingError) {
+          // Listing failed but mint succeeded — non-fatal
+          console.error("Auto-listing failed:", listingError);
+          toast({
+            title: "Mint succeeded, listing failed",
+            description: "Your NFT was minted but couldn't be listed. You can list it manually from the asset page.",
+            variant: "destructive",
+          });
+        }
+      }
 
       // Show success drawer with mint result
       setMintResult(mintResultData);
@@ -461,6 +537,7 @@ export default function CreateAssetPage() {
         data={{
           "License Type": formState.licenseType,
           "Collection": collections.find(c => c.id.toString() === formState.collection)?.name || "Unknown",
+          ...(formState.listOnMarketplace && formState.listingPrice ? { "Listing Price": `${formState.listingPrice} USDC` } : {}),
         }}
       />
     </>

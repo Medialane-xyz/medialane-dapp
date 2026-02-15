@@ -379,5 +379,113 @@ export const IPMarketplaceABI = [
                 "state_mutability": "view"
             }
         ]
+    },
+    {
+        "type": "event",
+        "name": "medialane::core::medialane::Medialane::OrderRegistered",
+        "kind": "struct",
+        "members": [
+            {
+                "name": "order_hash",
+                "type": "core::felt252",
+                "kind": "key"
+            },
+            {
+                "name": "offerer",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            },
+            {
+                "name": "offer_token",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "data"
+            },
+            {
+                "name": "offer_identifier",
+                "type": "core::integer::u256",
+                "kind": "data"
+            },
+            {
+                "name": "consideration_token",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "data"
+            },
+            {
+                "name": "consideration_amount",
+                "type": "core::integer::u256",
+                "kind": "data"
+            },
+            {
+                "name": "start_time",
+                "type": "core::integer::u64",
+                "kind": "data"
+            },
+            {
+                "name": "end_time",
+                "type": "core::integer::u64",
+                "kind": "data"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "medialane::core::medialane::Medialane::OrderFulfilled",
+        "kind": "struct",
+        "members": [
+            {
+                "name": "order_hash",
+                "type": "core::felt252",
+                "kind": "key"
+            },
+            {
+                "name": "offerer",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            },
+            {
+                "name": "fulfiller",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "medialane::core::medialane::Medialane::OrderCancelled",
+        "kind": "struct",
+        "members": [
+            {
+                "name": "order_hash",
+                "type": "core::felt252",
+                "kind": "key"
+            },
+            {
+                "name": "offerer",
+                "type": "core::starknet::contract_address::ContractAddress",
+                "kind": "key"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "medialane::core::medialane::Medialane::Event",
+        "kind": "enum",
+        "variants": [
+            {
+                "name": "OrderRegistered",
+                "type": "medialane::core::medialane::Medialane::OrderRegistered",
+                "kind": "nested"
+            },
+            {
+                "name": "OrderFulfilled",
+                "type": "medialane::core::medialane::Medialane::OrderFulfilled",
+                "kind": "nested"
+            },
+            {
+                "name": "OrderCancelled",
+                "type": "medialane::core::medialane::Medialane::OrderCancelled",
+                "kind": "nested"
+            }
+        ]
     }
 ];

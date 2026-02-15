@@ -39,7 +39,7 @@ export function useMarketplace(): UseMarketplaceReturn {
     const [error, setError] = useState<string | null>(null);
 
     const { contract } = useContract({
-        address: process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS as `0x${string}`,
+        address: process.env.NEXT_PUBLIC_MEDIALANE_CONTRACT_ADDRESS as `0x${string}`,
         abi: IPMarketplaceABI as Abi,
     });
 

@@ -60,7 +60,7 @@ const EXPIRATION_OPTIONS = [
 import { useMarketplace } from "@/hooks/use-marketplace"
 import { ItemType, OrderType } from "@/types/marketplace"
 import { useAccount } from "@starknet-react/core"
-import { AVNU_PAYMASTER_CONFIG } from "@/lib/constants"
+import { AVNU_PAYMASTER_CONFIG, EXPLORER_URL } from "@/lib/constants"
 
 export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChange: setControlledOpen }: OfferDialogProps) {
     const { address } = useAccount()
@@ -188,7 +188,7 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-muted-foreground">Transaction</span>
-                                    <Link href={`https://starkscan.co/tx/${txHash}`} target="_blank" className="flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors">
+                                    <Link href={`${EXPLORER_URL}/tx/${txHash}`} target="_blank" className="flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors">
                                         <span className="font-mono text-xs">{txHash ? `${txHash.slice(0, 8)}...${txHash.slice(-6)}` : ""}</span>
                                         <ExternalLink className="w-3 h-3" />
                                     </Link>

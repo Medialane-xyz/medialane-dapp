@@ -33,6 +33,10 @@ export interface AssetFormState {
 
   // Template-specific metadata
   metadataFields: Record<string, unknown>
+
+  // Marketplace listing
+  listOnMarketplace: boolean
+  listingPrice: string
 }
 
 const initialState: AssetFormState = {
@@ -57,6 +61,10 @@ const initialState: AssetFormState = {
   grantBack: "",
   aiRights: "",
   metadataFields: {},
+
+  // Marketplace listing
+  listOnMarketplace: false,
+  listingPrice: "",
 }
 
 export function useAssetForm(defaultValues?: Partial<AssetFormState>) {

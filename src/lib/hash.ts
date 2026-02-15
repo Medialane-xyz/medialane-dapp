@@ -56,7 +56,7 @@ const TYPES = {
 const DOMAIN = {
     name: "Medialane",
     version: "1",
-    chainId: constants.StarknetChainId.SN_MAIN, // Ensure this matches connected network
+    chainId: constants.StarknetChainId.SN_SEPOLIA, // Matches deployment on Sepolia testnet
     revision: "1",
 };
 

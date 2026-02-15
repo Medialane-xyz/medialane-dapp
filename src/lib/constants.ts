@@ -6,6 +6,7 @@ import type { IPType } from "./types";
 // Contract addresses
 export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_COLLECTION_CONTRACT_ADDRESS as `0x${string}`;
 export const COLLECTION_CONTRACT_ADDRESS = CONTRACT_ADDRESS;
+export const MEDIALANE_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_MEDIALANE_CONTRACT_ADDRESS as `0x${string}`;
 
 export const IPFS_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || "https://gateway.pinata.cloud";
 export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL || "https://sepolia.voyager.online";

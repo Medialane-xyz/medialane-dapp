@@ -2,41 +2,47 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { TrendingUp, Users, Activity, Layers } from "lucide-react"
+import { Activity, Layers, Users, TrendingUp } from "lucide-react"
 import { motion } from "framer-motion"
-
-const stats = [
-    {
-        label: "Total Volume",
-        value: "2,345 STRK",
-        change: "+12.5%",
-        icon: Activity,
-        gradient: "from-blue-500 to-cyan-500",
-    },
-    {
-        label: "Active Listings",
-        value: "1,234",
-        change: "+5.2%",
-        icon: Layers,
-        gradient: "from-violet-500 to-purple-500",
-    },
-    {
-        label: "Unique Creators",
-        value: "450+",
-        change: "+8.1%",
-        icon: Users,
-        gradient: "from-emerald-500 to-teal-500",
-    },
-    {
-        label: "Floor Price",
-        value: "0.05 STRK",
-        change: "+2.3%",
-        icon: TrendingUp,
-        gradient: "from-amber-500 to-orange-500",
-    },
-]
+import { useMarketplaceListings } from "@/hooks/use-marketplace-events"
 
 export function MarketplaceStats() {
+    const { activeCount, totalVolume, allOrders, isLoading } = useMarketplaceListings();
+
+    // Compute unique creators from all orders
+    const uniqueCreators = new Set(allOrders.map(o => o.offerer)).size;
+
+    const stats = [
+        {
+            label: "Total Orders",
+            value: isLoading ? "..." : allOrders.length.toString(),
+            change: totalVolume > 0 ? `${totalVolume} filled` : "0 filled",
+            icon: Activity,
+            gradient: "from-blue-500 to-cyan-500",
+        },
+        {
+            label: "Active Listings",
+            value: isLoading ? "..." : activeCount.toString(),
+            change: "Live on-chain",
+            icon: Layers,
+            gradient: "from-violet-500 to-purple-500",
+        },
+        {
+            label: "Unique Creators",
+            value: isLoading ? "..." : uniqueCreators.toString(),
+            change: "On-chain verified",
+            icon: Users,
+            gradient: "from-emerald-500 to-teal-500",
+        },
+        {
+            label: "Protocol",
+            value: "Medialane",
+            change: "Sepolia Testnet",
+            icon: TrendingUp,
+            gradient: "from-amber-500 to-orange-500",
+        },
+    ]
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}

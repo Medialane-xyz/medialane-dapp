@@ -16,6 +16,7 @@ import Link from "next/link"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { useMarketplace } from "@/hooks/use-marketplace"
 import { Listing, Fulfillment } from "@/types/marketplace"
+import { EXPLORER_URL } from "@/lib/constants"
 
 interface PurchaseDialogProps {
     trigger?: React.ReactNode
@@ -92,7 +93,7 @@ export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
                             <p className="text-muted-foreground mb-8">
                                 You have successfully purchased <span className="text-foreground font-semibold">{asset.name}</span>
                             </p>
-                            <Link href={`https://starkscan.co/tx/${txHash}`} target="_blank" className="text-primary text-sm flex items-center gap-1 hover:underline mb-6">
+                            <Link href={`${EXPLORER_URL}/tx/${txHash}`} target="_blank" className="text-primary text-sm flex items-center gap-1 hover:underline mb-6">
                                 View Transaction <ExternalLink className="w-3 h-3" />
                             </Link>
                             <Button onClick={() => setOpen(false)} className="w-full">Close</Button>

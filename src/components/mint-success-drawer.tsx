@@ -14,14 +14,14 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle2, Sparkles, ExternalLink, FolderOpen, Share2, ArrowRight, Loader2, Library, Copy, Upload, XCircle } from "lucide-react"
+import { CheckCircle2, Sparkles, ExternalLink, FolderOpen, Share2, ArrowRight, Loader2, Library, Copy, Upload, XCircle, ShoppingBag } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import type { IMintResult } from "@/hooks/use-create-asset"
 import { EXPLORER_URL } from "@/lib/constants"
 import { shortenAddress } from "@/lib/utils"
 import Image from "next/image"
 
-export type MintDrawerStep = "idle" | "uploading" | "processing" | "success"
+export type MintDrawerStep = "idle" | "uploading" | "processing" | "listing" | "success"
 
 interface MintSuccessDrawerProps {
   isOpen: boolean
@@ -82,7 +82,7 @@ export function MintSuccessDrawer({
 
   // Prevent closing during active processing
   const handleOpenChange = (open: boolean) => {
-    if (!open && (step === "uploading" || step === "processing") && !error) {
+    if (!open && (step === "uploading" || step === "processing" || step === "listing") && !error) {
       return
     }
     onOpenChange(open)
@@ -106,6 +106,12 @@ export function MintSuccessDrawer({
                 Minting Asset
               </>
             )}
+            {step === "listing" && (
+              <>
+                <ShoppingBag className="h-5 w-5 animate-pulse text-foreground" />
+                Listing on Marketplace
+              </>
+            )}
             {step === "success" && (
               <>
                 <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -118,6 +124,7 @@ export function MintSuccessDrawer({
             {step === "idle" && "Please review the details below before confirming the transaction."}
             {step === "uploading" && "Securely storing your metadata and assets on IPFS."}
             {step === "processing" && "Please confirm the transaction in your wallet."}
+            {step === "listing" && "Signing and submitting your marketplace listing."}
             {step === "success" && "Your intellectual property is now secured onchain."}
             {error && step !== "success" && "There was a problem creating your asset."}
           </DrawerDescription>
@@ -179,12 +186,12 @@ export function MintSuccessDrawer({
           )}
 
           {/* PROGRESS STATES */}
-          {(step === "uploading" || step === "processing") && !error && (
+          {(step === "uploading" || step === "processing" || step === "listing") && !error && (
             <div className="flex flex-col items-center justify-center space-y-8 py-4">
               <div className="w-full space-y-2">
                 <div className="flex justify-between text-sm font-medium text-muted-foreground">
                   <span>
-                    {step === "uploading" ? "Uploading to IPFS" : "Waiting for Confirmation"}
+                    {step === "uploading" ? "Uploading to IPFS" : step === "listing" ? "Listing on Marketplace" : "Waiting for Confirmation"}
                   </span>
                   <span>{progress}%</span>
                 </div>
@@ -195,14 +202,16 @@ export function MintSuccessDrawer({
                 <div className="relative mx-auto w-16 h-16 flex items-center justify-center">
                   <div className="absolute inset-0 border-4 border-muted rounded-full"></div>
                   <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                  {step === "uploading" ? <Upload className="h-6 w-6 text-foreground" /> : <Loader2 className="h-6 w-6 text-foreground" />}
+                  {step === "uploading" ? <Upload className="h-6 w-6 text-foreground" /> : step === "listing" ? <ShoppingBag className="h-6 w-6 text-foreground" /> : <Loader2 className="h-6 w-6 text-foreground" />}
                 </div>
 
                 <div>
                   <p className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto">
                     {step === "uploading"
                       ? "Ensuring your metadata is decentralized and permanent."
-                      : "Please check your wallet to sign the transaction."}
+                      : step === "listing"
+                        ? "Please check your wallet to sign the listing order."
+                        : "Please check your wallet to sign the transaction."}
                   </p>
                 </div>
               </div>
@@ -309,7 +318,7 @@ export function MintSuccessDrawer({
             </div>
           )}
 
-          {(step === "uploading" || step === "processing") && !error && (
+          {(step === "uploading" || step === "processing" || step === "listing") && !error && (
             <Button variant="outline" className="w-full opacity-50 cursor-not-allowed" disabled>
               Processing...
             </Button>

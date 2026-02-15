@@ -8,6 +8,7 @@ import { Upload, X, ImageIcon, Globe, FileText, Boxes, RotateCcw } from "lucide-
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import type { AssetFormState } from "@/hooks/use-asset-form"
+import { MarketplacePricing } from "./marketplace-pricing"
 import {
     Select,
     SelectContent,
@@ -236,6 +237,12 @@ export function AssetBasicInfo({
                     Link to your website or the detailed project page for this asset.
                 </p>
             </div>
+
+            {/* 6. Marketplace Pricing */}
+            <MarketplacePricing
+                formState={formState}
+                updateFormField={updateFormField}
+            />
 
         </div>
     )

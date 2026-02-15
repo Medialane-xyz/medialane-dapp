@@ -32,6 +32,9 @@ import { MintSuccessDrawer, MintDrawerStep } from "@/components/mint-success-dra
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import CreateCollectionView from "@/components/collections/create-collection"
 import { Card, CardContent } from "@/components/ui/card"
+import { useMarketplace } from "@/hooks/use-marketplace"
+import { ItemType, OrderType } from "@/types/marketplace"
+import { AVNU_PAYMASTER_CONFIG } from "@/lib/constants"
 
 export default function CreateAssetFromTemplate() {
   const params = useParams()
@@ -45,6 +48,8 @@ export default function CreateAssetFromTemplate() {
   const { uploadToIpfs, loading: upload_loading } = useIpfsUpload()
   const { createAsset, isCreating } = useCreateAsset()
   const { checkOwnership } = useIsCollectionOwner()
+  const { createListing } = useMarketplace()
+  const usdcToken = AVNU_PAYMASTER_CONFIG.SUPPORTED_GAS_TOKENS.find(t => t.symbol === "USDC")
   const {
     collections,
     loading: collection_loading,
@@ -233,6 +238,74 @@ export default function CreateAssetFromTemplate() {
 
       setMintProgress(90)
 
+      // --- AUTO-LIST ON MARKETPLACE ---
+      if (formState.listOnMarketplace && formState.listingPrice && parseFloat(formState.listingPrice) > 0) {
+        try {
+          setMintStep("listing")
+          setMintProgress(92)
+
+          const tokenId = mintTxApply.tokenId
+          const nftAddress = contractHex
+          const usdcAddress = usdcToken?.address || "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8"
+          const usdcDecimals = usdcToken?.decimals || 6
+
+          const priceInSmallestUnit = BigInt(
+            Math.round(parseFloat(formState.listingPrice) * Math.pow(10, usdcDecimals))
+          ).toString()
+
+          const now = Math.floor(Date.now() / 1000)
+          const duration = 30 * 24 * 60 * 60
+
+          const orderParams = {
+            offerer: walletAddress,
+            offer: [
+              {
+                item_type: ItemType.ERC721,
+                token: nftAddress,
+                identifier_or_criteria: tokenId,
+                start_amount: "1",
+                end_amount: "1",
+              }
+            ],
+            consideration: [
+              {
+                item_type: ItemType.ERC20,
+                token: usdcAddress,
+                identifier_or_criteria: "0",
+                start_amount: priceInSmallestUnit,
+                end_amount: priceInSmallestUnit,
+                recipient: walletAddress,
+              }
+            ],
+            order_type: OrderType.FULL_OPEN,
+            start_time: now.toString(),
+            end_time: (now + duration).toString(),
+            zone: "0x0",
+            zone_hash: "0x0",
+            salt: `0x${Math.floor(Math.random() * 0xFFFFFFFF).toString(16)}`,
+            conduit_key: "0x0",
+            nonce: "0",
+          }
+
+          setMintProgress(95)
+          const listingTxHash = await createListing(orderParams)
+
+          if (listingTxHash) {
+            toast({
+              title: "🏷️ Listed on Marketplace!",
+              description: `Your ${template.name} asset is now listed for ${formState.listingPrice} USDC.`,
+            })
+          }
+        } catch (listingError) {
+          console.error("Auto-listing failed:", listingError)
+          toast({
+            title: "Mint succeeded, listing failed",
+            description: "Your NFT was minted but couldn't be listed. You can list it manually from the asset page.",
+            variant: "destructive",
+          })
+        }
+      }
+
       // 6. Handle success
       setMintResult(mintTxApply)
       setMintStep("success")
@@ -292,6 +365,7 @@ export default function CreateAssetFromTemplate() {
         data={{
           "License Type": formState.licenseType,
           "Collection": collections.find(c => c.id.toString() === formState.collection)?.name || "Unknown",
+          ...(formState.listOnMarketplace && formState.listingPrice ? { "Listing Price": `${formState.listingPrice} USDC` } : {}),
         }}
       />
 
