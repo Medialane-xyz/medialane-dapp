@@ -191,9 +191,9 @@ const INITIAL_USER_PROFILE: UserProfile = {
 // Utility function to generate Starknet explorer links
 const getStarknetExplorerUrl = (txHash: string, network: "mainnet" | "sepolia" = "mainnet") => {
   if (network === "mainnet") {
-    return `https://voyager.online/tx/${txHash}`
+    return `https://sepolia.voyager.online/tx/${txHash}`
   }
-  const baseUrl = process.env.NEXT_PUBLIC_EXPLORER_URL || "https://voyager.online";
+  const baseUrl = process.env.NEXT_PUBLIC_EXPLORER_URL || "https://sepolia.voyager.online";
   return `${baseUrl}/tx/${txHash}`
 }
 

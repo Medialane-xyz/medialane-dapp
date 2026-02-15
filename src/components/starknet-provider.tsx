@@ -45,12 +45,12 @@ export function StarknetProvider({ children }: { children: React.ReactNode }) {
     mainnet: {
       chainId: mainnet.id.toString(),
       name: 'Starknet Mainnet',
-      explorerUrl: 'https://voyager.online'
+      explorerUrl: 'https://sepolia.voyager.online'
     },
     sepolia: {
       chainId: sepolia.id.toString(),
       name: 'Starknet Sepolia',
-      explorerUrl: process.env.NEXT_PUBLIC_EXPLORER_URL || 'https://voyager.online'
+      explorerUrl: process.env.NEXT_PUBLIC_EXPLORER_URL || 'https://sepolia.voyager.online'
     }
   };
 

@@ -8,7 +8,7 @@ export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_COLLECTION_CONTRACT_ADDR
 export const COLLECTION_CONTRACT_ADDRESS = CONTRACT_ADDRESS;
 
 export const IPFS_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || "https://gateway.pinata.cloud";
-export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL || "https://voyager.online";
+export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL || "https://sepolia.voyager.online";
 
 const ENV_START_BLOCK = process.env.NEXT_PUBLIC_START_BLOCK ? parseInt(process.env.NEXT_PUBLIC_START_BLOCK) : null;
 export const START_BLOCK = ENV_START_BLOCK || (process.env.NEXT_PUBLIC_STARKNET_NETWORK === "mainnet" ? 6204232 : 1861690);
