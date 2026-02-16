@@ -34,43 +34,43 @@ export function MarketplaceActions({
 
     const handleCancel = async () => {
         if (!listing) return;
-        // TODO: Pass correct cancel parameters based on listing data
-        // For now we assume listing object has what we need or we reconstruct it
         await cancelListing(listing);
     }
 
     if (isListingLoading) {
         return (
-            <div className="w-full h-24 flex items-center justify-center glass-card">
+            <div className="w-full h-24 flex items-center justify-center rounded-xl border bg-muted/30">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
         )
     }
 
     return (
-        <div className="w-full space-y-6">
-            <div className="glass-card p-4 sm:p-5 space-y-4">
-
+        <div className="w-full space-y-4">
+            <div className="rounded-xl border bg-card p-5 shadow-sm space-y-4">
                 {listing ? (
-                    <div className="flex items-baseline gap-2 flex-wrap">
-                        <span className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                            {listing.start_amount} {/* TODO: Format Price */} {listing.currency || "USDC"}
-                        </span>
+                    <div className="flex flex-col gap-1">
+                        <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Current Price</p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-3xl font-bold tracking-tight text-foreground">
+                                {listing.start_amount} {listing.currency || "USDC"}
+                            </span>
+                        </div>
                     </div>
                 ) : (
-                    <div className="flex justify-between items-center">
-                        <p className="text-lg text-muted-foreground">
+                    <div className="flex justify-between items-center py-2">
+                        <p className="text-sm font-medium text-muted-foreground">
                             {isOwner ? "Not listed for sale" : "Not listed yet"}
                         </p>
                     </div>
                 )}
 
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     {isOwner ? (
                         listing ? (
                             <Button
                                 variant="destructive"
-                                className="flex-1 h-11 rounded-lg"
+                                className="flex-1 h-11"
                                 onClick={handleCancel}
                                 disabled={isProcessing}
                             >
@@ -86,12 +86,12 @@ export function MarketplaceActions({
                                 asset={{
                                     id: assetId,
                                     name: assetName,
-                                    image: "/placeholder.svg", // Pass real image
+                                    image: "/placeholder.svg",
                                     collectionAddress: nftAddress,
                                     tokenId: tokenId
                                 }}
                                 trigger={
-                                    <Button className="flex-1 w-full">
+                                    <Button className="flex-1 h-11">
                                         <Tag className="mr-2 h-4 w-4" />
                                         List for Sale
                                     </Button>
@@ -112,14 +112,14 @@ export function MarketplaceActions({
                                         listing: listing
                                     }}
                                     trigger={
-                                        <Button className="flex-1 w-full">
+                                        <Button className="flex-1 h-11">
                                             <ShoppingBag className="mr-2 h-4 w-4" />
                                             Buy Now
                                         </Button>
                                     }
                                 />
                             ) : (
-                                <Button className="flex-1 h-11 glass-button text-muted-foreground cursor-not-allowed rounded-lg" disabled>
+                                <Button className="flex-1 h-11" variant="secondary" disabled>
                                     Buy Now
                                 </Button>
                             )}
@@ -136,7 +136,7 @@ export function MarketplaceActions({
                                     tokenId: tokenId
                                 }}
                                 trigger={
-                                    <Button variant="outline" className="flex-1 h-11 glass-button text-foreground hover:text-foreground rounded-lg">
+                                    <Button variant="outline" className="flex-1 h-11">
                                         <HandCoins className="mr-2 h-4 w-4" />
                                         Make Offer
                                     </Button>
@@ -148,17 +148,17 @@ export function MarketplaceActions({
             </div>
 
             <Link href={`/create/remix/${slug}`} className="block">
-                <div className="glass-interactive p-4 sm:p-5 rounded-xl flex items-center justify-between group cursor-pointer">
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center">
-                            <RefreshCw className="h-5 w-5 text-white" />
+                <div className="p-5 rounded-xl border bg-card/50 hover:bg-card hover:border-primary/30 transition-all flex items-center justify-between group cursor-pointer shadow-sm">
+                    <div className="flex items-center gap-4">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                            <RefreshCw className="h-5 w-5 text-primary" />
                         </div>
                         <div>
                             <p className="font-semibold text-foreground">Create a Remix</p>
-                            <p className="text-xs text-muted-foreground">Custom licensing & pricing</p>
+                            <p className="text-xs text-muted-foreground font-medium">Custom licensing & pricing</p>
                         </div>
                     </div>
-                    <Sparkles className="h-5 w-5 text-muted-foreground group-hover:text-pink-500 transition-colors" />
+                    <Sparkles className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
             </Link>
         </div>

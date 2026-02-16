@@ -63,7 +63,7 @@ export default function CreatorNFTPortfolio() {
 
   return (
     <div className="space-y-6">
-      {showStats && <PortfolioStats useBlockchainData={false} />}
+      {showStats && <PortfolioStats />}
 
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
         <div className="relative w-full sm:w-[350px]">

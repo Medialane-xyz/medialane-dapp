@@ -10,13 +10,9 @@ import {
     prepareFulfillmentForSigning,
     prepareCancelationForSigning
 } from "@/lib/hash";
-import {
-    OrderParameters,
-    Fulfillment,
-    Cancelation,
-    ItemType,
-    OrderType
-} from "@/types/marketplace";
+
+// On-chain contract uses simple felt252 for all fields - no enums, no u256
+// offer/consideration are single structs, not arrays
 
 interface UseMarketplaceReturn {
     createListing: (listingParams: any) => Promise<string | undefined>;
@@ -66,20 +62,23 @@ export function useMarketplace(): UseMarketplaceReturn {
 
             // 1. Prepare Typed Data for SNIP-12
             const typedData = prepareOrderForSigning(params, chainId);
+            console.log("TypedData for signing:", JSON.stringify(typedData, null, 2));
 
             // 2. Sign
             console.log("Requesting signature...");
             const signature = await account.signMessage(typedData);
             const signatureArray = Array.isArray(signature) ? signature : [signature];
+            console.log("Signature received:", signatureArray);
 
             // 3. Execute Transaction
-            // Struct expected by Cairo: Order { parameters: OrderParameters, signature: felt252[] }
+            // On-chain Order = { parameters: OrderParameters, signature: Array<felt252> }
+            // OrderParameters fields are all felt252 - pass as-is
             const orderStruct = {
                 parameters: params,
                 signature: signatureArray
             };
 
-            console.log("Submitting transaction register_order...");
+            console.log("Submitting register_order...", JSON.stringify(orderStruct, null, 2));
             const { transaction_hash } = await account.execute([
                 contract.populate("register_order", [orderStruct])
             ]);
@@ -119,11 +118,6 @@ export function useMarketplace(): UseMarketplaceReturn {
         try {
             const chainId = chain.id.toString();
 
-            // 1. Prepare Fulfillment Typed Data
-            // We sign the Fulfillment struct which contains order_hash and fulfiller
-            // Fulfillment = { fulfiller, order_hash, nonce }
-
-            // Note: The fulfiller is the Buyer (current account)
             const fulfillmentData = {
                 ...fulfillment,
                 fulfiller: address // Ensure we sign as ourselves
@@ -142,26 +136,15 @@ export function useMarketplace(): UseMarketplaceReturn {
                 signature: signatureArray
             };
 
-            // If paying with ERC20, we might need an approve() call first!
-            // Seaport usually requires:
-            // 1. Approve Currency -> Marketplace
-            // 2. Fulfill Order
-            // We should check if approval is needed.
-            // For now, assuming approval is handled separately or user has approved.
-            // Best practice: Multi-call (Approve + Fulfill)
-
-            // Check consideration item to find currency
-            const consideration = order.parameters?.consideration?.[0]; // Assuming simple listing
-            // If ItemType is ERC20 (1) or Native (0)
-
             const calls = [];
 
-            // Add approval if needed (simplified logic)
-            if (consideration && consideration.item_type === ItemType.ERC20) {
+            // Add approval if the consideration is ERC20 (item_type = 1)
+            const consideration = order.parameters?.consideration;
+            if (consideration && Number(consideration.item_type) === 1) {
                 calls.push({
                     contractAddress: consideration.token,
                     entrypoint: "approve",
-                    calldata: [contract.address, consideration.start_amount, "0"] // u256
+                    calldata: [contract.address, consideration.start_amount]
                 });
             }
 

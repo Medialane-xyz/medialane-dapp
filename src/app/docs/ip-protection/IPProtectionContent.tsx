@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { ChevronRight, Shield, Lock, Scale, Users, Server, Coins, ArrowUp, Fingerprint, Globe, FileKey, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DocsNavigation } from "@/components/docs/docs-navigation"
-import { AiAgentOverview } from "@/components/docs/ai-agent-overview"
 
 const tableOfContents = [
     { id: "intro", title: "Introduction", icon: Shield },
@@ -258,19 +257,6 @@ export default function IPProtectionContent() {
 
 
 
-                            <AiAgentOverview
-                                title="Automated Rights Enforcement"
-                                summary="For AI agents, 'protection' means 'verification'. Mediolano provides the cryptographic proofs necessary for an autonomous agent to verify that it is interacting with the legitimate owner of an asset, and to respect the license constraints (e.g., 'commercial_use: false') programmatically before ingestion or modification."
-                                roles={["Rights Verifier", "Royalty Disburser", "Dispute Oracle"]}
-                                contracts={[
-                                    { name: "IPCollection", address: process.env.NEXT_PUBLIC_COLLECTION_CONTRACT_ADDRESS || "0x...", network: "Starknet Mainnet" }
-                                ]}
-                                codeSnippet={{
-                                    language: "json",
-                                    code: `{\n  "verification_status": "verified",\n  "proof_type": "starknet_tx_hash",\n  "timestamp": "1738072800",\n  "license_check": "passed"\n}`,
-                                    description: "Agent Verification Output"
-                                }}
-                            />
 
                             <DocsNavigation />
 

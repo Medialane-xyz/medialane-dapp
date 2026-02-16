@@ -100,7 +100,7 @@ export function WalletConnect() {
             </div>
             <div className="alert alert-warning">
               <Badge variant="secondary" className="text-sm">
-                Live on Starknet Mainnet for testing.
+                @ Starknet {process.env.NEXT_PUBLIC_STARKNET_NETWORK}
               </Badge>
             </div>
           </div>

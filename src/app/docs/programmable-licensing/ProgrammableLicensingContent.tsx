@@ -5,7 +5,6 @@ import { ChevronRight, FileText, Scale, Network, ShoppingBag, Globe, Repeat, Dat
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { DocsNavigation } from "@/components/docs/docs-navigation"
-import { AiAgentOverview } from "@/components/docs/ai-agent-overview"
 
 const tableOfContents = [
     { id: "intro", title: "Introduction", icon: FileText },
@@ -367,19 +366,6 @@ export default function ProgrammableLicensingContent() {
                             </section>
 
 
-                            <AiAgentOverview
-                                title="Agent-Readable Metadata"
-                                summary="Mediolano's programmable licensing is designed for AI agents. By standardizing license terms in JSON metadata (e.g., 'commercial_use': true, 'modification_allowed': false) and ensuring on-chain verifiability, autonomous agents can query, negotiate, and utilize IP rights without human intervention."
-                                roles={["IP Licensor", "License Verifier", "Marketplace Agent"]}
-                                contracts={[
-                                    { name: "IPCollection", address: process.env.NEXT_PUBLIC_COLLECTION_CONTRACT_ADDRESS || "0x...", network: "Starknet Mainnet" }
-                                ]}
-                                codeSnippet={{
-                                    language: "json",
-                                    code: `{\n  "name": "Asset Name",\n  "description": "...",\n  "attributes": [\n    { "trait_type": "License", "value": "CC-BY-SA-4.0" },\n    { "trait_type": "Commercial Use", "value": "Allowed" },\n    { "trait_type": "Royalty", "value": "5%" }\n  ]\n}`,
-                                    description: "Example Metadata Structure"
-                                }}
-                            />
 
                             <DocsNavigation />
 

@@ -40,7 +40,7 @@ import { useProvider } from "@starknet-react/core";
 import { num, hash } from "starknet";
 import { useMarketplace } from "@/hooks/use-marketplace";
 import { ItemType, OrderType } from "@/types/marketplace";
-import { AVNU_PAYMASTER_CONFIG } from "@/lib/constants";
+import { SUPPORTED_TOKENS } from "@/lib/constants";
 
 export default function CreateAssetPage() {
   const { toast } = useToast();
@@ -66,7 +66,7 @@ export default function CreateAssetPage() {
   const { formState, updateFormField, handleFileChange, handleFeaturedImageChange, canSubmit } =
     useAssetForm();
   const { createListing } = useMarketplace();
-  const usdcToken = AVNU_PAYMASTER_CONFIG.SUPPORTED_GAS_TOKENS.find(t => t.symbol === "USDC");
+  const usdcToken = SUPPORTED_TOKENS.find(t => t.symbol === "USDC");
   const {
     collections,
     loading: collection_loading,

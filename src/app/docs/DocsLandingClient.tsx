@@ -26,7 +26,6 @@ import {
     ShieldCheck
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { AiAgentOverview } from "@/components/docs/ai-agent-overview"
 
 const container = {
     hidden: { opacity: 0 },
@@ -377,19 +376,7 @@ export default function DocsLandingClient() {
 
 
 
-                <AiAgentOverview
-                    title="Mediolano Protocol System Context"
-                    summary="Mediolano is a permissionless, Starknet-based protocol for programmable intellectual property. It serves as the foundation for Programmable IP on the Integrity Web, enabling on-chain IP registration, flexible licensing modules, and immutable provenance tracking. Designed for autonomy, it allows AI agents to register self-generated content and manage IP rights programmatically."
-                    roles={["Medialane", "IP Consumer", "Module Developer", "DAO Governance"]}
-                    contracts={[
-                        { name: "IPCollection Core", address: process.env.NEXT_PUBLIC_COLLECTION_CONTRACT_ADDRESS || "0x...", network: "Starknet Mainnet" }
-                    ]}
-                    codeSnippet={{
-                        language: "bash",
-                        code: "npx create-mediolano-app@latest",
-                        description: "Scaffold a new IP Application"
-                    }}
-                />
+
             </div>
         </div>
     )

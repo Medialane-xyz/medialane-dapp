@@ -5,7 +5,6 @@ import { ChevronRight, Terminal, Braces, GitMerge, FileJson, ArrowUp, Code2, Cop
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { DocsNavigation } from "@/components/docs/docs-navigation"
-import { AiAgentOverview } from "@/components/docs/ai-agent-overview"
 
 const tableOfContents = [
     { id: "open-source", title: "Open Source Repository", icon: Terminal },
@@ -316,27 +315,6 @@ export default function DevelopersContent() {
                             </section>
 
 
-                            <AiAgentOverview
-                                title="Developer API & SDK Integration"
-                                summary="Interact with the Mediolano Protocol via our REST API or TypeScript SDK. The API follows OpenAPI 3.0 standards and provides indexed access to on-chain Asset, Collection, and Transfer data. Designed for programmatic access, allowing agents to query asset provenance and market stats efficiently."
-                                roles={["Integrator", "Data Analyst", "Bot Developer"]}
-                                schema={{
-                                    Asset: {
-                                        type: "object",
-                                        properties: {
-                                            contract_address: { type: "string" },
-                                            token_id: { type: "string" },
-                                            owner: { type: "string" },
-                                            metadata_uri: { type: "string" }
-                                        }
-                                    }
-                                }}
-                                codeSnippet={{
-                                    language: "typescript",
-                                    code: "import { MediolanoSDK } from '@mediolano/sdk';\n\nconst sdk = new MediolanoSDK();\nconst asset = await sdk.getAsset(contractAddress, tokenId);",
-                                    description: "Fetch Asset Data (SDK)"
-                                }}
-                            />
 
                             <DocsNavigation />
 

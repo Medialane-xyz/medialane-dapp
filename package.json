@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@avnu/gasless-sdk": "^0.1.8",
     "@clerk/nextjs": "^6.0.2",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.12",
@@ -57,7 +56,6 @@
     "fast-safe-stringify": "^2.1.1",
     "fetch-blob": "^4.0.0",
     "framer-motion": "^12.4.1",
-    "get-starknet": "^3.3.3",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.456.0",
     "motion": "^11.18.2",
@@ -76,7 +74,7 @@
     "recharts": "^2.15.4",
     "safe-stable-stringify": "^2.5.0",
     "sonner": "^1.7.4",
-    "starknet": "^8.5.2",
+    "starknet": "^8.9.2",
     "starknetkit": "^3.4.3",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",

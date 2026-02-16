@@ -1,113 +1,111 @@
-import { constants, type TypedData, hash, CallData, shortString } from "starknet";
-import { ItemType, OrderType } from "@/types/marketplace";
+import { constants, type TypedData, cairo } from "starknet";
 
-// --- Types needed for Hashing ---
+// --- SNIP-12 Types (must match on-chain Cairo structs) ---
+// On-chain contract has simplified types: all felt252, no u256, no enums
+// offer/consideration are SINGLE items, not arrays
 
-// Must match the Cairo struct names for SNIP-12
 const TYPES = {
-    StarkNetDomain: [
+    StarknetDomain: [
         { name: "name", type: "shortstring" },
         { name: "version", type: "shortstring" },
-        { name: "chainId", type: "shortstring" },
+        { name: "chainId", type: "felt" },
         { name: "revision", type: "shortstring" },
     ],
     OfferItem: [
-        { name: "item_type", type: "u128" }, // Enum as u128
-        { name: "token", type: "ContractAddress" },
-        { name: "identifier_or_criteria", type: "u256" },
-        { name: "start_amount", type: "u256" },
-        { name: "end_amount", type: "u256" },
+        { name: "item_type", type: "felt" },
+        { name: "token", type: "felt" },
+        { name: "identifier_or_criteria", type: "felt" },
+        { name: "start_amount", type: "felt" },
+        { name: "end_amount", type: "felt" },
     ],
     ConsiderationItem: [
-        { name: "item_type", type: "u128" },
-        { name: "token", type: "ContractAddress" },
-        { name: "identifier_or_criteria", type: "u256" },
-        { name: "start_amount", type: "u256" },
-        { name: "end_amount", type: "u256" },
-        { name: "recipient", type: "ContractAddress" },
+        { name: "item_type", type: "felt" },
+        { name: "token", type: "felt" },
+        { name: "identifier_or_criteria", type: "felt" },
+        { name: "start_amount", type: "felt" },
+        { name: "end_amount", type: "felt" },
+        { name: "recipient", type: "felt" },
     ],
     OrderParameters: [
-        { name: "offerer", type: "ContractAddress" },
-        { name: "zone", type: "ContractAddress" },
-        { name: "offer", type: "OfferItem*" }, // Array
-        { name: "consideration", type: "ConsiderationItem*" }, // Array
-        { name: "order_type", type: "u128" },
-        { name: "start_time", type: "u64" },
-        { name: "end_time", type: "u64" },
-        { name: "zone_hash", type: "felt" },
+        { name: "offerer", type: "felt" },
+        { name: "offer", type: "OfferItem" },          // Single struct, NOT array
+        { name: "consideration", type: "ConsiderationItem" }, // Single struct, NOT array
+        { name: "start_time", type: "felt" },
+        { name: "end_time", type: "felt" },
         { name: "salt", type: "felt" },
-        { name: "conduit_key", type: "felt" },
-        { name: "total_original_consideration_items", type: "u32" },
-        { name: "nonce", type: "felt" }, // Should match valid order params if included in hash
+        { name: "nonce", type: "felt" },
     ],
-    // The top-level struct we sign is NOT Order (which includes signature), but the parameters + offerer
-    // Wait, looking at Cairo: 
-    // order_hash = order_parameters.get_message_hash(offerer);
-    // Implementation likely: hash(OrderParameters)
-    // Let's check `get_message_hash` implementation in Cairo... 
-    // It usually takes the data struct.
-
-    // Actually, for SNIP-12, we define the Type we are signing.
-    // The contract says: `get_message_hash` on `OrderParameters`.
-    // So we sign `OrderParameters`.
 };
 
 // Domain constants
 const DOMAIN = {
     name: "Medialane",
     version: "1",
-    chainId: constants.StarknetChainId.SN_SEPOLIA, // Matches deployment on Sepolia testnet
+    chainId: constants.StarknetChainId.SN_SEPOLIA,
     revision: "1",
 };
+
+// Helper to ensure values are 0x-prefixed hex strings
+function toHex(value: any): string {
+    if (!value && value !== 0) return "0x0";
+    if (typeof value === "string") {
+        return value.startsWith("0x") ? value : "0x" + BigInt(value).toString(16);
+    }
+    if (typeof value === "number" || typeof value === "bigint") {
+        return "0x" + BigInt(value).toString(16);
+    }
+    return "0x0";
+}
 
 export const getOrderTypedData = (chainId: string): TypedData => ({
     types: TYPES,
     primaryType: "OrderParameters",
     domain: {
         ...DOMAIN,
-        chainId: chainId,
+        chainId: toHex(chainId),
     },
-    message: {}, // Will be populated
+    message: {},
 });
 
-// Helper to format item type enum
-export function toCairoEnum(value: number): any {
-    // In Cairo, enums are often represented by index or custom serialization
-    // But SNIP-12 hashes struct members.
-    // If ItemType is enum: Native, ERC20...
-    // In hashing, it might be the index.
-    return value;
-}
-
-// Function to prepare order parameters for signing
+// Prepare order parameters for SNIP-12 signing
 export function prepareOrderForSigning(
     order: any,
     chainId: string
 ): TypedData {
     const typedData = getOrderTypedData(chainId);
+
     typedData.message = {
         offerer: order.offerer,
-        zone: order.zone,
-        offer: order.offer,
-        consideration: order.consideration,
-        order_type: order.orderType,
-        start_time: order.startTime,
-        end_time: order.endTime,
-        zone_hash: order.zoneHash,
-        salt: order.salt,
-        conduit_key: order.conduitKey,
-        total_original_consideration_items: order.totalOriginalConsiderationItems,
-        nonce: order.nonce,
+        offer: {
+            item_type: toHex(order.offer.item_type),
+            token: order.offer.token,
+            identifier_or_criteria: toHex(order.offer.identifier_or_criteria),
+            start_amount: toHex(order.offer.start_amount),
+            end_amount: toHex(order.offer.end_amount),
+        },
+        consideration: {
+            item_type: toHex(order.consideration.item_type),
+            token: order.consideration.token,
+            identifier_or_criteria: toHex(order.consideration.identifier_or_criteria),
+            start_amount: toHex(order.consideration.start_amount),
+            end_amount: toHex(order.consideration.end_amount),
+            recipient: order.consideration.recipient,
+        },
+        start_time: toHex(order.start_time),
+        end_time: toHex(order.end_time),
+        salt: toHex(order.salt),
+        nonce: toHex(order.nonce),
     };
+
     return typedData;
 }
 
-// Structs for Fulfillment and Cancelation
+// Fulfillment signing types
 const FULFILLMENT_TYPES = {
     ...TYPES,
-    Fulfillment: [
-        { name: "fulfiller", type: "ContractAddress" },
+    OrderFulfillment: [
         { name: "order_hash", type: "felt" },
+        { name: "fulfiller", type: "felt" },
         { name: "nonce", type: "felt" },
     ]
 };
@@ -118,17 +116,22 @@ export function prepareFulfillmentForSigning(
 ): TypedData {
     return {
         types: FULFILLMENT_TYPES,
-        primaryType: "Fulfillment",
-        domain: { ...DOMAIN, chainId },
-        message: fulfillment
+        primaryType: "OrderFulfillment",
+        domain: { ...DOMAIN, chainId: toHex(chainId) },
+        message: {
+            order_hash: toHex(fulfillment.order_hash),
+            fulfiller: fulfillment.fulfiller,
+            nonce: toHex(fulfillment.nonce),
+        }
     };
 }
 
+// Cancellation signing types
 const CANCELATION_TYPES = {
     ...TYPES,
-    Cancelation: [
-        { name: "offerer", type: "ContractAddress" },
+    OrderCancellation: [
         { name: "order_hash", type: "felt" },
+        { name: "offerer", type: "felt" },
         { name: "nonce", type: "felt" },
     ]
 };
@@ -139,8 +142,12 @@ export function prepareCancelationForSigning(
 ): TypedData {
     return {
         types: CANCELATION_TYPES,
-        primaryType: "Cancelation",
-        domain: { ...DOMAIN, chainId },
-        message: cancelation
+        primaryType: "OrderCancellation",
+        domain: { ...DOMAIN, chainId: toHex(chainId) },
+        message: {
+            order_hash: toHex(cancelation.order_hash),
+            offerer: cancelation.offerer,
+            nonce: toHex(cancelation.nonce),
+        }
     };
 }

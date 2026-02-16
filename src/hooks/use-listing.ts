@@ -6,7 +6,7 @@ import { Abi } from "starknet";
 import { IPMarketplaceABI } from "@/abis/ip_market";
 import { Listing } from "@/types/marketplace";
 import { useMarketplaceListings, findListingForToken } from "@/hooks/use-marketplace-events";
-import { AVNU_PAYMASTER_CONFIG } from "@/lib/constants";
+import { SUPPORTED_TOKENS } from "@/lib/constants";
 
 // Helper to format wei to human-readable price
 const formatPrice = (amount: string, decimals: number = 18) => {
@@ -21,7 +21,7 @@ const formatPrice = (amount: string, decimals: number = 18) => {
 // Find currency symbol from address
 const getCurrencySymbol = (tokenAddress: string): { symbol: string; decimals: number } => {
     const normalized = tokenAddress.toLowerCase();
-    for (const token of AVNU_PAYMASTER_CONFIG.SUPPORTED_GAS_TOKENS) {
+    for (const token of SUPPORTED_TOKENS) {
         if (token.address.toLowerCase() === normalized) {
             return { symbol: token.symbol, decimals: token.decimals };
         }
