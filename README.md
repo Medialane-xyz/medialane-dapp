@@ -1,3 +1,5 @@
+<img width="1280" height="640" alt="image" src="https://github.com/user-attachments/assets/70244d60-da87-47e2-9e10-5d04acf7ec16" />
+
 # Medialane: Creators Capital Markets on the Integrity Web
 
 Medialane is the monetization hub financial infrastructure for the Creators Capital Markets, with Creators Launchpad and IP Marketplace engineered for the integrity web, to enable trustless, verifiable financial activity. Our vision is to ensure that creators, businesses, and AI can fully own, trade, and generate capital from intellectual property with sovereignty, control, and transparency.
@@ -11,6 +13,14 @@ We provide the definitive operating environment for creative capital, eliminatin
 Medialane is sustained by a clear fee model: a 2% service fee is applied to Creator Launchpad revenue products, and a 1% total fee is collected on all NFT Marketplace trading, auctions, remix, and licensing services. Medialane is designed to serve the future of creators' capital markets, businesses, and AI agents—without compromise.
 
 Medialane Dapp (Starknet Mainnet): https://medialane.xyz/
+
+Roadmap:
+ Medialane Protocol @ Starknet Sepolia 25.11
+ Medialane Dapp @ Starknet Sepolia 25.11
+ Medialane Onboarding @ Starknet Mainnet 26.01
+ Medialane Protocol @ Starknet Mainnet 26.02
+ Medialane Creator Launchpad @ Starknet Mainnet 26.03
+ Medialane Marketplace @ Starknet Mainnet 26.03
 
 ## Medialane Dapp
 
