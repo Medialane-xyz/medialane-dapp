@@ -58,7 +58,7 @@ const EXPIRATION_OPTIONS = [
 ]
 
 import { useMarketplace } from "@/hooks/use-marketplace"
-import { ItemType, OrderType } from "@/types/marketplace"
+import { ItemType } from "@/types/marketplace"
 import { useAccount } from "@starknet-react/core"
 import { SUPPORTED_TOKENS, EXPLORER_URL } from "@/lib/constants"
 
@@ -74,7 +74,7 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
     const [expiration, setExpiration] = useState("7d")
 
     // Derived state
-    const stage = txHash ? "success" : isProcessing ? "processing" : error ? "error" : "form"
+    const stage = txHash ? "success" : isProcessing ? "processing" : "form"
 
     const handleSubmitOffer = async () => {
         if (!offerAmount || parseFloat(offerAmount) <= 0) return
@@ -89,7 +89,6 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
             "30d": 2592000
         }[expiration] || 604800
 
-        const startTime = now
         const endTime = now + durationSeconds
         const salt = Math.floor(Math.random() * 1000000).toString()
 
@@ -97,34 +96,32 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
         const currencyConfig = SUPPORTED_TOKENS.find(t => t.symbol === currencySymbol)
         const currencyAddress = currencyConfig?.address || SUPPORTED_TOKENS[0].address
 
-        const decimals = currencyConfig?.decimals || 18
+        const decimals = currencyConfig?.decimals || 6
         const priceWei = BigInt(Math.floor(parseFloat(offerAmount) * Math.pow(10, decimals))).toString()
 
+        // For an Offer:
+        // offer = Payment (ERC20)
+        // consideration = NFT (ERC721)
         const orderParameters = {
             offerer: address,
-            zone: "0x0",
-            offer: [{
+            offer: {
                 item_type: ItemType.ERC20,
                 token: currencyAddress,
                 identifier_or_criteria: "0",
                 start_amount: priceWei,
                 end_amount: priceWei
-            }],
-            consideration: [{
+            },
+            consideration: {
                 item_type: ItemType.ERC721,
                 token: asset.nftAddress,
                 identifier_or_criteria: asset.tokenId,
                 start_amount: "1",
                 end_amount: "1",
                 recipient: address
-            }],
-            order_type: OrderType.FULL_OPEN,
-            start_time: startTime,
-            end_time: endTime,
-            zone_hash: "0",
+            },
+            start_time: "0",
+            end_time: endTime.toString(),
             salt: salt,
-            conduit_key: "0",
-            total_original_consideration_items: 1,
             nonce: "0"
         }
 
@@ -137,7 +134,7 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
         setExpiration("7d")
     }
 
-    const floorPrice = asset.floorPrice || "0.45"
+    const floorPrice = asset.floorPrice
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => {
@@ -147,174 +144,200 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
             }
         }}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-            <DialogContent className="sm:max-w-[440px]">
-                <DialogHeader>
-                    <DialogTitle>Make an Offer</DialogTitle>
-                    <DialogDescription>
-                        Place a bid for this asset.
-                    </DialogDescription>
-                </DialogHeader>
+            <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden bg-card border-none shadow-2xl">
+                <div className="p-6 space-y-6">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold tracking-tight">Make an Offer</DialogTitle>
+                        <DialogDescription className="text-muted-foreground/80">
+                            Create a binding offer for this digital asset.
+                        </DialogDescription>
+                    </DialogHeader>
 
-                {stage === "success" ? (
-                    <div className="py-6 flex flex-col items-center text-center space-y-4">
-                        <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center">
-                            <CheckCircle2 className="h-10 w-10 text-primary" />
-                        </div>
-                        <div className="space-y-1">
-                            <h2 className="text-xl font-bold">Offer Submitted!</h2>
-                            <p className="text-sm text-muted-foreground text-center">
-                                Your offer of <span className="font-semibold text-foreground">{offerAmount} {asset.currency}</span> is now live.
-                            </p>
-                        </div>
-
-                        <div className="w-full bg-muted/50 rounded-lg p-4 border space-y-2 text-sm">
-                            <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Expires In</span>
-                                <span className="font-medium">{EXPIRATION_OPTIONS.find(o => o.value === expiration)?.label}</span>
+                    {stage === "success" ? (
+                        <div className="py-2 flex flex-col items-center text-center space-y-6 animate-in fade-in zoom-in duration-300">
+                            <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center">
+                                <CheckCircle2 className="h-10 w-10 text-primary" />
                             </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">Transaction</span>
-                                <Link href={`${EXPLORER_URL}/tx/${txHash}`} target="_blank" className="flex items-center gap-1 text-primary hover:underline">
-                                    <span className="font-mono text-xs">{txHash ? `${txHash.slice(0, 8)}...` : ""}</span>
-                                    <ExternalLink className="w-3 h-3" />
-                                </Link>
+                            <div className="space-y-2">
+                                <h2 className="text-2xl font-bold tracking-tight text-foreground">Offer Live!</h2>
+                                <p className="text-sm text-muted-foreground max-w-[280px]">
+                                    Your offer of <span className="font-semibold text-foreground">{offerAmount} {asset.currency}</span> has been broadcast to the network.
+                                </p>
                             </div>
-                        </div>
 
-                        <div className="flex flex-col sm:flex-row gap-2 w-full pt-2">
-                            <Button variant="outline" onClick={() => setIsOpen(false)} className="flex-1">
-                                Close
-                            </Button>
-                            <Link href={`/portfolio/offers`} className="flex-1">
-                                <Button className="w-full">
-                                    View My Offers
+                            <div className="w-full bg-muted/30 rounded-xl p-4 border border-border/50 space-y-3 text-sm">
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="text-muted-foreground uppercase font-semibold">Expires In</span>
+                                    <span className="font-medium text-foreground">{EXPIRATION_OPTIONS.find(o => o.value === expiration)?.label}</span>
+                                </div>
+                                <Separator className="bg-border/30" />
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="text-muted-foreground uppercase font-semibold">Transaction</span>
+                                    <Link
+                                        href={`${EXPLORER_URL}/tx/${txHash}`}
+                                        target="_blank"
+                                        className="flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors"
+                                    >
+                                        <span className="font-mono">{txHash ? `${txHash.slice(0, 10)}...` : ""}</span>
+                                        <ExternalLink className="w-3.5 h-3.5" />
+                                    </Link>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col gap-2 w-full pt-2">
+                                <Button
+                                    className="w-full font-semibold"
+                                    asChild
+                                >
+                                    <Link href="/portfolio/assets">
+                                        View in Portfolio
+                                    </Link>
                                 </Button>
-                            </Link>
-                        </div>
-                    </div>
-                ) : stage === "processing" ? (
-                    <div className="py-12 flex flex-col items-center text-center space-y-4">
-                        <div className="relative">
-                            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                        </div>
-                        <div className="space-y-1">
-                            <h2 className="text-lg font-bold">Submitting Offer</h2>
-                            <p className="text-sm text-muted-foreground max-w-[280px]">
-                                Processing your offer on the blockchain. Your funds will be securely escrowed.
-                            </p>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="space-y-6 pt-2">
-                        <div className="flex items-start gap-4 p-4 rounded-lg bg-muted/50 border">
-                            <div className="h-16 w-16 rounded-md overflow-hidden border bg-background shrink-0">
-                                <img src={asset.image} alt={asset.name} className="h-full w-full object-cover" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-2 mb-1">
-                                    <Badge variant="outline" className="text-[10px] uppercase tracking-wider py-0 px-1.5 h-4">
-                                        Collection
-                                    </Badge>
-                                    <div className="text-right shrink-0">
-                                        <p className="text-[10px] text-muted-foreground uppercase font-bold">Floor</p>
-                                        <p className="text-xs font-bold">{floorPrice} {asset.currency}</p>
-                                    </div>
-                                </div>
-                                <h3 className="font-bold truncate">{asset.name}</h3>
-                                <p className="text-xs text-muted-foreground truncate">{asset.collectionName}</p>
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => setIsOpen(false)}
+                                    className="w-full text-muted-foreground"
+                                >
+                                    Dismiss
+                                </Button>
                             </div>
                         </div>
-
-                        <div className="space-y-4">
+                    ) : stage === "processing" ? (
+                        <div className="py-12 flex flex-col items-center text-center space-y-6 animate-in fade-in duration-300">
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
+                                <Loader2 className="h-12 w-12 animate-spin text-primary relative z-10" />
+                            </div>
                             <div className="space-y-2">
-                                <Label htmlFor="offer-amount">Your Offer Amount</Label>
-                                <div className="relative">
-                                    <Input
-                                        id="offer-amount"
-                                        type="number"
-                                        placeholder="0.00"
-                                        value={offerAmount}
-                                        onChange={(e) => setOfferAmount(e.target.value)}
-                                        className="h-12 pl-4 pr-16 text-lg font-semibold"
+                                <h2 className="text-xl font-bold tracking-tight">Processing Offer</h2>
+                                <p className="text-sm text-muted-foreground max-w-[260px] mx-auto">
+                                    Approving & registering your offer on-chain. Please confirm the transaction in your wallet.
+                                </p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/30 border border-border/50">
+                                <div className="h-14 w-14 rounded-lg overflow-hidden border border-border/50 bg-background shrink-0 shadow-sm">
+                                    <img
+                                        src={asset.image}
+                                        alt={asset.name}
+                                        className="h-full w-full object-cover"
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).src = "/placeholder.svg"
+                                        }}
                                     />
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                        <span className="text-sm font-bold text-muted-foreground">
-                                            {asset.currency}
-                                        </span>
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex items-center justify-between mb-0.5">
+                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">{asset.collectionName}</p>
+                                        {floorPrice && (
+                                            <p className="text-[10px] font-bold text-primary/80">FLOOR: {floorPrice} {asset.currency}</p>
+                                        )}
+                                    </div>
+                                    <h3 className="font-bold text-foreground truncate">{asset.name}</h3>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="space-y-2.5">
+                                    <Label htmlFor="offer-amount" className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80 flex justify-between">
+                                        Amount
+                                        {offerAmount && floorPrice && parseFloat(offerAmount) < parseFloat(floorPrice) && (
+                                            <span className="text-amber-500 font-bold lowercase flex items-center gap-1">
+                                                <Info className="h-3 w-3" />
+                                                below floor
+                                            </span>
+                                        )}
+                                    </Label>
+                                    <div className="relative group">
+                                        <Input
+                                            id="offer-amount"
+                                            type="number"
+                                            placeholder="0.00"
+                                            value={offerAmount}
+                                            onChange={(e) => setOfferAmount(e.target.value)}
+                                            className="h-14 pl-4 pr-16 text-xl font-bold bg-muted/20 border-border/50 focus:border-primary/50 transition-all rounded-xl"
+                                        />
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                            <span className="text-sm font-black text-muted-foreground/60 select-none">
+                                                {asset.currency}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                                {offerAmount && parseFloat(offerAmount) < parseFloat(floorPrice) && (
-                                    <p className="text-[11px] text-amber-600 font-medium flex items-center gap-1 px-1">
-                                        <Info className="h-3 w-3" />
-                                        Below floor price
-                                    </p>
-                                )}
-                            </div>
 
-                            <div className="space-y-2">
-                                <Label className="text-sm flex items-center gap-2">
-                                    <Clock className="w-3.5 h-3.5 text-muted-foreground" />
-                                    Offer Expiration
-                                </Label>
-                                <div className="grid grid-cols-5 gap-2">
-                                    {EXPIRATION_OPTIONS.map((option) => (
-                                        <Button
-                                            key={option.value}
-                                            variant={expiration === option.value ? "default" : "outline"}
-                                            size="sm"
-                                            onClick={() => setExpiration(option.value)}
-                                            className="h-9 text-xs px-1"
-                                        >
-                                            {option.label}
-                                        </Button>
-                                    ))}
+                                <div className="space-y-2.5">
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80 flex items-center gap-2">
+                                        <Clock className="w-3.5 h-3.5" />
+                                        Expiration
+                                    </Label>
+                                    <div className="grid grid-cols-5 gap-1.5">
+                                        {EXPIRATION_OPTIONS.map((option) => (
+                                            <Button
+                                                key={option.value}
+                                                variant={expiration === option.value ? "default" : "outline"}
+                                                size="sm"
+                                                onClick={() => setExpiration(option.value)}
+                                                className={cn(
+                                                    "h-9 text-[10px] font-bold uppercase tracking-tight rounded-lg transition-all",
+                                                    expiration === option.value ? "shadow-md bg-primary" : "bg-muted/30 border-border/50 hover:bg-muted/50"
+                                                )}
+                                            >
+                                                {option.label}
+                                            </Button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
+
+                            <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 flex gap-3 shadow-inner">
+                                <Shield className="w-4 h-4 text-primary shrink-0 mt-0.5 opacity-80" />
+                                <div className="space-y-1">
+                                    <p className="text-[11px] font-bold text-foreground/80">On-Chain Binding</p>
+                                    <p className="text-[10px] text-muted-foreground leading-relaxed">
+                                        Your offer remains valid until it expires or is cancelled. Only the amount specified will be transferable from your wallet.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {error && (
+                                <Alert className="bg-destructive/10 border-destructive/20 text-destructive animate-in shake-in-1 duration-300">
+                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertDescription className="text-xs font-medium ml-2">{error}</AlertDescription>
+                                </Alert>
+                            )}
+
+                            <div className="flex items-center gap-3 pt-2">
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => setIsOpen(false)}
+                                    disabled={isProcessing}
+                                    className="flex-1 font-semibold text-muted-foreground"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={handleSubmitOffer}
+                                    disabled={!offerAmount || isProcessing}
+                                    className="flex-[2] h-12 font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all active:scale-[0.98]"
+                                >
+                                    {isProcessing ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                            Confirming...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <HandCoins className="w-4 h-4 mr-2" />
+                                            Place Offer
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
                         </div>
-
-                        <div className="bg-primary/5 border border-primary/10 rounded-lg p-3 flex gap-3">
-                            <Shield className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                            <p className="text-[11px] text-muted-foreground leading-snug">
-                                Your offer will be securely locked in the smart contract. You can cancel it at any time.
-                            </p>
-                        </div>
-
-                        {stage === "error" && (
-                            <Alert variant="destructive">
-                                <AlertCircle className="h-4 w-4" />
-                                <AlertTitle>Error</AlertTitle>
-                                <AlertDescription className="text-xs">{error || "Offer failed. Please try again."}</AlertDescription>
-                            </Alert>
-                        )}
-
-                        <DialogFooter className="pt-2">
-                            <Button
-                                variant="ghost"
-                                onClick={() => setIsOpen(false)}
-                                disabled={isProcessing}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={handleSubmitOffer}
-                                disabled={!offerAmount || isProcessing}
-                                className="min-w-[140px]"
-                            >
-                                {isProcessing ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                        Processing...
-                                    </>
-                                ) : (
-                                    <>
-                                        <HandCoins className="w-4 h-4 mr-2" />
-                                        Submit Offer
-                                    </>
-                                )}
-                            </Button>
-                        </DialogFooter>
-                    </div>
-                )}
+                    )}
+                </div>
             </DialogContent>
         </Dialog>
     )

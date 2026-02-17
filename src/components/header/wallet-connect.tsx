@@ -64,9 +64,16 @@ export function WalletConnect() {
           <Button
             variant="ghost"
             size="icon"
-            className={`rounded-full h-9 w-9 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/5 transition-all ${isWrongNetwork ? "text-red-500 hover:text-red-600 hover:bg-red-500/10" : "text-muted-foreground hover:text-foreground"}`}
+            className={`relative rounded-full h-9 w-9 transition-all duration-300
+              ${isWrongNetwork
+                ? "bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/30"
+                : "bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/5 text-foreground shadow-[0_0_15px_rgba(16,185,129,0.05)] dark:shadow-[0_0_20px_rgba(16,185,129,0.1)]"}`}
           >
             <Wallet className="h-4 w-4" />
+            <span
+              className={`absolute top-2 right-2 h-2 w-2 rounded-full border border-background
+                ${isWrongNetwork ? "bg-red-500" : "bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"}`}
+            />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] backdrop-blur-2xl">

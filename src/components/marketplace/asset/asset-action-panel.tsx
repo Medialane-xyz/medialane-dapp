@@ -29,7 +29,7 @@ export function AssetActionPanel({
 }: AssetActionPanelProps) {
     const { toast } = useToast()
     const [copied, setCopied] = useState(false)
-    const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL || "https://sepolia.voyager.online";
+    const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL || "https://voyager.online";
 
     const handleShare = async () => {
         if (navigator.share) {

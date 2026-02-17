@@ -128,10 +128,10 @@ export function MarketplaceActions({
                                 asset={{
                                     id: assetId,
                                     name: assetName,
-                                    floorPrice: "25.00",
-                                    currency: "USDC",
-                                    image: "/placeholder.svg",
-                                    collectionName: "Collection",
+                                    floorPrice: listing?.start_amount,
+                                    currency: listing?.currency || "USDC",
+                                    image: `/api/assets/image?address=${nftAddress}&tokenId=${tokenId}`,
+                                    collectionName: "Digital Asset",
                                     nftAddress: nftAddress,
                                     tokenId: tokenId
                                 }}

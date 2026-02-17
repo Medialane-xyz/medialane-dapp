@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 
+import { WalletConnectCTA } from "@/components/portfolio/wallet-connect-cta";
+
 const PortfolioAssets = dynamic(() =>
     import("@/components/portfolio/portfolio-assets").then(mod => mod.PortfolioAssets), {
     loading: () => <AssetsSkeleton />
@@ -65,10 +67,13 @@ export default function AssetsClientPage() {
                     </div>
                 </div>
 
-                {/* Show message when no wallet is connected */}
+                {/* Show CTA when no wallet is connected */}
                 {!address && (
-                    <div className="text-center py-12">
-                        <p className="text-muted-foreground">Please connect your wallet to view your assets</p>
+                    <div className="max-w-4xl mx-auto">
+                        <WalletConnectCTA
+                            title="Connect wallet"
+                            description="Securely access and manage your onchain assets."
+                        />
                     </div>
                 )}
 

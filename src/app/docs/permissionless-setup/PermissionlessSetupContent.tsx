@@ -218,7 +218,7 @@ export default function PermissionlessSetupContent() {
                                             <div className="bg-card p-4 rounded-xl border border-border/50 text-sm">
                                                 <ul className="space-y-2 font-mono">
                                                     <li><span className="text-primary">NEXT_PUBLIC_STARKNET_NETWORK</span>: mainnet (or sepolia)</li>
-                                                    <li><span className="text-primary">NEXT_PUBLIC_EXPLORER_URL</span>: https://sepolia.voyager.online</li>
+                                                    <li><span className="text-primary">NEXT_PUBLIC_EXPLORER_URL</span>: https://voyager.online</li>
                                                     <li><span className="text-primary">NEXT_PUBLIC_RPC_URL</span>: Your RPC endpoint (optional)</li>
                                                 </ul>
                                             </div>

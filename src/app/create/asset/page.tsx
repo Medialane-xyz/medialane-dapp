@@ -39,7 +39,7 @@ import { normalizeStarknetAddress } from "@/lib/utils";
 import { useProvider } from "@starknet-react/core";
 import { num, hash } from "starknet";
 import { useMarketplace } from "@/hooks/use-marketplace";
-import { ItemType, OrderType } from "@/types/marketplace";
+import { ItemType } from "@/types/marketplace";
 import { SUPPORTED_TOKENS } from "@/lib/constants";
 
 export default function CreateAssetPage() {
@@ -248,32 +248,24 @@ export default function CreateAssetPage() {
           // Build Seaport-style OrderParameters
           const orderParams = {
             offerer: walletAddress,
-            offer: [
-              {
-                item_type: ItemType.ERC721,
-                token: nftAddress,
-                identifier_or_criteria: tokenId,
-                start_amount: "1",
-                end_amount: "1",
-              }
-            ],
-            consideration: [
-              {
-                item_type: ItemType.ERC20,
-                token: usdcAddress,
-                identifier_or_criteria: "0",
-                start_amount: priceInSmallestUnit,
-                end_amount: priceInSmallestUnit,
-                recipient: walletAddress,
-              }
-            ],
-            order_type: OrderType.FULL_OPEN,
-            start_time: now.toString(),
+            offer: {
+              item_type: ItemType.ERC721,
+              token: nftAddress,
+              identifier_or_criteria: tokenId,
+              start_amount: "1",
+              end_amount: "1",
+            },
+            consideration: {
+              item_type: ItemType.ERC20,
+              token: usdcAddress,
+              identifier_or_criteria: "0",
+              start_amount: priceInSmallestUnit,
+              end_amount: priceInSmallestUnit,
+              recipient: walletAddress,
+            },
+            start_time: "0",
             end_time: (now + duration).toString(),
-            zone: "0x0",
-            zone_hash: "0x0",
             salt: `0x${Math.floor(Math.random() * 0xFFFFFFFF).toString(16)}`,
-            conduit_key: "0x0",
             nonce: "0",
           };
 

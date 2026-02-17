@@ -69,7 +69,7 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
         if (!price || parseFloat(price) <= 0 || !address) return null;
 
         const now = Math.floor(Date.now() / 1000)
-        const startTime = now - 60
+        const startTime = 0
         const endTime = now + duration.seconds
         const salt = Math.floor(Math.random() * 1000000).toString()
 
@@ -97,7 +97,7 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                 end_amount: priceWei,
                 recipient: address
             },
-            start_time: startTime,
+            start_time: 0,
             end_time: endTime,
             salt: salt,
             nonce: "0"
@@ -115,6 +115,7 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
         if (!isOpen) {
+            // Delay reset to avoid UI flicker during close animation
             setTimeout(() => {
                 resetState()
                 setPrice("")
@@ -125,59 +126,69 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-            <DialogContent className="sm:max-w-[440px]">
-                <DialogHeader>
-                    <DialogTitle>List Asset for Sale</DialogTitle>
+            <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden border-none bg-background shadow-2xl">
+                <DialogHeader className="p-6 pb-2">
+                    <DialogTitle className="text-xl font-bold tracking-tight">List for Sale</DialogTitle>
                 </DialogHeader>
 
                 {stage === "success" ? (
-                    <div className="py-6 flex flex-col items-center text-center space-y-4">
-                        <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center">
-                            <CheckCircle2 className="h-10 w-10 text-primary" />
+                    <div className="p-8 flex flex-col items-center text-center space-y-6">
+                        <div className="h-20 w-20 bg-emerald-500/10 rounded-full flex items-center justify-center">
+                            <CheckCircle2 className="h-10 w-10 text-emerald-500" />
                         </div>
-                        <div className="space-y-1">
-                            <h2 className="text-xl font-bold">Listing Created!</h2>
-                            <p className="text-sm text-muted-foreground">
-                                Your asset is now listed for <span className="font-medium text-foreground">{price} {currency}</span>
+                        <div className="space-y-2">
+                            <h2 className="text-2xl font-bold tracking-tight">Listing Live!</h2>
+                            <p className="text-muted-foreground">
+                                Your asset is now available for <span className="font-semibold text-foreground">{price} {currency}</span> on the marketplace.
                             </p>
                         </div>
-                        <Link href={`${EXPLORER_URL}/tx/${txHash}`} target="_blank" className="text-primary text-sm flex items-center gap-1 hover:underline">
-                            View Transaction <ExternalLink className="w-3 h-3" />
-                        </Link>
-                        <Button onClick={() => setOpen(false)} className="w-full mt-2">Close</Button>
+                        <div className="w-full space-y-3 pt-2">
+                            <Button asChild variant="outline" className="w-full">
+                                <Link href={`${EXPLORER_URL}/tx/${txHash}`} target="_blank" className="flex items-center justify-center gap-2">
+                                    View Transaction <ExternalLink className="w-4 h-4" />
+                                </Link>
+                            </Button>
+                            <Button onClick={() => setOpen(false)} className="w-full h-11">Done</Button>
+                        </div>
                     </div>
                 ) : (
-                    <div className="space-y-6 pt-2">
-                        <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 border">
-                            <div className="h-16 w-16 rounded-md overflow-hidden border bg-background">
+                    <div className="p-6 space-y-6">
+                        {/* Compact Asset Preview */}
+                        <div className="flex items-center gap-4 p-3 rounded-xl bg-muted/30 border border-border/50">
+                            <div className="h-14 w-14 rounded-lg overflow-hidden border bg-background shrink-0 shadow-sm">
                                 <img src={asset.image} alt={asset.name} className="h-full w-full object-cover" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h3 className="font-semibold truncate">{asset.name}</h3>
-                                <p className="text-xs text-muted-foreground">Medialane Marketplace</p>
+                                <h3 className="font-bold text-sm truncate">{asset.name}</h3>
+                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Asset Listing</p>
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="listing-price">Listing Price</Label>
-                                <div className="flex gap-2">
+                        <div className="space-y-5">
+                            <div className="space-y-2.5">
+                                <Label htmlFor="listing-price" className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                                    Set Price
+                                </Label>
+                                <div className="relative group">
                                     <Input
                                         id="listing-price"
                                         type="number"
                                         placeholder="0.00"
                                         value={price}
                                         onChange={(e) => setPrice(e.target.value)}
-                                        className="flex-1"
+                                        className="h-12 pl-4 pr-16 bg-muted/20 border-border focus:ring-1 focus:ring-primary/20 text-lg font-medium"
+                                        disabled={isProcessing}
                                     />
-                                    <div className="w-24 shrink-0 px-3 bg-muted border rounded-md flex items-center justify-center text-sm font-medium">
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-background border rounded-md text-xs font-bold shadow-sm">
                                         {currency}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label>Duration</Label>
+                            <div className="space-y-2.5">
+                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                                    Listing Duration
+                                </Label>
                                 <div className="grid grid-cols-4 gap-2">
                                     {DURATION_OPTIONS.map(opt => (
                                         <Button
@@ -185,7 +196,11 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                                             variant={duration.value === opt.value ? "default" : "outline"}
                                             size="sm"
                                             onClick={() => setDuration(opt)}
-                                            className="h-9 text-xs"
+                                            className={cn(
+                                                "h-10 text-xs font-medium transition-all",
+                                                duration.value === opt.value ? "shadow-md scale-[1.02]" : "hover:bg-muted/50"
+                                            )}
+                                            disabled={isProcessing}
                                         >
                                             {opt.label}
                                         </Button>
@@ -195,26 +210,22 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                         </div>
 
                         {stage === "error" && (
-                            <Alert variant="destructive">
+                            <Alert variant="destructive" className="bg-destructive/5 border-destructive/20 py-3">
                                 <AlertCircle className="h-4 w-4" />
-                                <AlertTitle>Error</AlertTitle>
-                                <AlertDescription className="text-xs">{error || "Listing failed. Please try again."}</AlertDescription>
+                                <AlertDescription className="text-xs font-medium pl-2">{error || "Listing failed. Please try again."}</AlertDescription>
                             </Alert>
                         )}
 
-                        <DialogFooter className="pt-2">
-                            <Button variant="ghost" onClick={() => setOpen(false)} disabled={isProcessing}>
-                                Cancel
-                            </Button>
+                        <div className="pt-2 flex flex-col gap-3">
                             <Button
                                 onClick={handleCreateListing}
                                 disabled={isProcessing || !price}
-                                className="min-w-[120px]"
+                                className="w-full h-12 text-sm font-bold tracking-wide shadow-lg shadow-primary/10 transition-all hover:scale-[1.01]"
                             >
                                 {isProcessing ? (
                                     <>
                                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                        Processing...
+                                        Confirming Order...
                                     </>
                                 ) : (
                                     <>
@@ -223,12 +234,20 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                                     </>
                                 )}
                             </Button>
-                        </DialogFooter>
 
-                        <DebugSignature orderParams={debugParams} />
+                            <p className="text-[10px] text-center text-muted-foreground px-4 leading-relaxed">
+                                Listing is free. You will be prompted to sign a message and approve the asset for sale in one atomic transaction.
+                            </p>
+                        </div>
+
+                        {/* Debug Toggle (optional, keeping it for now but making it more subtle) */}
+                        <div className="opacity-0 hover:opacity-100 transition-opacity">
+                            <DebugSignature orderParams={debugParams} />
+                        </div>
                     </div>
                 )}
             </DialogContent>
         </Dialog>
     )
 }
+

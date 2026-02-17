@@ -104,10 +104,13 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="flex md:hidden h-9 w-9 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 backdrop-blur-sm transition-all text-foreground"
+            className="flex md:hidden h-9 w-16 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 backdrop-blur-sm transition-all text-foreground"
             onClick={() => document.dispatchEvent(new CustomEvent("openCommandMenu"))}
           >
             <Command className="h-4 w-4" />
+            <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 px-1.5 font-mono text-[10px] font-medium opacity-100">
+              <span className="text-xs">K</span>
+            </kbd>
           </Button>
 
         </div>

@@ -337,7 +337,7 @@ export function AssetProvenance({ asset, events, showActions = true, compact = f
                             size="icon"
                             className="h-7 w-7 text-muted-foreground hover:text-foreground"
                           >
-                            <a href={`${process.env.NEXT_PUBLIC_EXPLORER_URL || "https://sepolia.voyager.online"}/tx/${event.transactionHash}`} target="_blank" rel="noreferrer">
+                            <a href={`${process.env.NEXT_PUBLIC_EXPLORER_URL || "https://voyager.online"}/tx/${event.transactionHash}`} target="_blank" rel="noreferrer">
                               <ExternalLink className="h-3.5 w-3.5" />
                             </a>
 
@@ -410,7 +410,7 @@ export function AssetProvenance({ asset, events, showActions = true, compact = f
           <div className="space-y-6">
 
             <Button variant="outline" className="w-full h-14 rounded-2xl" asChild>
-              <Link href={`${process.env.NEXT_PUBLIC_EXPLORER_URL || "https://sepolia.voyager.online"}/nft/${asset.contract}`} target="_blank" rel="noreferrer">
+              <Link href={`${process.env.NEXT_PUBLIC_EXPLORER_URL || "https://voyager.online"}/nft/${asset.contract}`} target="_blank" rel="noreferrer">
                 <ExternalLink className="h-4 w-4 mr-3" />
                 View asset on External Explorer
               </Link>

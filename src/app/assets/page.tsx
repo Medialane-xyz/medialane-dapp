@@ -52,7 +52,7 @@ export default function AssetsPage() {
     }, [assets, searchQuery])
 
     return (
-        <div className="min-h-screen py-10">
+        <div className="min-h-screen py-12">
             <main className="container mx-auto px-4 py-8">
 
                 <div className="relative mb-12">

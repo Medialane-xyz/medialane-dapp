@@ -7,11 +7,12 @@ import type { IPType } from "./types";
 export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_COLLECTION_CONTRACT_ADDRESS as `0x${string}`;
 export const COLLECTION_CONTRACT_ADDRESS = CONTRACT_ADDRESS;
 export const MEDIALANE_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_MEDIALANE_CONTRACT_ADDRESS as `0x${string}`;
+export const MARKETPLACE_ADDRESS = "0x059deafbbafbf7051c315cf75a94b03c5547892bc0c6dfa36d7ac7290d4cc33a" as `0x${string}`;
 
 export const IPFS_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || "https://gateway.pinata.cloud";
-export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL || "https://sepolia.voyager.online";
+export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL || "https://voyager.online";
 
-const ENV_START_BLOCK = process.env.NEXT_PUBLIC_START_BLOCK ? parseInt(process.env.NEXT_PUBLIC_START_BLOCK) : null;
+const ENV_START_BLOCK = process.env.NEXT_PUBLIC_COLLECTIONS_CONTRACT_START_BLOCK ? parseInt(process.env.NEXT_PUBLIC_COLLECTIONS_CONTRACT_START_BLOCK) : null;
 export const START_BLOCK = ENV_START_BLOCK || (process.env.NEXT_PUBLIC_STARKNET_NETWORK === "mainnet" ? 6204232 : 1861690);
 export const REGISTRY_START_BLOCK = ENV_START_BLOCK || (process.env.NEXT_PUBLIC_STARKNET_NETWORK === "mainnet" ? 4924753 : 1861690);
 
@@ -19,7 +20,7 @@ export const REGISTRY_START_BLOCK = ENV_START_BLOCK || (process.env.NEXT_PUBLIC_
 export const SUPPORTED_TOKENS = [
   {
     symbol: "USDC",
-    address: process.env.NEXT_PUBLIC_STARKNET_USDC || "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
+    address: process.env.NEXT_PUBLIC_STARKNET_USDC || "0x0512feAc6339Ff7889822cb5aA2a86C848e9D392bB0E3E237C008674feeD8343",
     decimals: 6,
   },
   {
