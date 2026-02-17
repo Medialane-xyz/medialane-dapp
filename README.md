@@ -1,5 +1,3 @@
-<img width="1280" height="640" alt="image" src="https://github.com/user-attachments/assets/70244d60-da87-47e2-9e10-5d04acf7ec16" />
-
 # Medialane: Creators Capital Markets on the Integrity Web
 
 Medialane is the monetization hub financial infrastructure for the Creators Capital Markets, with Creators Launchpad and IP Marketplace engineered for the integrity web, to enable trustless, verifiable financial activity. Our vision is to ensure that creators, businesses, and AI can fully own, trade, and generate capital from intellectual property with sovereignty, control, and transparency.
