@@ -30,7 +30,7 @@ import { ItemType } from "@/types/marketplace"
 import { useAccount } from "@starknet-react/core"
 import { SUPPORTED_TOKENS, EXPLORER_URL } from "@/lib/constants"
 import { constants } from "starknet"
-import { DebugSignature } from "@/components/debug/debug-signature"
+
 
 interface ListingDialogProps {
     trigger?: React.ReactNode
@@ -69,7 +69,7 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
         if (!price || parseFloat(price) <= 0 || !address) return null;
 
         const now = Math.floor(Date.now() / 1000)
-        const startTime = 0
+        const startTime = now + 300 // 5 minutes in future
         const endTime = now + duration.seconds
         const salt = Math.floor(Math.random() * 1000000).toString()
 
@@ -83,24 +83,23 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
         return {
             offerer: address,
             offer: {
-                item_type: ItemType.ERC721,
+                item_type: "ERC721",
                 token: asset.collectionAddress,
                 identifier_or_criteria: asset.tokenId,
                 start_amount: "1",
                 end_amount: "1"
             },
             consideration: {
-                item_type: ItemType.ERC20,
+                item_type: "ERC20",
                 token: currencyAddress,
                 identifier_or_criteria: "0",
                 start_amount: priceWei,
                 end_amount: priceWei,
                 recipient: address
             },
-            start_time: 0,
-            end_time: endTime,
+            start_time: startTime.toString(),
+            end_time: endTime.toString(),
             salt: salt,
-            nonce: "0"
         }
     }
 
@@ -241,9 +240,7 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                         </div>
 
                         {/* Debug Toggle (optional, keeping it for now but making it more subtle) */}
-                        <div className="opacity-0 hover:opacity-100 transition-opacity">
-                            <DebugSignature orderParams={debugParams} />
-                        </div>
+
                     </div>
                 )}
             </DialogContent>

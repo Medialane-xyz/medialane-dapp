@@ -81,6 +81,7 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
         if (!address) return
 
         const now = Math.floor(Date.now() / 1000)
+        const startTime = now + 300 // 5 minutes in future
         const durationSeconds = {
             "1d": 86400,
             "3d": 259200,
@@ -99,30 +100,26 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
         const decimals = currencyConfig?.decimals || 6
         const priceWei = BigInt(Math.floor(parseFloat(offerAmount) * Math.pow(10, decimals))).toString()
 
-        // For an Offer:
-        // offer = Payment (ERC20)
-        // consideration = NFT (ERC721)
         const orderParameters = {
             offerer: address,
             offer: {
-                item_type: ItemType.ERC20,
+                item_type: "ERC20",
                 token: currencyAddress,
                 identifier_or_criteria: "0",
                 start_amount: priceWei,
                 end_amount: priceWei
             },
             consideration: {
-                item_type: ItemType.ERC721,
+                item_type: "ERC721",
                 token: asset.nftAddress,
                 identifier_or_criteria: asset.tokenId,
                 start_amount: "1",
                 end_amount: "1",
                 recipient: address
             },
-            start_time: "0",
+            start_time: startTime.toString(),
             end_time: endTime.toString(),
             salt: salt,
-            nonce: "0"
         }
 
         await createListing(orderParameters)

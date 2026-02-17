@@ -1,14 +1,15 @@
 "use client"
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { RpcProvider, hash, num } from "starknet";
+import { RpcProvider, hash, num, Contract } from "starknet";
 import { MEDIALANE_CONTRACT_ADDRESS, START_BLOCK } from "@/lib/constants";
 import { normalizeStarknetAddress } from "@/lib/utils";
+import { IPMarketplaceABI } from "@/abis/ip_market";
 
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL;
 
 // Compute selectors for marketplace events
-const ORDER_REGISTERED_SELECTOR = hash.getSelectorFromName("OrderRegistered");
+const ORDER_CREATED_SELECTOR = hash.getSelectorFromName("OrderCreated");
 const ORDER_FULFILLED_SELECTOR = hash.getSelectorFromName("OrderFulfilled");
 const ORDER_CANCELLED_SELECTOR = hash.getSelectorFromName("OrderCancelled");
 
@@ -28,7 +29,7 @@ export interface MarketplaceOrder {
 
 /**
  * Hook to scan marketplace contract events and derive active listings.
- * Fetches OrderRegistered, OrderFulfilled, and OrderCancelled events,
+ * Fetches OrderCreated, OrderFulfilled, and OrderCancelled events,
  * then computes the set of currently active orders.
  */
 export function useMarketplaceListings() {
@@ -49,7 +50,7 @@ export function useMarketplaceListings() {
             const provider = new RpcProvider({ nodeUrl: RPC_URL });
             const contractAddress = normalizeStarknetAddress(MEDIALANE_CONTRACT_ADDRESS);
 
-            // Fetch all marketplace events in one call (registered + fulfilled + cancelled)
+            // Fetch all marketplace events in one call (created + fulfilled + cancelled)
             const allEvents: any[] = [];
             let continuationToken: string | undefined = undefined;
             let page = 0;
@@ -61,7 +62,7 @@ export function useMarketplaceListings() {
                     from_block: { block_number: START_BLOCK },
                     to_block: "latest",
                     keys: [[
-                        ORDER_REGISTERED_SELECTOR,
+                        ORDER_CREATED_SELECTOR,
                         ORDER_FULFILLED_SELECTOR,
                         ORDER_CANCELLED_SELECTOR,
                     ]],
@@ -82,57 +83,73 @@ export function useMarketplaceListings() {
             const fulfilledSet = new Set<string>();
             const cancelledSet = new Set<string>();
 
+            // Collect active hashes to fetch details
+            const activeHashesToFetch: { hash: string; offerer: string; event: any }[] = [];
+
             for (const event of allEvents) {
                 const keys = (event.keys || []).map((k: string) => num.toHex(k));
-                const data = (event.data || []).map((d: string) => num.toHex(d));
                 const selector = keys[0];
 
-                if (selector === ORDER_REGISTERED_SELECTOR) {
-                    // keys: [selector, order_hash, offerer]
-                    // data: [offer_token, offer_identifier_low, offer_identifier_high,
-                    //        consideration_token, consideration_amount_low, consideration_amount_high,
-                    //        start_time, end_time]
+                if (selector === ORDER_CREATED_SELECTOR) {
                     const orderHash = keys[1];
                     const offerer = keys[2];
-
-                    const offerToken = data[0] || "0x0";
-                    const offerIdentifierLow = BigInt(data[1] || "0");
-                    const offerIdentifierHigh = BigInt(data[2] || "0");
-                    const offerIdentifier = (offerIdentifierLow + (offerIdentifierHigh << 128n)).toString();
-
-                    const considerationToken = data[3] || "0x0";
-                    const considerationAmountLow = BigInt(data[4] || "0");
-                    const considerationAmountHigh = BigInt(data[5] || "0");
-                    const considerationAmount = (considerationAmountLow + (considerationAmountHigh << 128n)).toString();
-
-                    const startTime = Number(BigInt(data[6] || "0"));
-                    const endTime = Number(BigInt(data[7] || "0"));
-
-                    orderMap.set(orderHash, {
-                        orderHash,
-                        offerer,
-                        offerToken,
-                        offerIdentifier,
-                        considerationToken,
-                        considerationAmount,
-                        startTime,
-                        endTime,
-                        blockNumber: event.block_number,
-                        transactionHash: event.transaction_hash,
-                        status: "active",
-                    });
+                    activeHashesToFetch.push({ hash: orderHash, offerer, event });
                 } else if (selector === ORDER_FULFILLED_SELECTOR) {
-                    // keys: [selector, order_hash, offerer, fulfiller]
                     const orderHash = keys[1];
                     fulfilledSet.add(orderHash);
                 } else if (selector === ORDER_CANCELLED_SELECTOR) {
-                    // keys: [selector, order_hash, offerer]
                     const orderHash = keys[1];
                     cancelledSet.add(orderHash);
                 }
             }
 
-            // Mark fulfilled and cancelled orders
+            // Fetch details for each order hash
+            // Using parallel calls for efficiency
+            const contract = new Contract({
+                abi: IPMarketplaceABI as any,
+                address: contractAddress,
+                providerOrAccount: provider
+            });
+
+            const orderDetailsResults = await Promise.all(
+                activeHashesToFetch.map(async ({ hash: orderHash, offerer, event }) => {
+                    try {
+                        const details = await contract.get_order_details(orderHash);
+
+                        // Parse status from enum 
+                        // OrderStatus variants: None, Created, Filled, Cancelled
+                        const statusKey = Object.keys(details.order_status)[0];
+                        let status: "active" | "fulfilled" | "cancelled" = "active";
+                        if (statusKey === "Filled") status = "fulfilled";
+                        if (statusKey === "Cancelled") status = "cancelled";
+
+                        return {
+                            orderHash,
+                            offerer: details.offerer.toString(),
+                            offerToken: details.offer.token.toString(),
+                            offerIdentifier: details.offer.identifier_or_criteria.toString(),
+                            considerationToken: details.consideration.token.toString(),
+                            considerationAmount: details.consideration.start_amount.toString(),
+                            startTime: Number(details.start_time),
+                            endTime: Number(details.end_time),
+                            blockNumber: event.block_number,
+                            transactionHash: event.transaction_hash,
+                            status,
+                        } as MarketplaceOrder;
+                    } catch (err) {
+                        console.error(`Failed to fetch details for order ${orderHash}:`, err);
+                        return null;
+                    }
+                })
+            );
+
+            for (const order of orderDetailsResults) {
+                if (order) {
+                    orderMap.set(order.orderHash, order);
+                }
+            }
+
+            // Mark fulfilled and cancelled orders from events (secondary verification)
             for (const hash of fulfilledSet) {
                 const order = orderMap.get(hash);
                 if (order) order.status = "fulfilled";
@@ -194,8 +211,11 @@ export function findListingForToken(
         try {
             const listingOfferToken = normalizeStarknetAddress(listing.offerToken).toLowerCase();
             const listingIdentifier = BigInt(listing.offerIdentifier);
-            return listingOfferToken === normalizedContract && listingIdentifier === targetTokenId;
-        } catch {
+
+            const isMatch = listingOfferToken === normalizedContract && listingIdentifier === targetTokenId;
+            return isMatch;
+        } catch (err) {
+            console.error("[findListingForToken] Error comparing listing:", err);
             return false;
         }
     });

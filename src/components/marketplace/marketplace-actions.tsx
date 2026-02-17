@@ -86,7 +86,7 @@ export function MarketplaceActions({
                                 asset={{
                                     id: assetId,
                                     name: assetName,
-                                    image: "/placeholder.svg",
+                                    image: `/api/assets/image?address=${nftAddress}&tokenId=${tokenId}`,
                                     collectionAddress: nftAddress,
                                     tokenId: tokenId
                                 }}
@@ -107,7 +107,7 @@ export function MarketplaceActions({
                                         name: assetName,
                                         price: listing.start_amount || "0",
                                         currency: listing.currency || "USDC",
-                                        image: "/placeholder.svg",
+                                        image: `/api/assets/image?address=${nftAddress}&tokenId=${tokenId}`,
                                         collectionName: "Collection",
                                         listing: listing
                                     }}
@@ -136,7 +136,7 @@ export function MarketplaceActions({
                                     tokenId: tokenId
                                 }}
                                 trigger={
-                                    <Button variant="outline" className="flex-1 h-11">
+                                    <Button className="flex-1 h-11">
                                         <HandCoins className="mr-2 h-4 w-4" />
                                         Make Offer
                                     </Button>

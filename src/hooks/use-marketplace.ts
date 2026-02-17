@@ -1,21 +1,12 @@
-"use client"
-
 import { useState, useCallback } from "react";
 import { useAccount, useContract, useNetwork } from "@starknet-react/core";
-import { Abi } from "starknet";
+import { Abi, shortString, constants } from "starknet";
 import { IPMarketplaceABI } from "@/abis/ip_market";
 import { useToast } from "@/components/ui/use-toast";
-import {
-    prepareOrderForSigning,
-    prepareFulfillmentForSigning,
-    prepareCancelationForSigning
-} from "@/lib/hash";
-
-// On-chain contract uses simple felt252 for all fields - no enums, no u256
-// offer/consideration are single structs, not arrays
+import { getOrderParametersTypedData, stringifyBigInts } from "@/utils/marketplace-utils";
 
 interface UseMarketplaceReturn {
-    createListing: (listingParams: any) => Promise<string | undefined>;
+    createListing: (params: any) => Promise<string | undefined>;
     buyItem: (orderParams: any, fulfillmentParams: any) => Promise<string | undefined>;
     cancelListing: (cancelParams: any) => Promise<string | undefined>;
 
@@ -34,260 +25,123 @@ export function useMarketplace(): UseMarketplaceReturn {
     const [txHash, setTxHash] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    const { contract } = useContract({
+    const { contract: medialaneContract } = useContract({
         address: process.env.NEXT_PUBLIC_MEDIALANE_CONTRACT_ADDRESS as `0x${string}`,
-        abi: IPMarketplaceABI as Abi,
+        abi: IPMarketplaceABI as any[],
     });
 
     const resetState = useCallback(() => {
-        setIsProcessing(false);
         setTxHash(null);
         setError(null);
+        setIsProcessing(false);
     }, []);
 
-    // --- HELPERS ---
-
-    const getNonce = useCallback(async (owner: string) => {
-        if (!contract) return "0";
-        try {
-            const nonce = await contract.call("nonces", [owner]);
-            return nonce.toString();
-        } catch (err) {
-            console.error("Failed to fetch nonce:", err);
-            return "0";
-        }
-    }, [contract]);
-
-    // --- CREATE LISTING (register_order) ---
     const createListing = useCallback(async (params: any) => {
-        if (!account || !contract || !chain || !address) {
-            setError("Wallet or contract not ready");
-            return;
+        if (!account || !medialaneContract || !chain) {
+            const msg = "Account, contract, or network not available";
+            setError(msg);
+            toast({ title: "Error", description: msg, variant: "destructive" });
+            return undefined;
         }
 
         setIsProcessing(true);
         setError(null);
-        setTxHash(null);
 
         try {
-            const chainId = chain.id.toString();
+            // 1. Fetch current nonce
+            console.log("Fetching nonce for:", account.address);
+            const currentNonce = await medialaneContract.nonces(account.address);
+            console.log("Current nonce:", currentNonce.toString());
 
-            // Fetch current nonce from contract
-            const currentNonce = await getNonce(address);
-            const paramsWithNonce = {
+            // 2. Prepare order parameters for signing
+            const orderParams = {
                 ...params,
-                nonce: currentNonce
+                nonce: currentNonce.toString(),
             };
 
-            console.log("Creating listing/offer with params (and fetched nonce):", paramsWithNonce);
+            // 3. Generate typed data and sign
+            const chainId = chain.id as any as constants.StarknetChainId;
+            const typedData = stringifyBigInts(getOrderParametersTypedData(orderParams, chainId));
 
-            // 1. Prepare Typed Data for SNIP-12 Signing
-            const typedData = prepareOrderForSigning(paramsWithNonce, chainId);
-            console.log("Typed Data for signing:", JSON.stringify(typedData, null, 2));
+            console.log("Signing typed data:", typedData);
+            const signature = await account.signMessage(typedData);
 
-            // 2. Sign the Message (Typed Data)
-            console.log("Requesting SNIP-12 signature...");
-            let signature;
+            const signatureArray = Array.isArray(signature)
+                ? signature
+                : [signature.r.toString(), signature.s.toString()];
+
+            console.log("Signature generated:", signatureArray);
+
+            // 4. Register the order (with shortString encoding for item_type)
+            const registerPayload = stringifyBigInts({
+                parameters: {
+                    ...orderParams,
+                    offer: {
+                        ...orderParams.offer,
+                        item_type: shortString.encodeShortString(orderParams.offer.item_type)
+                    },
+                    consideration: {
+                        ...orderParams.consideration,
+                        item_type: shortString.encodeShortString(orderParams.consideration.item_type)
+                    },
+                },
+                signature: signatureArray,
+            });
+
+            console.log("Registering order with payload:", registerPayload);
+
+            // Hash verification (Troubleshooting)
             try {
-                signature = await account.signMessage(typedData);
-            } catch (err: any) {
-                console.error("Signing failed:", err);
-                throw new Error(`Signing failed: ${err.message}`);
+                const localHash = await account.hashMessage(typedData);
+                const contractHash = await medialaneContract.get_order_hash(registerPayload.parameters, account.address);
+                const contractHashHex = "0x" + BigInt(contractHash).toString(16);
+
+                console.log("Verification - Local Hash:", localHash);
+                console.log("Verification - Contract Hash:", contractHashHex);
+
+                if (localHash !== contractHashHex) {
+                    console.warn("HASH MISMATCH: Local hash does not match contract hash. Signature will likely be rejected.");
+                } else {
+                    console.log("HASH MATCH: Local and contract hashes are consistent.");
+                }
+            } catch (hashErr) {
+                console.warn("Could not verify hash mismatch:", hashErr);
             }
 
-            // Convert to Array<felt252> for contract
-            const signatureArray = Array.isArray(signature) ? signature : [signature];
-            console.log("Signature received:", signatureArray);
+            // Execute transaction via account for better control/compatibility
+            const call = medialaneContract.populate("register_order", [registerPayload]);
+            const tx = await account.execute(call);
+            console.log("Transaction sent:", tx.transaction_hash);
 
-            // 3. Build Multicall: Approve + Register
-            const orderStruct = {
-                parameters: paramsWithNonce,
-                signature: signatureArray
-            };
-
-            const marketplaceAddress = contract.address;
-
-            // Logic to determine what needs approval
-            // For a Listing: offer is NFT, consideration is Payment
-            // For an Offer: offer is Payment, consideration is NFT
-            const itemToApprove = params.offer;
-            const assetAddress = itemToApprove.token;
-            const itemType = Number(itemToApprove.item_type);
-
-            console.log("Submitting multicall: approve + register_order");
-
-            const calls = [];
-
-            // Add approval call based on item type (ERC20: 1, ERC721: 2, ERC1155: 3)
-            if (itemType === 1) {
-                // ERC20: Approve amount (end_amount is ceiling)
-                // contract expects u256 for amount: [low, high]
-                const amount = itemToApprove.end_amount;
-                calls.push({
-                    contractAddress: assetAddress,
-                    entrypoint: "approve",
-                    calldata: [marketplaceAddress, amount, 0] // u256 [low, high]
-                });
-            } else if (itemType === 2 || itemType === 3) {
-                // NFT: Approve token ID
-                const tokenId = itemToApprove.identifier_or_criteria;
-                calls.push({
-                    contractAddress: assetAddress,
-                    entrypoint: "approve",
-                    calldata: [marketplaceAddress, tokenId, 0] // u256 [low, high]
-                });
-            }
-
-            // Call 2: Register Order
-            calls.push(contract.populate("register_order", [orderStruct]));
-
-            const { transaction_hash } = await account.execute(calls);
-
-            setTxHash(transaction_hash);
-            const isOffer = itemType === 1;
+            setTxHash(tx.transaction_hash);
             toast({
-                title: isOffer ? "Offer Created" : "Listing Created",
-                description: isOffer ? "Your offer has been submitted." : "Your asset is now listed on the marketplace.",
+                title: "Listing Created",
+                description: "Your asset has been listed successfully.",
             });
 
-            return transaction_hash;
-
+            return tx.transaction_hash;
         } catch (err: any) {
-            console.error("Action Failed:", err);
-            setError(err.message || "Operation failed");
-            toast({
-                title: "Error",
-                description: err.message || "Operation failed",
-                variant: "destructive"
-            });
+            console.error("Error in createListing:", err);
+            const msg = err.message || "Failed to create listing";
+            setError(msg);
+            toast({ title: "Error", description: msg, variant: "destructive" });
+            return undefined;
         } finally {
             setIsProcessing(false);
         }
-    }, [account, contract, chain, address, getNonce, toast]);
+    }, [account, medialaneContract, chain, toast]);
 
-
-    // --- BUY ITEM (fulfill_order) ---
     const buyItem = useCallback(async (order: any, fulfillment: any) => {
-        if (!account || !contract || !chain || !address) {
-            setError("Wallet or contract not ready");
-            return;
-        }
+        console.warn("buyItem: Not implemented yet (Stubbed)");
+        setError("Functionality temporarily disabled (Under maintenance)");
+        return undefined;
+    }, []);
 
-        setIsProcessing(true);
-        setError(null);
-        setTxHash(null);
-
-        try {
-            const chainId = chain.id.toString();
-
-            // Fetch current nonce
-            const currentNonce = await getNonce(address);
-
-            const fulfillmentData = {
-                ...fulfillment,
-                fulfiller: address,
-                nonce: currentNonce
-            };
-
-            const typedData = prepareFulfillmentForSigning(fulfillmentData, chainId);
-
-            // 2. Sign
-            console.log("Requesting fulfillment signature...");
-            const signature = await account.signMessage(typedData);
-            const signatureArray = Array.isArray(signature) ? signature : [signature];
-
-            // 3. Execute
-            const fulfillmentRequest = {
-                fulfillment: fulfillmentData,
-                signature: signatureArray
-            };
-
-            const calls = [];
-
-            // Add approval if the consideration is ERC20 (item_type = 1)
-            const consideration = order.parameters?.consideration;
-            if (consideration && Number(consideration.item_type) === 1) {
-                calls.push({
-                    contractAddress: consideration.token,
-                    entrypoint: "approve",
-                    calldata: [contract.address, consideration.start_amount]
-                });
-            }
-
-            calls.push(contract.populate("fulfill_order", [fulfillmentRequest]));
-
-            console.log("Submitting buy transaction...", calls);
-            const { transaction_hash } = await account.execute(calls);
-
-            setTxHash(transaction_hash);
-            toast({
-                title: "Purchase Successful",
-                description: "You successfully bought the item!",
-            });
-
-            return transaction_hash;
-
-        } catch (err: any) {
-            console.error("Buy Item Failed:", err);
-            setError(err.message);
-            toast({
-                title: "Error",
-                description: err.message,
-                variant: "destructive"
-            });
-        } finally {
-            setIsProcessing(false);
-        }
-    }, [account, contract, chain, address, getNonce, toast]);
-
-    // --- CANCEL LISTING (cancel_order) ---
     const cancelListing = useCallback(async (cancelParams: any) => {
-        if (!account || !contract || !chain || !address) {
-            setError("Wallet or contract not ready");
-            return;
-        }
-
-        setIsProcessing(true);
-        setError(null);
-        setTxHash(null);
-
-        try {
-            const chainId = chain.id.toString();
-
-            // Fetch current nonce
-            const currentNonce = await getNonce(address);
-            const cancelWithNonce = {
-                ...cancelParams,
-                nonce: currentNonce
-            };
-
-            const typedData = prepareCancelationForSigning(cancelWithNonce, chainId);
-            const signature = await account.signMessage(typedData);
-            const signatureArray = Array.isArray(signature) ? signature : [signature];
-
-            const cancelRequest = {
-                cancelation: cancelWithNonce,
-                signature: signatureArray
-            };
-
-            const { transaction_hash } = await account.execute([
-                contract.populate("cancel_order", [cancelRequest])
-            ]);
-
-            setTxHash(transaction_hash);
-            toast({
-                title: "Listing Cancelled",
-                description: "Your listing has been cancelled.",
-            });
-
-            return transaction_hash;
-        } catch (err: any) {
-            console.error("Cancel Failed:", err);
-            setError(err.message);
-        } finally {
-            setIsProcessing(false);
-        }
-    }, [account, contract, chain, address, getNonce, toast]);
+        console.warn("cancelListing: Not implemented yet (Stubbed)");
+        setError("Functionality temporarily disabled (Under maintenance)");
+        return undefined;
+    }, []);
 
     return {
         createListing,
