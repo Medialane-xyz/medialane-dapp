@@ -14,7 +14,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle2, Sparkles, ExternalLink, FolderOpen, Share2, ArrowRight, Loader2, Library, Copy, Upload, XCircle, ShoppingBag } from "lucide-react"
+import { CheckCircle2, Sparkles, ExternalLink, FolderOpen, Share2, ArrowRight, Loader2, Library, Copy, Upload, XCircle, ShoppingBag, Zap } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import type { IMintResult } from "@/hooks/use-create-asset"
 import { EXPLORER_URL } from "@/lib/constants"
@@ -177,10 +177,22 @@ export function MintSuccessDrawer({
                 )}
               </div>
 
-              {/* Cost Estimation */}
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 px-4 flex justify-between items-center text-sm">
-                <span className="text-blue-700 dark:text-blue-300">Estimated Cost</span>
-                <span className="font-bold text-blue-700 dark:text-blue-300 font-mono">{cost}</span>
+              {/* Cost & Listing Estimation */}
+              <div className="space-y-3">
+                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 px-4 flex justify-between items-center text-sm border border-blue-100 dark:border-blue-800">
+                  <span className="text-blue-700 dark:text-blue-300 font-medium">Network Fee</span>
+                  <span className="font-bold text-blue-700 dark:text-blue-300 font-mono italic">{cost}</span>
+                </div>
+
+                {data?.["Listing Price"] && (
+                  <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 px-4 flex justify-between items-center text-sm border border-green-100 dark:border-green-800">
+                    <span className="text-green-700 dark:text-green-300 font-medium flex items-center gap-1.5">
+                      <Zap className="h-3 w-3" />
+                      Marketplace Price
+                    </span>
+                    <span className="font-bold text-green-700 dark:text-green-300 font-mono">{data["Listing Price"]}</span>
+                  </div>
+                )}
               </div>
             </div>
           )}

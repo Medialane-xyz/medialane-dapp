@@ -35,7 +35,7 @@ export function AssetPreview({ formState, template }: AssetPreviewProps) {
           <div className="space-y-2">
             <div className="aspect-video bg-muted rounded-lg overflow-hidden">
               {formState.mediaPreviewUrl &&
-              formState.mediaPreviewUrl !==
+                formState.mediaPreviewUrl !==
                 "/placeholder.svg?height=600&width=600" ? (
                 <img
                   src={formState.mediaPreviewUrl || "/placeholder.svg"}
@@ -62,7 +62,7 @@ export function AssetPreview({ formState, template }: AssetPreviewProps) {
                 {formState.description}
               </p>
             )}
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1 items-center">
               {template && (
                 <Badge variant="outline" className="text-xs">
                   {template.name}
@@ -73,6 +73,11 @@ export function AssetPreview({ formState, template }: AssetPreviewProps) {
                   {tag}
                 </Badge>
               ))}
+              {formState.listOnMarketplace && formState.listingPrice && (
+                <Badge variant="secondary" className="text-xs bg-green-500/10 text-green-600 border-green-500/20">
+                  {formState.listingPrice} USDC
+                </Badge>
+              )}
             </div>
           </div>
         )}
