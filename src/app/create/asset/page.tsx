@@ -327,7 +327,7 @@ export default function CreateAssetPage() {
           </DialogContent>
         </Dialog>
       )}
-      <div className="min-h-screen text-foreground pb-20">
+      <div className="min-h-screen text-foreground py-10">
         {/* Mobile Preview Modal */}
         {showMobilePreview && (
           <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm lg:hidden">

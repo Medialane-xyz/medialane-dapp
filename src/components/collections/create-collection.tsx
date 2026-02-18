@@ -326,7 +326,7 @@ export default function CreateCollectionView({
   };
 
   return (
-    <div className="min-h-screen text-foreground pb-20">
+    <div className="min-h-screen text-foreground py-10">
       <main className="container mx-auto px-4 py-8">
         {!isModalMode && (
           <Link href="/create">

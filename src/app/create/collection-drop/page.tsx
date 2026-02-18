@@ -96,7 +96,7 @@ export default function CreateDropPage() {
     const selectedLicense = licenseTypes.find((license) => license.id === licenseType) || licenseTypes[0];
 
     return (
-        <div className="min-h-screen text-foreground py-20 relative overflow-hidden bg-transparent">
+        <div className="min-h-screen text-foreground py-10 relative overflow-hidden">
 
 
 

@@ -57,7 +57,7 @@ export default function ActivitiesPage() {
   const activityTypes = ["all", "mint", "transfer", "remix", "collection"];
 
   return (
-    <div className="min-h-screen bg-background py-10">
+    <div className="min-h-screen py-10">
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px] pointer-events-none fixed" />
 
       <main className="container relative mx-auto px-4 pb-12 space-y-12 max-w-7xl">

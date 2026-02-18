@@ -131,7 +131,7 @@ export default function ProvenancePage({ params }: ProvenancePageProps) {
     return (
       <>
 
-        <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="min-h-screen py-10">
           <div className="text-center space-y-6 max-w-md">
             <div className="w-16 h-16 mx-auto rounded-2xl bg-muted flex items-center justify-center">
               <Clock className="h-8 w-8 text-muted-foreground" />

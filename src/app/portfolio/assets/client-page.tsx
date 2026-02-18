@@ -54,8 +54,8 @@ export default function AssetsClientPage() {
     }, [tokens, searchQuery]);
 
     return (
-        <div className="p-8">
-            <div className="container mx-auto px-4 py-8">
+        <div className="min-h-screen py-10">
+            <div className="container mx-auto px-4">
                 <PageHeader
                     title="My Assets"
                     description="View and manage your digital assets"

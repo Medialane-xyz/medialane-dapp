@@ -22,7 +22,7 @@ export default function PortfolioClientPage() {
     });
 
     return (
-        <div className="min-h-screen bg-background pb-8">
+        <div className="min-h-screen py-10">
             <div className="container mx-auto px-4">
                 <PageHeader
                     title="IP Portfolio"

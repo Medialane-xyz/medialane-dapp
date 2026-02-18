@@ -48,7 +48,7 @@ export default function TemplatesPage() {
   const selectedTemplateObject = templates.find((template) => template.id === selectedTemplate)
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen py-10">
 
       <main className="container mx-auto p-4 py-8">
         <PageHeader

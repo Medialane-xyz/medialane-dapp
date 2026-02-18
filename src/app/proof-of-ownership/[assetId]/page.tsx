@@ -109,7 +109,7 @@ export default function ProofOfOwnershipPage({ params }: ProofOfOwnershipPagePro
   } as any
 
   return (
-    <main className="min-h-screen text-foreground">
+    <main className="min-h-screen text-foreground py-10">
       <div className="container mx-auto px-4 py-8 sm:py-16 max-w-5xl">
         <PageHeader
           title="Proof of Ownership"

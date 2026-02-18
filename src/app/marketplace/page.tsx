@@ -26,7 +26,7 @@ export default function MarketplacePage() {
     const [sortOrder, setSortOrder] = useState<"recent" | "oldest">("recent")
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen py-10">
             <main className="container mx-auto px-4 max-w-7xl">
                 <PageHeader
                     title="Marketplace"

@@ -21,7 +21,7 @@ export default function ListingsClientPage() {
     const [searchQuery, setSearchQuery] = useState("");
 
     return (
-        <div className="container max-w-7xl mx-auto px-4 py-20">
+        <div className="container max-w-7xl mx-auto px-4 py-10">
             {/* Header Section */}
             <PageHeader
                 title="My Listings"

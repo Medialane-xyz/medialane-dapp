@@ -67,7 +67,7 @@ export default function PortfolioActivitiesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background relative overflow-hidden">
+        <div className="min-h-screen py-10">
             {/* Background pattern */}
             <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px] pointer-events-none fixed" />
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-outrun-cyan/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />

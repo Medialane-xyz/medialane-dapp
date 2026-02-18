@@ -28,7 +28,7 @@ export default function CollectionsClientPage() {
     });
 
     return (
-        <div className="p-8">
+        <div className="min-h-screen py-10">
             <div className="container mx-auto px-4 py-8">
                 <PageHeader
                     title="My Collections"

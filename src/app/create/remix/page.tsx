@@ -91,7 +91,7 @@ export default function RemixDiscoveryPage() {
   }
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen py-10">
       <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
 
         {/* Header */}
