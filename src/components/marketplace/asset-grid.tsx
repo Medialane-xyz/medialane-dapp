@@ -1,28 +1,37 @@
 "use client"
 
-import { useRecentAssets } from "@/hooks/use-recent-assets"
+import { useMarketplaceListings } from "@/hooks/use-marketplace-events"
 import { AssetCard } from "./asset-card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { AlertCircle, Loader2 } from "lucide-react"
+import { AlertCircle, Loader2, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useMemo } from "react"
 
 export interface AssetGridProps {
     sortOrder?: "recent" | "oldest"
 }
 
 export function AssetGrid({ sortOrder = "recent" }: AssetGridProps) {
-    const { assets, loading, error, hasMore, loadMore, loadingMore } = useRecentAssets(50)
+    const { listings, isLoading, error, refetch } = useMarketplaceListings()
 
-    const sortedAssets = [...assets].sort((a, b) => {
-        const blockA = a.blockNumber || 0
-        const blockB = b.blockNumber || 0
-        if (sortOrder === "oldest") {
-            return blockA - blockB
-        }
-        return blockB - blockA
-    })
+    const activeListings = useMemo(() => {
+        if (!listings) return [];
 
-    if (loading && assets.length === 0) {
+        // Filter for active sell listings (NFT in offer)
+        return listings.filter(l =>
+            l.status === "active" &&
+            (l.offerType === "ERC721" || l.offerType === "ERC1155")
+        ).sort((a, b) => {
+            const timeA = a.startTime || 0
+            const timeB = b.startTime || 0
+            if (sortOrder === "oldest") {
+                return timeA - timeB
+            }
+            return timeB - timeA
+        });
+    }, [listings, sortOrder]);
+
+    if (isLoading && activeListings.length === 0) {
         return (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {Array.from({ length: 8 }).map((_, i) => (
@@ -44,59 +53,38 @@ export function AssetGrid({ sortOrder = "recent" }: AssetGridProps) {
                 <AlertCircle className="h-10 w-10 mb-4 text-red-500" />
                 <p>Failed to load assets from the marketplace.</p>
                 <p className="text-sm mt-2">{error}</p>
+                <Button variant="outline" onClick={() => refetch()} className="mt-4 border-white/10">
+                    <RefreshCw className="mr-2 h-4 w-4" /> Try Again
+                </Button>
             </div>
         )
     }
 
-    if (assets.length === 0) {
+    if (activeListings.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground bg-muted/10 rounded-xl border border-dashed">
-                <Loader2 className="h-10 w-10 mb-4 animate-spin text-primary" />
-                <p>No assets found on the marketplace yet.</p>
+            <div className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground bg-muted/5 rounded-xl border border-dashed border-white/10 backdrop-blur-sm">
+                <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mb-6">
+                    <AlertCircle className="h-8 w-8 opacity-50" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Marketplace is Quiet</h3>
+                <p className="max-w-xs mx-auto">There are currently no active intellectual property assets listed for trading.</p>
+                <Button variant="outline" onClick={() => refetch()} className="mt-6 border-white/10 hover:bg-white/5">
+                    <RefreshCw className="mr-2 h-4 w-4" /> Refresh Marketplace
+                </Button>
             </div>
         )
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 pb-20">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {sortedAssets.map((asset) => (
+                {activeListings.map((listing) => (
                     <AssetCard
-                        key={asset.id}
-                        asset={{
-                            id: asset.id, // This is collectionAddress-tokenId
-                            title: asset.name,
-                            creator: asset.owner,
-                            image: asset.image,
-                            collectionAddress: asset.collectionAddress,
-                            tokenId: asset.tokenId,
-                            type: asset.ipType || "Asset",
-                            verified: true
-                        }}
+                        key={listing.orderHash}
+                        listing={listing}
                     />
                 ))}
             </div>
-
-            {hasMore && (
-                <div className="flex justify-center pt-4">
-                    <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={() => loadMore()}
-                        disabled={loadingMore}
-                        className="min-w-[200px] border-white/10 hover:bg-white/5"
-                    >
-                        {loadingMore ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Loading...
-                            </>
-                        ) : (
-                            "Load More"
-                        )}
-                    </Button>
-                </div>
-            )}
         </div>
     )
 }
