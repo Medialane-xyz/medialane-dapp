@@ -7,7 +7,6 @@ import { StarknetProvider } from "@/components/starknet-provider";
 import { CommandMenu } from "@/components/command-menu"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import AnimatedBackground from "@/components/animated-bg";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -38,7 +37,6 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <StarknetProvider>
-            <AnimatedBackground />
             <Header />
             <main className="min-h-screen">
               {children}

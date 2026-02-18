@@ -38,7 +38,7 @@ export default function MarketplacePage() {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
                                 placeholder="Search assets..."
-                                className="pl-10 bg-white/5 border-white/10 w-full focus:bg-white/10 focus:border-outrun-cyan/50 focus:shadow-[0_0_15px_rgba(0,255,255,0.1)] transition-all h-10"
+                                className="pl-10 w-full h-10"
                             />
                         </div>
 
@@ -47,13 +47,13 @@ export default function MarketplacePage() {
                             {/* Filter Button */}
                             <Sheet>
                                 <SheetTrigger asChild>
-                                    <Button variant="outline" size="sm" className="gap-2 border-white/10 hover:bg-white/10 hover:border-outrun-cyan/30 hover:shadow-[0_0_10px_rgba(0,255,255,0.15)] transition-all duration-200 h-10 px-3 min-w-[100px] justify-center">
+                                    <Button variant="outline" size="sm" className="gap-2 h-10 px-3 min-w-[100px] justify-center">
                                         <Filter className="h-4 w-4" />
                                         <span className="hidden sm:inline">Filters</span>
                                         <span className="sm:hidden">Filter</span>
                                     </Button>
                                 </SheetTrigger>
-                                <SheetContent side="left" className="w-[300px] sm:w-[360px] bg-black/95 border-r border-white/10 backdrop-blur-2xl">
+                                <SheetContent side="left" className="w-[300px] sm:w-[360px]">
                                     <VisuallyHidden.Root>
                                         <SheetTitle>Filters</SheetTitle>
                                     </VisuallyHidden.Root>
@@ -66,7 +66,7 @@ export default function MarketplacePage() {
                             {/* Sort Dropdown */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="sm" className="gap-2 border-white/10 hover:bg-white/10 hover:border-outrun-cyan/30 hover:shadow-[0_0_10px_rgba(0,255,255,0.15)] transition-all duration-200 h-10 px-3 min-w-[120px] justify-between">
+                                    <Button variant="outline" size="sm" className="gap-2 h-10 px-3 min-w-[120px] justify-between">
                                         <div className="flex items-center gap-2">
                                             <SlidersHorizontal className="h-4 w-4" />
                                             <span className="hidden sm:inline">{sortOrder === "recent" ? "Recent" : "Oldest"}</span>
@@ -75,11 +75,11 @@ export default function MarketplacePage() {
                                         <ChevronDown className="h-3 w-3 opacity-50" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-[140px] bg-black/95 backdrop-blur-xl border-white/10">
-                                    <DropdownMenuItem onClick={() => setSortOrder("recent")} className="cursor-pointer focus:bg-white/10">
+                                <DropdownMenuContent align="end" className="w-[140px]">
+                                    <DropdownMenuItem onClick={() => setSortOrder("recent")} className="cursor-pointer">
                                         Recent
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setSortOrder("oldest")} className="cursor-pointer focus:bg-white/10">
+                                    <DropdownMenuItem onClick={() => setSortOrder("oldest")} className="cursor-pointer">
                                         Oldest
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
