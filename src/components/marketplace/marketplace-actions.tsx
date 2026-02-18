@@ -3,13 +3,13 @@
 import { PurchaseDialog } from "@/components/marketplace/checkout/purchase-dialog"
 import { OfferDialog } from "@/components/marketplace/checkout/offer-dialog"
 import { ListingDialog } from "@/components/marketplace/listing-dialog"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useListing } from "@/hooks/use-listing"
 import { useMarketplace } from "@/hooks/use-marketplace"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-
 import { ShoppingBag, HandCoins, RefreshCw, Sparkles, Tag, XCircle, Loader2 } from "lucide-react"
 
 interface MarketplaceActionsProps {
@@ -29,12 +29,17 @@ export function MarketplaceActions({
     nftAddress,
     tokenId
 }: MarketplaceActionsProps) {
-    const { data: listing, isLoading: isListingLoading } = useListing(nftAddress, tokenId)
-    const { cancelListing, isProcessing } = useMarketplace()
+    const router = useRouter()
+    const { data: listing, isLoading: isListingLoading, refetch } = useListing(nftAddress, tokenId)
+    const { cancelOrder, isProcessing } = useMarketplace()
 
     const handleCancel = async () => {
-        if (!listing) return;
-        await cancelListing(listing);
+        if (!listing?.orderHash) return;
+        const hash = await cancelOrder(listing.orderHash);
+        if (hash) {
+            router.refresh();
+            await refetch();
+        }
     }
 
     if (isListingLoading) {

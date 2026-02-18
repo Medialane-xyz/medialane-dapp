@@ -48,6 +48,35 @@ export const getOrderParametersTypedData = (
     };
 };
 
+export const getOrderCancellationTypedData = (
+    message: any,
+    chainId: constants.StarknetChainId
+): TypedData => {
+    return {
+        domain: {
+            name: "Medialane",
+            version: "1",
+            chainId: chainId,
+            revision: TypedDataRevision.ACTIVE,
+        },
+        primaryType: "OrderCancellation",
+        types: {
+            StarknetDomain: [
+                { name: "name", type: "shortstring" },
+                { name: "version", type: "shortstring" },
+                { name: "chainId", type: "shortstring" },
+                { name: "revision", type: "shortstring" },
+            ],
+            OrderCancellation: [
+                { name: "order_hash", type: "felt" },
+                { name: "offerer", type: "ContractAddress" },
+                { name: "nonce", type: "felt" },
+            ],
+        },
+        message,
+    };
+};
+
 export const stringifyBigInts = (obj: any): any => {
     if (typeof obj === "bigint") {
         return obj.toString();

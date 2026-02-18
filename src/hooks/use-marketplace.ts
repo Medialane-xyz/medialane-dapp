@@ -1,14 +1,15 @@
 import { useState, useCallback } from "react";
-import { useAccount, useContract, useNetwork } from "@starknet-react/core";
+import { useAccount, useContract, useNetwork, useProvider } from "@starknet-react/core";
 import { Abi, shortString, constants } from "starknet";
 import { IPMarketplaceABI } from "@/abis/ip_market";
 import { useToast } from "@/components/ui/use-toast";
-import { getOrderParametersTypedData, stringifyBigInts } from "@/utils/marketplace-utils";
+import { getOrderParametersTypedData, getOrderCancellationTypedData, stringifyBigInts } from "@/utils/marketplace-utils";
 
 interface UseMarketplaceReturn {
     createListing: (params: any) => Promise<string | undefined>;
     buyItem: (orderParams: any, fulfillmentParams: any) => Promise<string | undefined>;
     cancelOrder: (orderHash: string) => Promise<string | undefined>;
+    cancelListing: (orderHash: string) => Promise<string | undefined>;
 
     isProcessing: boolean;
     isLoading: boolean; // For compatibility
@@ -21,6 +22,7 @@ export function useMarketplace(): UseMarketplaceReturn {
     const { account, address } = useAccount();
     const { chain } = useNetwork();
     const { toast } = useToast();
+    const { provider } = useProvider();
 
     const [isProcessing, setIsProcessing] = useState(false);
     const [txHash, setTxHash] = useState<string | null>(null);
@@ -114,6 +116,10 @@ export function useMarketplace(): UseMarketplaceReturn {
             const tx = await account.execute(call);
             console.log("Transaction sent:", tx.transaction_hash);
 
+            // Wait for transaction confirmation
+            console.log("Waiting for transaction confirmation:", tx.transaction_hash);
+            await provider.waitForTransaction(tx.transaction_hash);
+
             setTxHash(tx.transaction_hash);
             toast({
                 title: "Listing Created",
@@ -130,7 +136,7 @@ export function useMarketplace(): UseMarketplaceReturn {
         } finally {
             setIsProcessing(false);
         }
-    }, [account, medialaneContract, chain, toast]);
+    }, [account, medialaneContract, chain, toast, provider]);
 
     const buyItem = useCallback(async (order: any, fulfillment: any) => {
         console.warn("buyItem: Not implemented yet (Stubbed)");
@@ -161,21 +167,18 @@ export function useMarketplace(): UseMarketplaceReturn {
                 nonce: currentNonce.toString(),
             };
 
-            // 3. Register cancellation (Note: If contract requires signature, we'd sign here. 
-            // Looking at ABI, it takes CancelRequest which has a signature.)
+            // 3. Generate typed data and sign
+            const chainId = chain.id as any as constants.StarknetChainId;
+            const typedData = stringifyBigInts(getOrderCancellationTypedData(cancelParams, chainId));
 
-            // Simplified for now based on common patterns, but if it needs SNIP-12:
-            // The ABI shows cancel_order(cancel_request: CancelRequest)
-            // CancelRequest: { cancelation: OrderCancellation, signature: Array<felt252> }
+            console.log("Signing cancellation typed data:", typedData);
+            const signature = await account.signMessage(typedData);
 
-            // For now, let's assume it needs a signature since it's an off-chain order system.
-            // But usually cancellations are just a direct tx to the contract from the offerer.
-            // Let's check if we need to sign. Given 'CancelRequest' structure, yes.
+            const signatureArray = Array.isArray(signature)
+                ? signature
+                : [signature.r.toString(), signature.s.toString()];
 
-            // Mocking signature for now or assuming the contract validates caller if signature is empty
-            // In a real SNIP-12 flow, we'd define types for OrderCancellation.
-
-            const signatureArray: string[] = []; // Empty or real signature if required
+            console.log("Cancellation signature generated:", signatureArray);
 
             const cancelRequest = stringifyBigInts({
                 cancelation: cancelParams,
@@ -185,10 +188,14 @@ export function useMarketplace(): UseMarketplaceReturn {
             const call = medialaneContract.populate("cancel_order", [cancelRequest]);
             const tx = await account.execute(call);
 
+            // Wait for transaction confirmation
+            console.log("Waiting for transaction confirmation:", tx.transaction_hash);
+            await provider.waitForTransaction(tx.transaction_hash);
+
             setTxHash(tx.transaction_hash);
             toast({
                 title: "Listing Cancelled",
-                description: "The listing cancellation has been submitted.",
+                description: "The listing has been successfully cancelled on-chain.",
             });
 
             return tx.transaction_hash;
@@ -201,12 +208,13 @@ export function useMarketplace(): UseMarketplaceReturn {
         } finally {
             setIsProcessing(false);
         }
-    }, [account, medialaneContract, chain, toast]);
+    }, [account, medialaneContract, chain, toast, provider]);
 
     return {
         createListing,
         buyItem,
         cancelOrder,
+        cancelListing: cancelOrder,
         isProcessing,
         isLoading: isProcessing,
         txHash,
