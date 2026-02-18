@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { PageHeader } from "@/components/page-header"
 
 interface RemixPageProps {
     params: Promise<{
@@ -47,19 +48,17 @@ export default function RemixPage({ params }: RemixPageProps) {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8"
                 >
-                    <Link href="/create/remix">
-                        <Button variant="ghost" size="sm" className="pl-0 mb-4 hover:bg-transparent hover:text-primary transition-colors">
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Discovery
-                        </Button>
-                    </Link>
-
-                    <h1 className="text-3xl md:text-5xl font-bold mb-2 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-                        Create Remix
-                    </h1>
-                    <p className="text-lg text-muted-foreground max-w-2xl">
-                        Transform knowledge and creativity into new IP.
-                    </p>
+                    <PageHeader
+                        title="Create Remix"
+                        description="Transform knowledge and creativity into new IP."
+                    >
+                        <Link href="/create/remix">
+                            <Button variant="ghost" size="sm" className="pl-0 hover:bg-transparent hover:text-primary transition-colors">
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                Back to Discovery
+                            </Button>
+                        </Link>
+                    </PageHeader>
                 </motion.div>
 
                 <RemixAssetForm nftAddress={nftAddress} tokenId={tokenId} />

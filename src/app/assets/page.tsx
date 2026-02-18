@@ -1,5 +1,7 @@
 "use client"
 
+import { PageHeader } from "@/components/page-header"
+
 import { useState, useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
@@ -55,56 +57,39 @@ export default function AssetsPage() {
         <div className="min-h-screen py-12">
             <main className="container mx-auto px-4 py-8">
 
-                <div className="relative mb-12">
-                    {/* Hero Background Effect */}
-                    <div className="absolute inset-0 -z-10 overflow-hidden rounded-3xl">
-                        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
-                        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-                    </div>
-
-                    <div className="relative flex flex-col md:flex-row items-end justify-between gap-6">
-                        <div className="space-y-2">
-
-                            <h1 className="tracking-tight text-foreground text-2xl">
-                                Explore Onchain IP Assets
-                            </h1>
-
+                <PageHeader
+                    title="Explore Onchain IP Assets"
+                    description="Discover and collect intellectual property assets secured on Starknet."
+                >
+                    <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto mt-4 md:mt-0">
+                        <div className="relative flex-1 md:min-w-[300px] group">
+                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground group-focus-within:text-outrun-cyan transition-colors" />
+                            <Input
+                                placeholder="Search by name, ID, or collection..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-9 h-10 bg-background/50 border-input/50 focus:border-outrun-cyan/50 focus:ring-outrun-cyan/20 rounded-xl"
+                            />
                         </div>
-
-                        {totalCount > 0 && (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-outrun-cyan/10 backdrop-blur-md rounded-full border border-outrun-cyan/20">
-                                <Box className="h-4 w-4 text-outrun-cyan" />
-                                <span className="font-semibold">{totalCount}</span>
-                                <span className="text-muted-foreground text-sm">Assets</span>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="mt-8 flex flex-col md:flex-row gap-4 items-stretch md:items-center">
-                        <div className="relative flex-1 group">
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-blue-500/5 rounded-xl blur-sm transition-opacity opacity-0 group-hover:opacity-100" />
-                            <div className="relative">
-                                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                <Input
-                                    placeholder="Search by name, ID, or collection..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-12 h-12 text-base bg-background/50 border-input/50 focus:border-outrun-cyan/50 focus:ring-outrun-cyan/20 focus:shadow-[0_0_15px_rgba(0,255,255,0.15)] rounded-xl shadow-sm transition-all"
-                                />
-                            </div>
+                        <div className="flex items-center gap-2">
+                            {totalCount > 0 && (
+                                <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-outrun-cyan/10 backdrop-blur-md rounded-xl border border-outrun-cyan/20 h-10">
+                                    <Box className="h-4 w-4 text-outrun-cyan" />
+                                    <span className="font-semibold text-sm">{totalCount}</span>
+                                </div>
+                            )}
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={refresh}
+                                disabled={loading}
+                                className="h-10 w-10 border-input/50 bg-background/50 hover:bg-outrun-cyan/10 hover:border-outrun-cyan/30 backdrop-blur-sm rounded-xl transition-all"
+                            >
+                                <RefreshCw className={`h-4 w-4 ${loading && !loadingMore ? "animate-spin text-outrun-cyan" : ""}`} />
+                            </Button>
                         </div>
-                        <Button
-                            variant="outline"
-                            size="lg"
-                            onClick={refresh}
-                            disabled={loading}
-                            className="h-12 px-6 border-input/50 bg-background/50 hover:bg-outrun-cyan/10 hover:border-outrun-cyan/30 backdrop-blur-sm rounded-xl transition-all"
-                        >
-                            <RefreshCw className={`h-5 w-5 mr-2 ${loading && !loadingMore ? "animate-spin text-outrun-cyan" : ""}`} />
-                            Refresh
-                        </Button>
                     </div>
-                </div>
+                </PageHeader>
 
                 {/* Assets Grid */}
                 <div className="space-y-6">

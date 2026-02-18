@@ -17,6 +17,8 @@ import {
   Users
 } from "lucide-react"
 
+import { PageHeader } from "@/components/page-header"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -93,22 +95,16 @@ export default function RemixDiscoveryPage() {
       <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
 
         {/* Header */}
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12 space-y-4"
+          className="mb-8"
         >
-
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-2">
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-                IP Remix
-              </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl">
-                Create derivative works, adaptations, and remixes. Select an asset from your portfolio or explore public collections to begin.
-              </p>
-            </div>
-          </div>
+          <PageHeader
+            title="IP Remix"
+            description="Create derivative works, adaptations, and remixes. Select an asset from your portfolio or explore public collections to begin."
+          />
         </motion.div>
 
         {/* Controls */}

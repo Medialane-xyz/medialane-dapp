@@ -20,6 +20,8 @@ import {
     Wallet
 } from "lucide-react"
 
+import { PageHeader } from "@/components/page-header"
+
 export default function PortfolioActivitiesPage() {
     const { address } = useAccount()
     const [searchQuery, setSearchQuery] = useState("")
@@ -71,37 +73,15 @@ export default function PortfolioActivitiesPage() {
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-outrun-cyan/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-outrun-magenta/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
-            <main className="container relative mx-auto px-4 pt-28 pb-12 md:pt-32 md:pb-20 space-y-10 max-w-7xl">
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-end justify-between">
-                    <div className="space-y-4 max-w-2xl">
-                        <Badge variant="outline" className="rounded-full px-4 py-1.5 border-outrun-magenta/20 bg-outrun-magenta/5 text-outrun-magenta">
-                            <span className="flex items-center gap-2">
-                                <Activity className="h-3.5 w-3.5" />
-                                Your History
-                            </span>
-                        </Badge>
-                        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60 leading-none pb-1">
-                            My Activities
-                        </h1>
-                        <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl">
-                            Track your personal history on the Mediolano Protocol. View your mints, transfers, and remixes.
-                        </p>
-                    </div>
+            <main className="container relative mx-auto px-4 py-8 max-w-7xl">
+                <PageHeader
+                    title="My Activities"
+                    description="Track your personal history on the Mediolano Protocol. View your mints, transfers, and remixes."
+                >
+                    <div className="flex flex-col gap-6 w-full mt-4">
+                        {/* Status Badge - Optional, keeping it if desired, or merging into description. I'll drop the 'Your History' badge as planned but keep the 'events loaded' one */}
 
-                    <div className="flex items-center gap-3 w-full md:w-auto">
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-border/40 bg-background/40 backdrop-blur-md text-sm text-muted-foreground shadow-sm flex-1 md:flex-none justify-center md:justify-start">
-                            <span className="font-semibold text-foreground">{activities.length}</span>
-                            <span>events loaded</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Filters Bar */}
-                <div>
-                    {/* Controls Section */}
-                    <div className="-mx-4 px-4 py-4 md:mx-0 md:px-0 md:py-0 bg-background/80 backdrop-blur-xl md:bg-transparent">
-                        <div className="flex flex-col lg:flex-row gap-4">
+                        <div className="flex flex-col lg:flex-row gap-4 w-full">
                             {/* Search */}
                             <div className="relative flex-1 group">
                                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-outrun-cyan transition-colors" />
@@ -139,6 +119,11 @@ export default function PortfolioActivitiesPage() {
                                     <RefreshCw className={`h-4 w-4 ${loading && !loadingMore ? "animate-spin" : ""}`} />
                                 </Button>
 
+                                <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl border border-border/40 bg-background/40 backdrop-blur-md text-sm text-muted-foreground shadow-sm h-11">
+                                    <span className="font-semibold text-foreground">{activities.length}</span>
+                                    <span>events</span>
+                                </div>
+
                                 {/* Clear Filters (Desktop) */}
                                 {(searchQuery || activityTypeFilter !== "all") && (
                                     <Button
@@ -156,7 +141,7 @@ export default function PortfolioActivitiesPage() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </PageHeader>
 
                 {/* Activity Feed */}
                 {/* Activity Feed */}

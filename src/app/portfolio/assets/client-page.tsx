@@ -13,6 +13,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 
 import { WalletConnectCTA } from "@/components/portfolio/wallet-connect-cta";
+import { PageHeader } from "@/components/page-header";
 
 const PortfolioAssets = dynamic(() =>
     import("@/components/portfolio/portfolio-assets").then(mod => mod.PortfolioAssets), {
@@ -54,34 +55,19 @@ export default function AssetsClientPage() {
 
     return (
         <div className="p-8">
-            <div className="container mx-auto px-4 py-6">
-                <div className="flex items-center gap-4 mb-8">
-                    <Button variant="ghost" size="icon" asChild>
-                        <Link href="/portfolio">
-                            <ArrowLeft className="h-4 w-4" />
-                        </Link>
-                    </Button>
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight">My Assets</h1>
-                        <p className="text-muted-foreground">View and manage your digital assets</p>
-                    </div>
-                </div>
-
-                {/* Show CTA when no wallet is connected */}
-                {!address && (
-                    <div className="max-w-4xl mx-auto">
-                        <WalletConnectCTA
-                            title="Connect wallet"
-                            description="Securely access and manage your onchain assets."
-                        />
-                    </div>
-                )}
-
-                {/* Show content when wallet is connected */}
-                {address && (
-                    <Suspense fallback={<AssetsSkeleton />}>
-                        <div className="space-y-8 container mx-auto">
-                            <div className="relative w-full sm:w-[350px]">
+            <div className="container mx-auto px-4 py-8">
+                <PageHeader
+                    title="My Assets"
+                    description="View and manage your digital assets"
+                >
+                    <div className="flex items-center gap-4 w-full md:w-auto">
+                        <Button variant="ghost" size="icon" asChild className="shrink-0">
+                            <Link href="/portfolio">
+                                <ArrowLeft className="h-4 w-4" />
+                            </Link>
+                        </Button>
+                        {address && (
+                            <div className="relative w-full sm:min-w-[300px]">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     placeholder="Search your assets..."
@@ -98,6 +84,25 @@ export default function AssetsClientPage() {
                                     </button>
                                 )}
                             </div>
+                        )}
+                    </div>
+                </PageHeader>
+
+                {/* Show CTA when no wallet is connected */}
+                {!address && (
+                    <div className="max-w-4xl mx-auto">
+                        <WalletConnectCTA
+                            title="Connect wallet"
+                            description="Securely access and manage your onchain assets."
+                        />
+                    </div>
+                )}
+
+                {/* Show content when wallet is connected */}
+                {address && (
+                    <Suspense fallback={<AssetsSkeleton />}>
+                        <div className="space-y-8 container mx-auto">
+                            {/* Search bar moved to PageHeader */}
 
                             {loading ? (
                                 <AssetsSkeleton />

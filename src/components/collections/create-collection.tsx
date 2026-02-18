@@ -42,6 +42,7 @@ import { useProvider } from "@starknet-react/core";
 import { num, hash, Contract } from "starknet";
 import { ipCollectionAbi } from "../../abis/ip_collection";
 import { useNetwork } from "@/components/starknet-provider";
+import { PageHeader } from "@/components/page-header"
 
 // Debugging ABI import
 
@@ -336,11 +337,12 @@ export default function CreateCollectionView({
           </Link>
         )}
 
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Create New Collection</h1>
-          <p className="text-muted-foreground">
-            Mint a new collection to organize your intellectual property assets onchain
-          </p>
+        <div className="mb-0">
+          <PageHeader
+            title="Create New Collection"
+            description="Mint a new collection to organize your intellectual property assets onchain"
+            className="mb-8"
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

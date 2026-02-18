@@ -3,37 +3,30 @@
 import { useState } from "react";
 import { PortfolioOrderList } from "@/components/portfolio/portfolio-order-list";
 import { Input } from "@/components/ui/input";
-import { Search, History } from "lucide-react";
+import { Search } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 
-export default function OffersClientPage() {
+export default function BidHistoryClientPage() {
     const [searchQuery, setSearchQuery] = useState("");
 
     return (
         <div className="container max-w-7xl mx-auto px-4 py-20">
             {/* Header Section */}
             <PageHeader
-                title="Offers Made"
-                description="Track offers you have made on assets."
+                title="Bid History"
+                description="View your past bidding activity."
                 className="pt-8 pb-8"
             >
                 <div className="relative group flex-1 sm:min-w-[300px]">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
-                        placeholder="Search your offers..."
-                        className="pl-10 h-11 bg-muted/40 border-border/40 focus:bg-background transition-all rounded-xl"
+                        placeholder="Search history..."
+                        className="pl-10 bg-muted/20 border-border/50 focus:border-primary/50 transition-all rounded-xl"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
-                <Link href="/portfolio/bid-history">
-                    <Button variant="outline" className="h-11 rounded-xl border-border/40 px-6 gap-2 hover:bg-muted/50">
-                        <History className="w-4 h-4" />
-                        Bid History
-                    </Button>
-                </Link>
             </PageHeader>
 
             {/* Quick Navigation Tabs */}
@@ -46,7 +39,7 @@ export default function OffersClientPage() {
                 </Link>
                 <Link
                     href="/portfolio/offers"
-                    className="px-4 py-2 text-sm font-bold text-primary border-b-2 border-primary whitespace-nowrap"
+                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent whitespace-nowrap"
                 >
                     Offers Made
                 </Link>
@@ -58,7 +51,7 @@ export default function OffersClientPage() {
                 </Link>
                 <Link
                     href="/portfolio/bid-history"
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent whitespace-nowrap"
+                    className="px-4 py-2 text-sm font-bold text-primary border-b-2 border-primary whitespace-nowrap"
                 >
                     Bid History
                 </Link>
@@ -66,11 +59,11 @@ export default function OffersClientPage() {
 
             {/* Content Area */}
             <div className="relative">
-                <PortfolioOrderList searchQuery={searchQuery} mode="offers-made" />
+                <PortfolioOrderList searchQuery={searchQuery} mode="bid-history" />
 
-                {/* Decorative background element */}
+                {/* Decorative Elements */}
                 <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10 animate-pulse" />
-                <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl -z-10 animate-pulse delay-700" />
+                <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -z-10 animate-pulse delay-1000" />
             </div>
         </div>
     );

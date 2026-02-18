@@ -13,30 +13,17 @@ import { toast } from "sonner";
 
 interface PortfolioListingsProps {
     searchQuery?: string;
-    mode?: "listings" | "offers-made" | "offers-received";
 }
 
 import { usePortfolio } from "@/hooks/use-portfolio";
 
-export function PortfolioListings({ searchQuery = "", mode = "listings" }: PortfolioListingsProps) {
+export function PortfolioListings({ searchQuery = "" }: PortfolioListingsProps) {
     const { address } = useAccount();
     const { listings, isLoading, refetch } = useMarketplaceListings();
     const { cancelOrder } = useMarketplace();
     const { tokens } = usePortfolio();
 
-    // Flatten user tokens for easy lookup
-    const ownedTokenSet = useMemo(() => {
-        const set = new Set<string>();
-        Object.keys(tokens).forEach(collectionId => {
-            tokens[collectionId].forEach(token => {
-                const normalizedAddr = normalizeStarknetAddress(collectionId).toLowerCase();
-                set.add(`${normalizedAddr}-${token.token_id}`);
-            });
-        });
-        return set;
-    }, [tokens]);
-
-    // Filter listings for the connected user based on mode
+    // Filter listings for the connected user (only active sale listings)
     const filteredListings = useMemo(() => {
         if (!address || !listings) return [];
 
@@ -45,20 +32,9 @@ export function PortfolioListings({ searchQuery = "", mode = "listings" }: Portf
         return listings.filter(listing => {
             const normalizedOfferer = normalizeStarknetAddress(listing.offerer).toLowerCase();
             const isUserOfferer = normalizedOfferer === normalizedUser;
-
             const isNFTListing = listing.offerType === "ERC721" || listing.offerType === "ERC1155";
-            const isCurrencyOffer = listing.offerType === "ERC20" || listing.offerType === "Native";
 
-            const isNFTOfferReceived = (listing.considerationType === "ERC721" || listing.considerationType === "ERC1155") &&
-                ownedTokenSet.has(`${normalizeStarknetAddress(listing.considerationToken).toLowerCase()}-${listing.considerationIdentifier}`);
-
-            if (mode === "listings") {
-                if (!isUserOfferer || !isNFTListing) return false;
-            } else if (mode === "offers-made") {
-                if (!isUserOfferer || !isCurrencyOffer) return false;
-            } else if (mode === "offers-received") {
-                if (!isNFTOfferReceived || isUserOfferer) return false;
-            }
+            if (!isUserOfferer || !isNFTListing) return false;
 
             if (!searchQuery) return true;
 
@@ -70,17 +46,16 @@ export function PortfolioListings({ searchQuery = "", mode = "listings" }: Portf
 
             return matchesSearch;
         });
-    }, [listings, address, searchQuery, mode, ownedTokenSet]);
+    }, [listings, address, searchQuery]);
 
     const handleCancel = async (orderHash: string) => {
         try {
             await cancelOrder(orderHash);
-            const type = mode === "listings" ? "Listing" : "Offer";
-            toast.success(`${type} cancellation initiated`);
+            toast.success(`Listing cancellation initiated`);
             // Refetch events after a short delay to allow chain to update
             setTimeout(() => refetch(), 5000);
         } catch (err) {
-            console.error(`Failed to cancel ${mode}:`, err);
+            console.error(`Failed to cancel listing:`, err);
             toast.error(`Failed to cancel. Please try again.`);
         }
     };
@@ -89,7 +64,7 @@ export function PortfolioListings({ searchQuery = "", mode = "listings" }: Portf
         return (
             <div className="flex flex-col items-center justify-center py-20 text-muted-foreground animate-pulse">
                 <Loader2 className="h-8 w-8 animate-spin mb-4" />
-                <p>Loading your {mode.replace('-', ' ')}...</p>
+                <p>Loading your listings...</p>
             </div>
         );
     }
@@ -100,27 +75,16 @@ export function PortfolioListings({ searchQuery = "", mode = "listings" }: Portf
                 <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-6">
                     <Tag className="h-8 w-8 text-muted-foreground/50" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">No {mode.replace('-', ' ')} found</h3>
+                <h3 className="text-xl font-semibold mb-2">No listings found</h3>
                 <p className="text-muted-foreground max-w-sm mb-8 px-4">
                     {searchQuery
                         ? `No items match your search "${searchQuery}".`
-                        : mode === "listings"
-                            ? "You don't have any active marketplace listings yet. List an asset to see it here."
-                            : mode === "offers-made"
-                                ? "You haven't made any buy offers yet. Browse the marketplace to make an offer."
-                                : "You haven't received any offers on your assets yet."}
+                        : "You don't have any active marketplace listings yet. List an asset to see it here."}
                 </p>
-                {!searchQuery && mode === "listings" && (
+                {!searchQuery && (
                     <Button asChild className="rounded-full px-8 shadow-lg shadow-primary/20">
                         <Link href="/portfolio/assets">
                             Go to My Assets
-                        </Link>
-                    </Button>
-                )}
-                {!searchQuery && mode === "offers-made" && (
-                    <Button asChild className="rounded-full px-8 shadow-lg shadow-primary/20">
-                        <Link href="/marketplace">
-                            Explore Marketplace
                         </Link>
                     </Button>
                 )}
@@ -141,13 +105,13 @@ export function PortfolioListings({ searchQuery = "", mode = "listings" }: Portf
             </div>
 
             <div className="pt-8 border-t border-border/50 flex justify-between items-center text-xs text-muted-foreground">
-                <p>Showing {filteredListings.length} {mode.replace('-', ' ')}</p>
+                <p>Showing {filteredListings.length} listings</p>
                 <button
                     onClick={() => refetch()}
                     className="hover:text-primary transition-colors flex items-center gap-1.5"
                 >
                     <Loader2 className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
-                    Refresh {mode.replace('-', ' ')}
+                    Refresh Listings
                 </button>
             </div>
         </div>

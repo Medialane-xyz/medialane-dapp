@@ -33,6 +33,8 @@ import {
   Copy,
   ExternalLink,
 } from "lucide-react"
+import { PageHeader } from "@/components/page-header"
+import { usePortfolio } from "@/hooks/use-portfolio"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -46,8 +48,7 @@ import { TransferAssetDialog } from "@/components/transfer-asset-dialog"
 import { useToast } from "@/hooks/use-toast"
 import type { IPType } from "@/types/asset"
 
-
-const typeIcons: Record<IPType, any> = {
+const typeIcons: Record<string, any> = {
   Art: Palette,
   Audio: Music,
   Video: Video,
@@ -59,7 +60,7 @@ const typeIcons: Record<IPType, any> = {
   Custom: Box,
 }
 
-const typeColors: Record<IPType, string> = {
+const typeColors: Record<string, string> = {
   Art: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
   Audio: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
   Video: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
@@ -70,8 +71,6 @@ const typeColors: Record<IPType, string> = {
   NFT: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300",
   Custom: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
 }
-
-import { usePortfolio } from "@/hooks/use-portfolio"
 import { useAccount } from "@starknet-react/core"
 import { shortenAddress } from "@/lib/utils"
 
@@ -233,20 +232,14 @@ export default function TransferPage() {
 
       <main className="flex-1 container p-6 space-y-6">
         {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div>
-              <h1 className="text-3xl font-bold hidden md:block">Transfer Assets</h1>
-              <p className="text-muted-foreground hidden md:block">
-                Select assets to transfer ownership to anCustom wallet
-              </p>
-            </div>
-          </div>
-
+        <PageHeader
+          title="Transfer Assets"
+          description="Select assets to transfer ownership to another wallet"
+        >
           {/* Selection Summary - Desktop */}
           <div className="hidden md:flex items-center gap-4">
             {selectedAssets.length > 0 && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground bg-background/50 px-3 py-1.5 rounded-full border border-border/50 backdrop-blur-sm">
                 <Package className="h-4 w-4" />
                 <span>{selectedAssets.length} selected</span>
                 <Separator orientation="vertical" className="h-4" />
@@ -264,7 +257,7 @@ export default function TransferPage() {
               </Button>
             )}
           </div>
-        </div>
+        </PageHeader>
 
         {/* Tabs */}
         <Tabs defaultValue="owned" onValueChange={setActiveTab} className="space-y-6">

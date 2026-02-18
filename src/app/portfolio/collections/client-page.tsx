@@ -10,6 +10,7 @@ import { CollectionValidator } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { PageHeader } from "@/components/page-header";
 
 const CollectionsPortfolioGrid = dynamic(() =>
     import("@/components/collections/collections-portfolio").then(mod => mod.CollectionsPortfolioGrid), {
@@ -28,18 +29,17 @@ export default function CollectionsClientPage() {
 
     return (
         <div className="p-8">
-            <div className="container mx-auto px-4 py-6">
-                <div className="flex items-center gap-4 mb-8">
+            <div className="container mx-auto px-4 py-8">
+                <PageHeader
+                    title="My Collections"
+                    description="Manage your created collections"
+                >
                     <Button variant="ghost" size="icon" asChild>
                         <Link href="/portfolio">
                             <ArrowLeft className="h-4 w-4" />
                         </Link>
                     </Button>
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight">My Collections</h1>
-                        <p className="text-muted-foreground">Manage your created collections</p>
-                    </div>
-                </div>
+                </PageHeader>
 
                 {/* Show message when no wallet is connected */}
                 {!address && (

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, ShieldCheck, Loader2 } from "lucide-react"
 import Link from "next/link"
+import { PageHeader } from "@/components/page-header"
 import { ProofCertificate } from "@/components/proof-of-ownership/proof-certificate"
 import { useMemo, use } from "react"
 import { useAsset } from "@/hooks/use-asset"
@@ -110,19 +111,21 @@ export default function ProofOfOwnershipPage({ params }: ProofOfOwnershipPagePro
   return (
     <main className="min-h-screen text-foreground">
       <div className="container mx-auto px-4 py-8 sm:py-16 max-w-5xl">
-        <div className="text-center mb-12 space-y-4">
-          <Badge variant="outline" className="mb-4 border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-400">
-            <ShieldCheck className="w-3 h-3 mr-1" />
-            Onchain Certificate
-          </Badge>
-
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-            Proof of Ownership
-          </h1>
-          <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-            Verifiable onchain record for <span className="text-foreground font-medium">{enhancedAsset.name}</span>
-          </p>
-        </div>
+        <PageHeader
+          title="Proof of Ownership"
+          description={
+            <span>
+              Verifiable onchain record for <span className="text-foreground font-medium">{enhancedAsset.name}</span>
+            </span>
+          }
+        >
+          <div>
+            <Badge variant="outline" className="border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-400">
+              <ShieldCheck className="w-3 h-3 mr-1" />
+              Onchain Certificate
+            </Badge>
+          </div>
+        </PageHeader>
 
         <ProofCertificate asset={enhancedAsset} />
       </div>

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { WalletConnectCTA } from "@/components/portfolio/wallet-connect-cta";
+import { PageHeader } from "@/components/page-header";
 
 const PortfolioListings = dynamic<any>(() =>
     import("@/components/portfolio/portfolio-listings").then(mod => mod.PortfolioListings), {
@@ -22,30 +23,23 @@ export default function ListingsClientPage() {
     return (
         <div className="container max-w-7xl mx-auto px-4 py-20">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-
-                <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                        <h1 className="text-3xl text-foreground bg-blue/10 rounded-xl py-2 px-4">
-                            My Listings
-                        </h1>
+            <PageHeader
+                title="My Listings"
+                description="Manage your active marketplace listings."
+                className="pt-8 pb-8"
+            >
+                {!address ? null : (
+                    <div className="relative group flex-1 sm:min-w-[300px]">
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                        <Input
+                            placeholder="Search your listings..."
+                            className="pl-10 h-11 bg-muted/40 border-border/40 focus:bg-background transition-all rounded-xl"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                     </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    {!address ? null : (
-                        <div className="relative group flex-1 sm:min-w-[300px]">
-                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                            <Input
-                                placeholder="Search your listings..."
-                                className="pl-10 h-11 bg-muted/40 border-border/40 focus:bg-background transition-all rounded-xl"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
+                )}
+            </PageHeader>
 
             {/* Quick Navigation Tabs */}
             <div className="flex gap-4 mb-8 border-b border-border/40 pb-px">
@@ -66,6 +60,12 @@ export default function ListingsClientPage() {
                     className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent"
                 >
                     Offers Received
+                </Link>
+                <Link
+                    href="/portfolio/bid-history"
+                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent"
+                >
+                    Bid History
                 </Link>
             </div>
 

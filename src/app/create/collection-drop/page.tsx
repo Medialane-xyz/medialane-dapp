@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useDropzone } from 'react-dropzone';
 import { licenseTypes, geographicScopes } from '@/types/asset';
+import { PageHeader } from "@/components/page-header"
 
 export default function CreateDropPage() {
     const {
@@ -101,14 +102,11 @@ export default function CreateDropPage() {
 
 
             <main className="container mx-auto px-4 py-8 relative z-10">
-
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold mb-2">Create Collection Drop</h1>
-                    <p className="text-muted-foreground text-lg max-w-2xl">
-                        Launch a high-quality NFT collection with built-in scarcity, reveal mechanics, and programmable IP rights.
-                    </p>
-                </div>
+                <PageHeader
+                    title="Create Collection Drop"
+                    description="Launch a high-quality NFT collection with built-in scarcity, reveal mechanics, and programmable IP rights."
+                    className="mb-8"
+                />
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 

@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { PageHeader } from "@/components/page-header"
 
 export default function ActivitiesPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -59,41 +60,26 @@ export default function ActivitiesPage() {
     <div className="min-h-screen bg-background py-10">
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px] pointer-events-none fixed" />
 
-      <main className="container relative mx-auto px-4 py-12 md:py-20 space-y-12 max-w-7xl">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-end justify-between">
-          <div className="space-y-4 max-w-2xl">
-            <Badge variant="outline" className="rounded-full px-4 py-1.5 border-primary/20 bg-primary/5 text-primary">
-              <span className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Community Feed
-              </span>
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60 leading-none pb-1">
-              Protocol Activity
-            </h1>
-            <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl">
-              Explorer the pulse of the Mediolano ecosystem. Track live mints, collections, and asset transfers occurring on Starknet.
-            </p>
+      <main className="container relative mx-auto px-4 pb-12 space-y-12 max-w-7xl">
+        <PageHeader
+          title="Protocol Activity"
+          description="Explorer the pulse of the Mediolano ecosystem. Track live mints, collections, and asset transfers occurring on Starknet."
+        >
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full border bg-background/50 backdrop-blur text-sm text-muted-foreground shadow-sm flex-1 md:flex-none justify-center md:justify-start">
+            <span className="font-semibold text-foreground">{activities.length}</span>
+            <span>events</span>
           </div>
 
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full border bg-background/50 backdrop-blur text-sm text-muted-foreground shadow-sm flex-1 md:flex-none justify-center md:justify-start">
-              <span className="font-semibold text-foreground">{activities.length}</span>
-              <span>events</span>
-            </div>
-
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={refresh}
-              disabled={loading}
-              className="rounded-full h-10 w-10 shrink-0 hover:bg-primary/10 hover:text-primary transition-colors"
-            >
-              <RefreshCw className={`h-4 w-4 ${loading && !loadingMore ? "animate-spin" : ""}`} />
-            </Button>
-          </div>
-        </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={refresh}
+            disabled={loading}
+            className="rounded-full h-10 w-10 shrink-0 hover:bg-primary/10 hover:text-primary transition-colors"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading && !loadingMore ? "animate-spin" : ""}`} />
+          </Button>
+        </PageHeader>
 
         {/* Controls Section */}
         <div className="space-y-6 bg-background/80 backdrop-blur-xl p-1 -m-1 rounded-2xl md:bg-transparent md:p-0">

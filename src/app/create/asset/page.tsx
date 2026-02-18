@@ -41,6 +41,7 @@ import { num, hash } from "starknet";
 import { useMarketplace } from "@/hooks/use-marketplace";
 import { ItemType } from "@/types/marketplace";
 import { SUPPORTED_TOKENS } from "@/lib/constants";
+import { PageHeader } from "@/components/page-header"
 
 export default function CreateAssetPage() {
   const { toast } = useToast();
@@ -352,6 +353,11 @@ export default function CreateAssetPage() {
         )}
 
         <main className="container mx-auto p-4 max-w-7xl">
+          <PageHeader
+            title="Create Asset"
+            description="Mint unique assets and build your intellectual property portfolio."
+            className="mb-8"
+          />
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Main Content */}
             <div className="lg:col-span-3 space-y-8">

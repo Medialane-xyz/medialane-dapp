@@ -11,6 +11,8 @@ import { Grid3X3, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
+import { PageHeader } from "@/components/page-header"
+
 export default function CollectionsPage() {
   const router = useRouter();
   const { collections, loading, loadingMore, error, hasMore, loadMore } = usePaginatedCollections(12);
@@ -24,20 +26,10 @@ export default function CollectionsPage() {
   return (
     <main className="container mx-auto px-4">
 
-      <div className="relative py-12 md:py-20 mb-8 text-center overflow-hidden">
-        {/* Ambient Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-blue-500/20 rounded-full blur-[100px] -z-10" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[300px] bg-rose-500/10 rounded-full blur-[80px] -z-10" />
-
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-rose-400">
-            Collections
-          </span>
-        </h1>
-        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-5 duration-700 delay-100">
-          Explore and collect verified IP assets from the Medialane protocol.
-        </p>
-      </div>
+      <PageHeader
+        title="Collections"
+        description="Explore and collect verified IP assets from the Medialane protocol."
+      />
 
       <div className="container">
 

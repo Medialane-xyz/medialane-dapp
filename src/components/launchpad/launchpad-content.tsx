@@ -1,9 +1,9 @@
 "use client"
 
 import "@/components/launchpad/launchpad.css"
-import { LaunchpadHero } from "@/components/launchpad/launchpad-hero"
 import { LaunchpadCard, type LaunchpadFeatureData } from "@/components/launchpad/launchpad-card"
 import { CreatorStatsBar } from "@/components/create/creator-stats-bar"
+import { PageHeader } from "@/components/page-header"
 
 /* ═══════════════════════════════════════════════════════
    Feature Manifest
@@ -136,12 +136,15 @@ const features: LaunchpadFeatureData[] = [
 
 export function LaunchpadContent() {
     return (
-        <div className="min-h-screen pt-20 pb-16 px-4 md:px-6">
+        <div className="min-h-screen pb-16 px-4 md:px-6">
             <main className="container mx-auto max-w-6xl">
 
                 <CreatorStatsBar />
 
-                <LaunchpadHero />
+                <PageHeader
+                    title="Creator Launchpad"
+                    description="Pick a tool. Launch something new. Zero fees, full ownership."
+                />
 
                 {/* All features — unified grid, no section breaks */}
                 <div className="lp-grid">

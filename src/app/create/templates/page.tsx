@@ -11,6 +11,7 @@ import { TemplateCard } from "@/components/template-card"
 import { TemplateDetails } from "@/components/template-details"
 import { Badge } from "@/components/ui/badge"
 import { templates } from "@/lib/templates"
+import { PageHeader } from "@/components/page-header"
 
 const categories = [
   { id: "all", name: "All Templates", icon: "Sparkles" },
@@ -50,6 +51,22 @@ export default function TemplatesPage() {
     <div className="min-h-screen">
 
       <main className="container mx-auto p-4 py-8">
+        <PageHeader
+          title="Templates"
+          description="Choose a specialized template for your IP asset creation."
+          className="mb-8"
+        >
+          <div className="relative w-full max-w-md">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search templates..."
+              className="pl-10 h-10 bg-background/50 backdrop-blur-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </PageHeader>
+
         <div className="mb-8 space-y-6">
           <Alert className="border-primary/20 bg-primary/5">
             <Info className="h-4 w-4" />
@@ -59,16 +76,6 @@ export default function TemplatesPage() {
               blockchain registration using Starknet and Ethereum security.
             </AlertDescription>
           </Alert>
-
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search templates by name, type, or use case..."
-              className="pl-10 h-12"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-4">

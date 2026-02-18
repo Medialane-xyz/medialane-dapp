@@ -6,6 +6,7 @@ import Link from "next/link"
 
 import { AssetProvenance } from "@/components/asset-provenance/asset-provenance"
 import { Badge } from "@/components/ui/badge"
+import { PageHeader } from "@/components/page-header"
 
 import { useMemo, useState, use } from "react"
 import { useAsset } from "@/hooks/use-asset"
@@ -181,15 +182,14 @@ export default function ProvenancePage({ params }: ProvenancePageProps) {
 
 
 
-      <main className="container mx-auto px-4 py-12 sm:py-16 max-w-5xl">
-        <div className="mb-12 space-y-6">
-          <div className="text-center space-y-3">
-            <div>
-              <h1 className="text-3xl font-black tracking-tight mb-3">Provenance </h1>
-            </div>
-          </div>
+      <main className="container mx-auto px-4 py-8 max-w-5xl">
 
-        </div>
+        <PageHeader
+          title="Provenance"
+          description="Track the complete history of ownership and events for this asset onchain."
+        />
+
+
 
         <AssetProvenance asset={enhancedAsset} events={provenanceEvents} showActions={true} compact={false} />
       </main>

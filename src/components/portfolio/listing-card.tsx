@@ -86,8 +86,11 @@ export function ListingCard({ listing, onCancel }: ListingCardProps) {
                     </span>
                 </div>
                 <div className="absolute top-3 right-3 flex gap-2">
-                    <div className={`bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider border border-white/10`}>
-                        Active
+                    <div className={`${listing.status === 'active' ? 'bg-green-500/80 shadow-[0_0_10px_rgba(34,197,94,0.3)]' :
+                        listing.status === 'fulfilled' ? 'bg-blue-500/80' :
+                            'bg-muted/80'
+                        } backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider border border-white/10`}>
+                        {listing.status}
                     </div>
                     <div className={`${isListing ? 'bg-primary/80' : 'bg-orange-500/80'} backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider border border-white/10`}>
                         {isListing ? 'Sale' : 'Offer'}
@@ -120,7 +123,7 @@ export function ListingCard({ listing, onCancel }: ListingCardProps) {
                     size="sm"
                     className="w-full text-xs font-bold border border-border/40 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all rounded-lg group/btn"
                     onClick={() => onCancel?.(orderHash)}
-                    disabled={!isListing && !isBid}
+                    disabled={(!isListing && !isBid) || listing.status !== 'active'}
                 >
                     {isListing ? (
                         <>
@@ -133,7 +136,7 @@ export function ListingCard({ listing, onCancel }: ListingCardProps) {
                             : (
                                 <>
                                     <Trash2 className="w-3.5 h-3.5 mr-2 group-hover/btn:scale-110 transition-transform" />
-                                    Cancel Bid
+                                    {listing.status === 'active' ? "Cancel Bid" : listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}
                                 </>
                             )
                     ) : (

@@ -27,6 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CreationOptionCard } from "@/components/create/creation-option-card"
 import { CreationOptionDetails } from "@/components/create/creation-option-details"
 import { CreatorStatsBar } from "@/components/create/creator-stats-bar"
+import { PageHeader } from "@/components/page-header"
 
 const creationOptions = [
   {
@@ -295,12 +296,17 @@ export default function CreatePage() {
   const selectedOptionData = creationOptions.find((opt) => opt.id === selectedOption)
 
   return (
-    <div className="min-h-screen pt-24 pb-8 px-4 md:px-8">
+    <div className="min-h-screen pb-8 px-4 md:px-8">
 
       <main className="container mx-auto max-w-10xl">
 
         {/* Creator Stats */}
         <CreatorStatsBar />
+
+        <PageHeader
+          title="Create"
+          description="Start your journey. Mint assets, launch collections, and build your IP portfolio."
+        />
 
         {/* Search and Filters */}
         <div className="mb-8">

@@ -10,6 +10,8 @@ import { CollectionStats } from "@/components/collections/collections-stats";
 import Link from "next/link";
 import { ArrowRight, Grid3X3, Layers, Activity, Loader2 } from "lucide-react";
 
+import { PageHeader } from "@/components/page-header";
+
 export default function PortfolioClientPage() {
     const { address } = useAccount();
     const { collections, stats, loading, error, tokens } = usePortfolio();
@@ -20,21 +22,15 @@ export default function PortfolioClientPage() {
     });
 
     return (
-        <div className="p-8">
-            <div className="container mx-auto px-4 py-6">
-                <div className="space-y-1 mb-8 px-4 mx-auto text-center sm:text-left">
-                    <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
-                        IP Portfolio
-                    </h1>
-                    {address ?
-                        <p className="text-muted-foreground text-lg">
-                            Showcase and manage your digital assets and collections
-                        </p> :
-                        <p className="text-muted-foreground badge">
-                            Connect your wallet to open your onchain portfolio.
-                        </p>
+        <div className="min-h-screen bg-background pb-8">
+            <div className="container mx-auto px-4">
+                <PageHeader
+                    title="IP Portfolio"
+                    description={address
+                        ? "Showcase and manage your digital assets and collections"
+                        : "Connect your wallet to open your onchain portfolio."
                     }
-                </div>
+                />
 
                 {/* Show message when no wallet is connected */}
                 {!address && (

@@ -12,6 +12,7 @@ import { useAccount } from "@starknet-react/core";
 import { shortString } from "starknet";
 import { useUsersSettings } from "@/hooks/use-users-settings";
 import { toEpochTime } from "@/lib/utils";
+import { PageHeader } from "@/components/page-header";
 
 // Mockup data with booleans replaced by numbers
 const mockUser = {
@@ -112,8 +113,11 @@ export default function SettingsPage() {
   }, [walletAddress, getAccountSettings]);
 
   return (
-    <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">Settings</h1>
+    <div className="container mx-auto pb-8 px-4 sm:px-6 lg:px-8">
+      <PageHeader
+        title="Settings"
+        description="Manage your account preferences and application settings."
+      />
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-8">
         <Card className="flex flex-col glass-card">
           <CardHeader>
