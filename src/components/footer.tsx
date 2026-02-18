@@ -69,6 +69,7 @@ export function Footer() {
               <Link href="/portfolio/activities" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">My Activities</Link>
               <Link href="/portfolio/listings" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">My Listings</Link>
               <Link href="/portfolio/offers" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">My Offers</Link>
+              <Link href="/portfolio/offers-received" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Received Offers</Link>
             </div>
           </motion.div>
 

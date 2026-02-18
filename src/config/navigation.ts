@@ -32,10 +32,10 @@ import {
 
 export const navigation = {
     main: [
-        { title: "Start", href: "/", icon: Home, description: "Medialane Frontpage" },
-        { title: "Marketplace", href: "/marketplace", icon: ShoppingBag, description: "Trade IP and NFT assets" },
+        { title: "Start", href: "/", icon: Home, description: "Medialane.xyz" },
+        { title: "Marketplace", href: "/marketplace", icon: ShoppingBag, description: "Trade onchain assets" },
         { title: "Launchpad", href: "/launchpad", icon: Rocket, description: "Creator Launchpad" },
-        { title: "Portfolio", href: "/portfolio", icon: User, description: "Manage your on-chain assets" },
+        { title: "Portfolio", href: "/portfolio", icon: User, description: "Manage your onchain account" },
     ],
     marketplace: [
         { title: "Explore NFTs", href: "/assets", icon: Box, description: "Browse all IP assets" },
@@ -44,6 +44,7 @@ export const navigation = {
     ],
     launchpad: [
         { title: "Creator Launchpad", href: "/launchpad", icon: Rocket, description: "Creator tools dashboard" },
+        { title: "Create Panel", href: "/create", icon: Rocket, description: "Creator studio" },
         { title: "Collection Drop", href: "/create/collection-drop", icon: Layers, description: "Deploy a collection drop" },
         { title: "Standard Collection", href: "/create/collection", icon: PlusCircle, description: "Start from scratch" },
         { title: "Mint Asset", href: "/create/asset", icon: Box, description: "Mint single asset" },
@@ -53,16 +54,17 @@ export const navigation = {
     portfolio: [
         { title: "Onchain Dashboard", href: "/portfolio", icon: Box, description: "Your portfolio dashboard" },
         { title: "My Assets", href: "/portfolio/assets", icon: Box, description: "Your owned IP" },
-        { title: "My Listings", href: "/portfolio/listings", icon: Box, description: "Your active sale listings" },
-        { title: "My Offers", href: "/portfolio/offers", icon: Box, description: "Your active buy offers" },
         { title: "My Collections", href: "/portfolio/collections", icon: Layers, description: "Collections you created" },
         { title: "My Activities", href: "/portfolio/activities", icon: History, description: "Your activities" },
+        { title: "My Listings", href: "/portfolio/listings", icon: Box, description: "Your active sale listings" },
+        { title: "My Offers", href: "/portfolio/offers", icon: Box, description: "Your active buy offers" },
+        { title: "Offers Received", href: "/portfolio/offers-received", icon: Box, description: "Offers received on your assets" },
     ],
     discover: [
         { title: "IP Assets", href: "/assets", icon: Box, description: "Explore registered IP assets" },
         { title: "Collections", href: "/collections", icon: Layers, description: "Browse curated IP collections" },
         { title: "Activities", href: "/activities", icon: Zap, description: "Community events & rewards" },
-        { title: "Creator Launchpad", href: "/launchpad", icon: Rocket, description: "Creator tools dashboard" },
+        { title: "Marketplace", href: "/marketplace", icon: Rocket, description: "Trade onchain assets" },
     ],
     create: [
         { title: "Creator Studio", href: "/create", icon: Rocket, description: "Creator tools dashboard" },

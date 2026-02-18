@@ -20,29 +20,15 @@ export default function ListingsClientPage() {
     const [searchQuery, setSearchQuery] = useState("");
 
     return (
-        <div className="container max-w-7xl mx-auto px-4 py-8 md:py-12">
+        <div className="container max-w-7xl mx-auto px-4 py-20">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+
                 <div className="space-y-4">
-                    <Link
-                        href="/portfolio/assets"
-                        className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors group"
-                    >
-                        <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                        Back to Portfolio
-                    </Link>
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                                <Tag className="w-6 h-6" />
-                            </div>
-                            <h1 className="text-4xl font-black tracking-tight text-foreground">
-                                My Listings
-                            </h1>
-                        </div>
-                        <p className="text-muted-foreground text-lg max-w-2xl leading-relaxed">
-                            Manage your active marketplace listings for assets you own.
-                        </p>
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-3xl text-foreground bg-blue/10 rounded-xl py-2 px-4">
+                            My Listings
+                        </h1>
                     </div>
                 </div>
 
@@ -67,13 +53,19 @@ export default function ListingsClientPage() {
                     href="/portfolio/listings"
                     className="px-4 py-2 text-sm font-bold text-primary border-b-2 border-primary"
                 >
-                    Selling
+                    My Listings
                 </Link>
                 <Link
                     href="/portfolio/offers"
                     className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent"
                 >
-                    Buying
+                    Offers Made
+                </Link>
+                <Link
+                    href="/portfolio/offers-received"
+                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent"
+                >
+                    Offers Received
                 </Link>
             </div>
 

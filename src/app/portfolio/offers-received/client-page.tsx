@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { PortfolioListings } from "@/components/portfolio/portfolio-listings";
 import { Input } from "@/components/ui/input";
-import { Search, ArrowLeft, History, Gavel } from "lucide-react";
+import { Search, ArrowLeft, History, Inbox } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default function OffersClientPage() {
+export default function OffersReceivedClientPage() {
     const [searchQuery, setSearchQuery] = useState("");
 
     return (
@@ -20,7 +20,7 @@ export default function OffersClientPage() {
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
                                 <h1 className="text-3xl text-foreground bg-blue/10 rounded-xl py-2 px-4">
-                                    Offers Made
+                                    Offers Received
                                 </h1>
                             </div>
                         </div>
@@ -38,10 +38,6 @@ export default function OffersClientPage() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
-                    <Button variant="outline" className="h-11 rounded-xl border-border/40 px-6 gap-2 hover:bg-muted/50">
-                        <History className="w-4 h-4" />
-                        Bid History
-                    </Button>
                 </div>
             </div>
 
@@ -55,13 +51,13 @@ export default function OffersClientPage() {
                 </Link>
                 <Link
                     href="/portfolio/offers"
-                    className="px-4 py-2 text-sm font-bold text-primary border-b-2 border-primary"
+                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent"
                 >
                     Offers Made
                 </Link>
                 <Link
                     href="/portfolio/offers-received"
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent"
+                    className="px-4 py-2 text-sm font-bold text-primary border-b-2 border-primary"
                 >
                     Offers Received
                 </Link>
@@ -69,11 +65,11 @@ export default function OffersClientPage() {
 
             {/* Content Area */}
             <div className="relative">
-                <PortfolioListings searchQuery={searchQuery} mode="offers-made" />
+                <PortfolioListings searchQuery={searchQuery} mode="offers-received" />
 
                 {/* Decorative background element */}
                 <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
-                <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl -z-10" />
+                <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -z-10" />
             </div>
         </div>
     );
