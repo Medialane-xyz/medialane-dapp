@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils"
-import { ShoppingBag, Rocket, User, ChevronDown, Command } from "lucide-react";
+import { ShoppingBag, Rocket, User, ChevronDown, Command, Boxes } from "lucide-react";
 import { Logo } from "@/components/header/logo"
 import { ThemeToggle } from "@/components/header/theme-toggle"
 
@@ -51,8 +51,8 @@ export function Header() {
             onClick={() => openCommandMenu("marketplace")}
             className="h-8 gap-2 rounded-full px-4 text-xs font-medium hover:bg-white/50 dark:hover:bg-white/10 text-foreground transition-all"
           >
-            <ShoppingBag className="w-3.5 h-3.5" />
-            <span>Marketplace</span>
+            <Boxes className="w-3.5 h-3.5" />
+            <span>Explore</span>
           </Button>
 
           <Button
