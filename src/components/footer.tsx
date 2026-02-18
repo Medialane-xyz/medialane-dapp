@@ -25,43 +25,50 @@ export function Footer() {
 
           {/* Column 1: Platform */}
           <motion.div {...fadeIn} className="flex flex-col gap-6">
-            <h4 className="text-[11px] tracking-[0.2em] text-foreground/40">Platform</h4>
+            <h4 className="text-foreground/60">Medialane</h4>
             <div className="flex flex-col gap-4">
-              <FooterLink onClick={() => openCommandMenu("discover")}>Discover</FooterLink>
+              <FooterLink onClick={() => openCommandMenu("discover")}>Explore</FooterLink>
               <FooterLink onClick={() => openCommandMenu("launchpad")}>Launchpad</FooterLink>
               <FooterLink onClick={() => openCommandMenu("portfolio")}>Portfolio</FooterLink>
-              <FooterLink onClick={() => openCommandMenu("search")}>Search Hub</FooterLink>
+              <FooterLink onClick={() => openCommandMenu("search")}>Search</FooterLink>
             </div>
           </motion.div>
 
           {/* Column 2: Create */}
           <motion.div {...fadeIn} transition={{ ...fadeIn.transition, delay: 0.1 }} className="flex flex-col gap-6">
-            <h4 className="text-[11px] tracking-[0.2em] text-foreground/40">Create</h4>
+            <h4 className="text-foreground/60">Launch</h4>
             <div className="flex flex-col gap-4">
-              <Link href="/create" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Mint IP</Link>
-              <Link href="/create/remix" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Start Remix</Link>
-              <Link href="/launchpad/create" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">IP Clubs</Link>
-              <Link href="/templates" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Licensing</Link>
+              <Link href="/create" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Creator Studio</Link>
+              <Link href="/create/collections" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Create Collection</Link>
+              <Link href="/create/asset" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Programmable IP</Link>
+              <Link href="/create/templates" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">IP Templates</Link>
+              <Link href="/create/remix" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Create Remix</Link>
+              <Link href="#" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Claim Collection</Link>
+              <Link href="#" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Claim NFT</Link>
             </div>
           </motion.div>
 
           {/* Column 3: Marketplace */}
           <motion.div {...fadeIn} transition={{ ...fadeIn.transition, delay: 0.2 }} className="flex flex-col gap-6">
-            <h4 className="text-[11px] tracking-[0.2em] text-foreground/40">Marketplace</h4>
+            <h4 className="text-foreground/60">Explore</h4>
             <div className="flex flex-col gap-4">
-              <Link href="/marketplace" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">All Assets</Link>
-              <Link href="/collections" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Top Collections</Link>
-              <Link href="/marketplace?sort=trending" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Trending Now</Link>
-              <Link href="/marketplace?sort=new" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Newest Drops</Link>
+              <Link href="/assets" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">All Assets</Link>
+              <Link href="/collections" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">All Collections</Link>
+              <Link href="/marketplace" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Marketplace</Link>
+              <Link href="/activity" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Community Activity</Link>
             </div>
           </motion.div>
 
           {/* Column 4: Security */}
           <motion.div {...fadeIn} transition={{ ...fadeIn.transition, delay: 0.3 }} className="flex flex-col gap-6">
-            <h4 className="text-[11px] tracking-[0.2em] text-foreground/40">Guidelines</h4>
+            <h4 className="text-foreground/60">Manage</h4>
             <div className="flex flex-col gap-4">
-              <Link href="/privacy" className="text-[11px] tracking-widest text-foreground/20 hover:text-foreground/50 transition-colors">Privacy Policy</Link>
-              <Link href="/terms" className="text-[11px] tracking-widest text-foreground/20 hover:text-foreground/50 transition-colors">Terms of Service</Link>
+              <Link href="/portfolio" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Onchain Portfolio</Link>
+              <Link href="/portfolio/collections" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">My Collections</Link>
+              <Link href="/portfolio/assets" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">My Assets</Link>
+              <Link href="/portfolio/activities" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">My Activities</Link>
+              <Link href="/portfolio/listings" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">My Listings</Link>
+              <Link href="/portfolio/offers" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">My Offers</Link>
             </div>
           </motion.div>
 

@@ -53,6 +53,8 @@ export const navigation = {
     portfolio: [
         { title: "Onchain Dashboard", href: "/portfolio", icon: Box, description: "Your portfolio dashboard" },
         { title: "My Assets", href: "/portfolio/assets", icon: Box, description: "Your owned IP" },
+        { title: "My Listings", href: "/portfolio/listings", icon: Box, description: "Your active sale listings" },
+        { title: "My Offers", href: "/portfolio/offers", icon: Box, description: "Your active buy offers" },
         { title: "My Collections", href: "/portfolio/collections", icon: Layers, description: "Collections you created" },
         { title: "My Activities", href: "/portfolio/activities", icon: History, description: "Your activities" },
     ],

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { RpcProvider, hash, num, Contract } from "starknet";
+import { RpcProvider, hash, num, Contract, shortString } from "starknet";
 import { MEDIALANE_CONTRACT_ADDRESS, START_BLOCK } from "@/lib/constants";
 import { normalizeStarknetAddress } from "@/lib/utils";
 import { IPMarketplaceABI } from "@/abis/ip_market";
@@ -18,8 +18,12 @@ export interface MarketplaceOrder {
     offerer: string;
     offerToken: string;
     offerIdentifier: string;
+    offerAmount: string;
+    offerType: string;
     considerationToken: string;
+    considerationIdentifier: string;
     considerationAmount: string;
+    considerationType: string;
     startTime: number;
     endTime: number;
     blockNumber?: number;
@@ -128,8 +132,12 @@ export function useMarketplaceListings() {
                             offerer: details.offerer.toString(),
                             offerToken: details.offer.token.toString(),
                             offerIdentifier: details.offer.identifier_or_criteria.toString(),
+                            offerAmount: details.offer.start_amount.toString(),
+                            offerType: shortString.decodeShortString(num.toHex(details.offer.item_type)),
                             considerationToken: details.consideration.token.toString(),
+                            considerationIdentifier: details.consideration.identifier_or_criteria.toString(),
                             considerationAmount: details.consideration.start_amount.toString(),
+                            considerationType: shortString.decodeShortString(num.toHex(details.consideration.item_type)),
                             startTime: Number(details.start_time),
                             endTime: Number(details.end_time),
                             blockNumber: event.block_number,
