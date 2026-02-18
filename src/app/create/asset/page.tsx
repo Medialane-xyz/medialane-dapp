@@ -244,29 +244,30 @@ export default function CreateAssetPage() {
           ).toString();
 
           const now = Math.floor(Date.now() / 1000);
+          const startTime = now + 300; // 5 minutes in future
           const duration = 30 * 24 * 60 * 60; // 30 days default
 
           // Build Seaport-style OrderParameters
           const orderParams = {
             offerer: walletAddress,
             offer: {
-              item_type: ItemType.ERC721,
+              item_type: "ERC721",
               token: nftAddress,
               identifier_or_criteria: tokenId,
               start_amount: "1",
               end_amount: "1",
             },
             consideration: {
-              item_type: ItemType.ERC20,
+              item_type: "ERC20",
               token: usdcAddress,
               identifier_or_criteria: "0",
               start_amount: priceInSmallestUnit,
               end_amount: priceInSmallestUnit,
               recipient: walletAddress,
             },
-            start_time: "0",
+            start_time: startTime.toString(),
             end_time: (now + duration).toString(),
-            salt: `0x${Math.floor(Math.random() * 0xFFFFFFFF).toString(16)}`,
+            salt: Math.floor(Math.random() * 1000000).toString(),
             nonce: "0",
           };
 
