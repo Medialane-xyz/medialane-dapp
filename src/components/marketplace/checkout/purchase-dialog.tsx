@@ -18,6 +18,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { useMarketplace } from "@/hooks/use-marketplace"
 import { Listing, Fulfillment } from "@/types/marketplace"
 import { EXPLORER_URL } from "@/lib/constants"
+import { useTokenMetadata } from "@/hooks/use-token-metadata"
 
 interface PurchaseDialogProps {
     trigger?: React.ReactNode
@@ -35,6 +36,14 @@ interface PurchaseDialogProps {
 export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
     const { buyItem, isProcessing, txHash, error, resetState } = useMarketplace()
     const [open, setOpen] = useState(false)
+
+    // Parse NFT Address and Token ID from asset.id (contract-tokenId)
+    const [nftAddress, tokenId] = asset.id.split("-")
+    const metadata = useTokenMetadata(tokenId, nftAddress)
+    const { name: mName, image: mImage, loading: isLoadingMetadata } = metadata
+
+    const displayName = mName || asset.name
+    const displayImage = mImage || asset.image
 
     // Derived state from hook
     const stage = txHash ? "success" : isProcessing ? "processing" : error ? "error" : "review"
@@ -90,13 +99,28 @@ export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
                 ) : (
                     <div className="space-y-6 pt-2">
                         {/* Asset Preview */}
-                        <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 border">
-                            <div className="h-16 w-16 rounded-md overflow-hidden border bg-background shrink-0">
-                                <img src={asset.image} alt={asset.name} className="h-full w-full object-cover" />
+                        <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/30 border border-border/50 group hover:bg-muted/40 transition-colors">
+                            <div className="h-16 w-16 rounded-lg overflow-hidden border border-border/50 bg-background shrink-0 shadow-sm relative">
+                                {isLoadingMetadata ? (
+                                    <div className="absolute inset-0 bg-muted animate-pulse" />
+                                ) : (
+                                    <img
+                                        src={displayImage}
+                                        alt={displayName}
+                                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).src = "/placeholder.svg"
+                                        }}
+                                    />
+                                )}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs text-muted-foreground truncate">{asset.collectionName}</p>
-                                <h3 className="font-semibold truncate">{asset.name}</h3>
+                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">{asset.collectionName}</p>
+                                <h3 className="font-bold text-foreground truncate">{displayName}</h3>
+                                <div className="flex items-center gap-1.5 mt-1">
+                                    <Badge variant="outline" className="text-[9px] h-4 py-0 font-medium bg-background/50">#{tokenId}</Badge>
+                                    <span className="text-[10px] text-muted-foreground/60 font-medium">Verified IP</span>
+                                </div>
                             </div>
                         </div>
 

@@ -10,6 +10,7 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -30,6 +31,7 @@ import { ItemType } from "@/types/marketplace"
 import { useAccount } from "@starknet-react/core"
 import { SUPPORTED_TOKENS, EXPLORER_URL } from "@/lib/constants"
 import { constants } from "starknet"
+import { useTokenMetadata } from "@/hooks/use-token-metadata"
 
 
 interface ListingDialogProps {
@@ -55,6 +57,11 @@ const DURATION_OPTIONS = [
 export function ListingDialog({ trigger, asset }: ListingDialogProps) {
     const { address } = useAccount()
     const { createListing, isProcessing, txHash, error, resetState } = useMarketplace()
+    const metadata = useTokenMetadata(asset.tokenId, asset.collectionAddress)
+    const { name: mName, image: mImage, loading: isLoadingMetadata } = metadata
+
+    const displayName = mName || asset.name
+    const displayImage = mImage || asset.image
 
     const [open, setOpen] = useState(false)
     const [price, setPrice] = useState("")
@@ -153,13 +160,27 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                 ) : (
                     <div className="p-6 space-y-6">
                         {/* Compact Asset Preview */}
-                        <div className="flex items-center gap-4 p-3 rounded-xl bg-muted/30 border border-border/50">
-                            <div className="h-14 w-14 rounded-lg overflow-hidden border bg-background shrink-0 shadow-sm">
-                                <img src={asset.image} alt={asset.name} className="h-full w-full object-cover" />
+                        <div className="flex items-center gap-4 p-3 rounded-xl bg-muted/30 border border-border/50 group hover:bg-muted/40 transition-colors">
+                            <div className="h-14 w-14 rounded-lg overflow-hidden border border-border/50 bg-background shrink-0 shadow-sm relative">
+                                {isLoadingMetadata ? (
+                                    <div className="absolute inset-0 bg-muted animate-pulse" />
+                                ) : (
+                                    <img
+                                        src={displayImage}
+                                        alt={displayName}
+                                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).src = "/placeholder.svg"
+                                        }}
+                                    />
+                                )}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-sm truncate">{asset.name}</h3>
-                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Asset Listing</p>
+                                <h3 className="font-bold text-sm truncate">{displayName}</h3>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                    <Badge variant="outline" className="text-[9px] h-3.5 py-0 font-medium bg-background/30">#{asset.tokenId}</Badge>
+                                    <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-wider">Asset Listing</p>
+                                </div>
                             </div>
                         </div>
 

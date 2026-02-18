@@ -14,13 +14,23 @@ export interface TokenMetadata {
     loading: boolean;
 }
 
+import { normalizeStarknetAddress } from "@/lib/utils";
+
 /**
- * Helper to decode Cairo 1 ByteArray from raw felt array
+ * Helper to decode Cairo 1 ByteArray from raw felt array.
+ * Falls back to simple felt string decoding if data doesn't look like a ByteArray.
  */
 function decodeByteArray(data: string[]): string {
     if (!data || data.length < 1) return "";
     try {
-        const numWords = parseInt(data[0]);
+        const firstValue = BigInt(data[0]);
+        // Cairo 1 ByteArray starts with number of full words
+        // If it's a very large number, it's likely a single felt string (old format)
+        if (firstValue > 1000n && data.length === 1) {
+            return shortString.decodeShortString(data[0]).replace(/\0/g, "").trim();
+        }
+
+        const numWords = Number(firstValue);
         let str = "";
         for (let i = 0; i < numWords; i++) {
             const word = data[i + 1];
@@ -28,7 +38,7 @@ function decodeByteArray(data: string[]): string {
         }
         if (data.length >= numWords + 3) {
             const pendingWord = data[numWords + 1];
-            const pendingLen = parseInt(data[numWords + 2]);
+            const pendingLen = Number(data[numWords + 2]);
             if (pendingLen > 0 && pendingWord) {
                 const decoded = shortString.decodeShortString(pendingWord);
                 str += decoded.substring(0, pendingLen);
@@ -36,7 +46,12 @@ function decodeByteArray(data: string[]): string {
         }
         return str.replace(/\0/g, "").trim();
     } catch (e) {
-        return "";
+        // Final fallback: try to decode first felt
+        try {
+            return shortString.decodeShortString(data[0]).replace(/\0/g, "").trim();
+        } catch (e2) {
+            return "";
+        }
     }
 }
 
@@ -59,6 +74,8 @@ export function useTokenMetadata(tokenId: string, nftAddress?: string) {
     });
 
     const { provider } = useProvider();
+    const normalizedNftAddress = nftAddress ? normalizeStarknetAddress(nftAddress) : null;
+
     const { contract: managerContract } = useContract({
         abi: ipCollectionAbi as Abi,
         address: COLLECTION_CONTRACT_ADDRESS as `0x${string}`
@@ -83,10 +100,10 @@ export function useTokenMetadata(tokenId: string, nftAddress?: string) {
                 }
 
                 // 2. Try NFT contract uri
-                if (!metadataUri && nftAddress) {
+                if (!metadataUri && normalizedNftAddress) {
                     try {
                         const uriData = await provider.callContract({
-                            contractAddress: nftAddress,
+                            contractAddress: normalizedNftAddress,
                             entrypoint: "token_uri",
                             calldata: [tokenId, "0"]
                         });
@@ -94,7 +111,7 @@ export function useTokenMetadata(tokenId: string, nftAddress?: string) {
                     } catch (e) {
                         try {
                             const uriData = await provider.callContract({
-                                contractAddress: nftAddress,
+                                contractAddress: normalizedNftAddress,
                                 entrypoint: "tokenURI",
                                 calldata: [tokenId, "0"]
                             });
@@ -118,18 +135,22 @@ export function useTokenMetadata(tokenId: string, nftAddress?: string) {
                             description: data.description || "",
                             loading: false
                         });
+                        return;
                     }
                 } else if (metadataUri.startsWith('http')) {
-                    const res = await fetch(metadataUri);
-                    const data = await res.json();
-                    if (data && isMounted) {
-                        setMetadata({
-                            name: data.name || `Asset #${tokenId}`,
-                            image: data.image ? (data.image.startsWith('ipfs') ? processIPFSHashToUrl(data.image, "/placeholder.svg") : data.image) : "/placeholder.svg",
-                            description: data.description || "",
-                            loading: false
-                        });
-                    }
+                    try {
+                        const res = await fetch(metadataUri);
+                        const data = await res.json();
+                        if (data && isMounted) {
+                            setMetadata({
+                                name: data.name || `Asset #${tokenId}`,
+                                image: data.image ? (data.image.startsWith('ipfs') ? processIPFSHashToUrl(data.image, "/placeholder.svg") : data.image) : "/placeholder.svg",
+                                description: data.description || "",
+                                loading: false
+                            });
+                            return;
+                        }
+                    } catch (e) { }
                 }
             } catch (err) {
                 console.warn("Failed to load token metadata:", err);
@@ -140,7 +161,7 @@ export function useTokenMetadata(tokenId: string, nftAddress?: string) {
 
         loadMetadata();
         return () => { isMounted = false; };
-    }, [tokenId, nftAddress, provider, managerContract]);
+    }, [tokenId, normalizedNftAddress, provider, managerContract]);
 
     return metadata;
 }

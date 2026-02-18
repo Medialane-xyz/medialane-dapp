@@ -12,8 +12,8 @@ export async function generateMetadata({ params }: AssetPageProps): Promise<Meta
 
   // TODO: Fetch real asset data here for richer SEO
   // For now, using dynamic slug in title
-  const title = `IP ${slug.substring(0, 8)}...`
-  const description = "View, share and remix Programmable IP"
+  const title = `Medialane IP ${slug.substring(0, 8)}...`
+  const description = "Programmable IP for the Integrity Web"
 
   return {
     title: title,
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: AssetPageProps): Promise<Meta
     openGraph: {
       title: title,
       description: description,
-      siteName: "IP Creator",
+      siteName: "Medialane",
       type: "website",
     },
     twitter: {

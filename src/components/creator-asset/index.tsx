@@ -171,7 +171,7 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
 
   return (
     <AssetErrorBoundary onRetry={reload}>
-      <div className="min-h-screen text-foreground bg-background">
+      <div className="min-h-screen text-foreground bg-transparent py-20">
 
         {/* Loading / Error States - Keep existing logic if possible, or wrap them */}
         {showSkeleton || uiState === 'loading' ? (

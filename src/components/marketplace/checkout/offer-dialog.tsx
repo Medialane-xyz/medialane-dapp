@@ -61,10 +61,13 @@ import { useMarketplace } from "@/hooks/use-marketplace"
 import { ItemType } from "@/types/marketplace"
 import { useAccount } from "@starknet-react/core"
 import { SUPPORTED_TOKENS, EXPLORER_URL } from "@/lib/constants"
+import { useTokenMetadata } from "@/hooks/use-token-metadata"
 
 export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChange: setControlledOpen }: OfferDialogProps) {
     const { address } = useAccount()
     const { createListing, isProcessing, txHash, error, resetState } = useMarketplace()
+    const { metadata: metadataRaw } = { metadata: useTokenMetadata(asset.tokenId, asset.nftAddress) }
+    const { name: mName, image: mImage, loading: isLoadingMetadata } = metadataRaw
 
     const [internalOpen, setInternalOpen] = useState(false)
     const isOpen = controlledOpen ?? internalOpen
@@ -75,6 +78,11 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
 
     // Derived state
     const stage = txHash ? "success" : isProcessing ? "processing" : "form"
+
+    // Use metadata if available
+    const displayName = mName || asset.name
+    const displayImage = mImage || asset.image
+    const displayCollection = metadataRaw?.description ? asset.collectionName : asset.collectionName // Just keep existing collection for now
 
     const handleSubmitOffer = async () => {
         if (!offerAmount || parseFloat(offerAmount) <= 0) return
@@ -214,25 +222,33 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
                         </div>
                     ) : (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                            <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/30 border border-border/50">
-                                <div className="h-14 w-14 rounded-lg overflow-hidden border border-border/50 bg-background shrink-0 shadow-sm">
-                                    <img
-                                        src={asset.image}
-                                        alt={asset.name}
-                                        className="h-full w-full object-cover"
-                                        onError={(e) => {
-                                            (e.target as HTMLImageElement).src = "/placeholder.svg"
-                                        }}
-                                    />
+                            <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/30 border border-border/50 group hover:bg-muted/40 transition-colors">
+                                <div className="h-16 w-16 rounded-lg overflow-hidden border border-border/50 bg-background shrink-0 shadow-sm relative">
+                                    {isLoadingMetadata ? (
+                                        <div className="absolute inset-0 bg-muted animate-pulse" />
+                                    ) : (
+                                        <img
+                                            src={displayImage}
+                                            alt={displayName}
+                                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).src = "/placeholder.svg"
+                                            }}
+                                        />
+                                    )}
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <div className="flex items-center justify-between mb-0.5">
-                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">{asset.collectionName}</p>
+                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">{displayCollection}</p>
                                         {floorPrice && (
                                             <p className="text-[10px] font-bold text-primary/80">FLOOR: {floorPrice} {asset.currency}</p>
                                         )}
                                     </div>
-                                    <h3 className="font-bold text-foreground truncate">{asset.name}</h3>
+                                    <h3 className="font-bold text-foreground truncate">{displayName}</h3>
+                                    <div className="flex items-center gap-1.5 mt-1">
+                                        <Badge variant="outline" className="text-[9px] h-4 py-0 font-medium bg-background/50">#{asset.tokenId}</Badge>
+                                        <span className="text-[10px] text-muted-foreground/60 font-medium">Verified IP</span>
+                                    </div>
                                 </div>
                             </div>
 

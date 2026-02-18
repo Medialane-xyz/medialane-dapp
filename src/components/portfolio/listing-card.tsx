@@ -120,9 +120,25 @@ export function ListingCard({ listing, onCancel }: ListingCardProps) {
                     size="sm"
                     className="w-full text-xs font-bold border border-border/40 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all rounded-lg group/btn"
                     onClick={() => onCancel?.(orderHash)}
+                    disabled={!isListing && !isBid}
                 >
-                    <Trash2 className="w-3.5 h-3.5 mr-2 group-hover/btn:scale-110 transition-transform" />
-                    Remove {isListing ? 'Listing' : 'Offer'}
+                    {isListing ? (
+                        <>
+                            <Trash2 className="w-3.5 h-3.5 mr-2 group-hover/btn:scale-110 transition-transform" />
+                            Remove Listing
+                        </>
+                    ) : isBid ? (
+                        listing.offerer === normalizeStarknetAddress(normalizeStarknetAddress("0x0")) // Place holder check, will improve
+                            ? "Accept Offer"
+                            : (
+                                <>
+                                    <Trash2 className="w-3.5 h-3.5 mr-2 group-hover/btn:scale-110 transition-transform" />
+                                    Cancel Bid
+                                </>
+                            )
+                    ) : (
+                        "Manage"
+                    )}
                 </Button>
             </CardFooter>
         </Card>
