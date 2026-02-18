@@ -7,6 +7,7 @@ import { IPMarketplaceABI } from "@/abis/ip_market";
 import { Listing } from "@/types/marketplace";
 import { useMarketplaceListings, findListingForToken } from "@/hooks/use-marketplace-events";
 import { SUPPORTED_TOKENS } from "@/lib/constants";
+import { normalizeStarknetAddress } from "@/lib/utils";
 
 // Helper to format wei to human-readable price
 const formatPrice = (amount: string, decimals: number = 18) => {
@@ -20,9 +21,10 @@ const formatPrice = (amount: string, decimals: number = 18) => {
 
 // Find currency symbol from address
 const getCurrencySymbol = (tokenAddress: string): { symbol: string; decimals: number } => {
-    const normalized = tokenAddress.toLowerCase();
+    const normalized = normalizeStarknetAddress(tokenAddress).toLowerCase();
     for (const token of SUPPORTED_TOKENS) {
-        if (token.address.toLowerCase() === normalized) {
+        const tokenNormalized = normalizeStarknetAddress(token.address).toLowerCase();
+        if (tokenNormalized === normalized) {
             return { symbol: token.symbol, decimals: token.decimals };
         }
     }
