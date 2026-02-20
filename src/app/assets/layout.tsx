@@ -1,13 +1,12 @@
 import { Metadata } from 'next'
 
-export const metadata: Metadata = {
-    title: 'Explore Assets',
-    description: 'Discover and explore the latest minted IP assets on Mediolano. Browse creative works from the global creator community.',
-    openGraph: {
-        title: 'Explore Assets | Mediolano',
-        description: 'Discover and explore the latest minted IP assets on Mediolano. Browse creative works from the global creator community.',
-    },
-}
+import { constructMetadata } from '@/utils/seo'
+
+export const metadata: Metadata = constructMetadata({
+    title: 'Explore Assets | Medialane',
+    description: 'Discover and explore the latest minted IP assets on Medialane. Browse creative works from the global creator community.',
+    url: '/assets'
+})
 
 export default function AssetsLayout({
     children,

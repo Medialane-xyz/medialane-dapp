@@ -3,60 +3,23 @@ import { MetadataRoute } from 'next'
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dapp.medialane.xyz'
 
-    return [
-        {
-            url: baseUrl,
-            lastModified: new Date(),
-            changeFrequency: 'daily',
-            priority: 1,
-        },
-        {
-            url: `${baseUrl}/collections`,
-            lastModified: new Date(),
-            changeFrequency: 'daily',
-            priority: 0.9,
-        },
-        {
-            url: `${baseUrl}/portfolio`,
-            lastModified: new Date(),
-            changeFrequency: 'daily',
-            priority: 0.9,
-        },
-        {
-            url: `${baseUrl}/portfolio/collections`,
-            lastModified: new Date(),
-            changeFrequency: 'daily',
-            priority: 0.8,
-        },
-        {
-            url: `${baseUrl}/portfolio/assets`,
-            lastModified: new Date(),
-            changeFrequency: 'daily',
-            priority: 0.8,
-        },
-        {
-            url: `${baseUrl}/activities`,
-            lastModified: new Date(),
-            changeFrequency: 'hourly',
-            priority: 0.8,
-        },
-        {
-            url: `${baseUrl}/assets`,
-            lastModified: new Date(),
-            changeFrequency: 'daily',
-            priority: 0.8,
-        },
-        {
-            url: `${baseUrl}/docs`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly',
-            priority: 0.6,
-        },
-        {
-            url: `${baseUrl}/discover`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly',
-            priority: 0.6,
-        },
-    ]
+    const routes = [
+        { path: '', priority: 1.0, changeFrequency: 'daily' },
+        { path: '/collections', priority: 0.9, changeFrequency: 'daily' },
+        { path: '/assets', priority: 0.8, changeFrequency: 'daily' },
+        { path: '/discover', priority: 0.8, changeFrequency: 'daily' },
+        { path: '/launchpad', priority: 0.9, changeFrequency: 'daily' },
+        { path: '/activities', priority: 0.8, changeFrequency: 'hourly' },
+        { path: '/docs', priority: 0.6, changeFrequency: 'weekly' },
+        { path: '/provenance', priority: 0.7, changeFrequency: 'weekly' },
+    ] as const;
+
+    const sitemapRoutes: MetadataRoute.Sitemap = routes.map((route) => ({
+        url: `${baseUrl}${route.path}`,
+        lastModified: new Date(),
+        changeFrequency: route.changeFrequency as "daily" | "hourly" | "weekly",
+        priority: route.priority,
+    }));
+
+    return sitemapRoutes;
 }

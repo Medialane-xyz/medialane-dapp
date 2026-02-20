@@ -14,11 +14,25 @@ export const viewport: Viewport = {
   themeColor: "#000000",
 }
 
+import { constructMetadata } from "@/utils/seo";
+
 export const metadata: Metadata = {
-  title: "Medialane",
-  description: "Create, Trade, Remix, and Monetize on the Integrity Web.",
-  icons: {
-    icon: "/favicon.ico",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://dapp.medialane.xyz'),
+  ...constructMetadata({
+    title: "Medialane | IP Innovation Protocol",
+    description: "Create, Trade, Remix, and Monetize on the Integrity Web. The premier decentralized protocol for programmable intellectual property.",
+  }),
+  applicationName: "Medialane Dapp",
+  authors: [{ name: "Medialane Protocol" }],
+  generator: "Next.js",
+  keywords: ["IP", "Intellectual Property", "Web3", "Starknet", "NFT", "Creator Economy", "Programmable IP", "Integrity Web"],
+  manifest: "/site.webmanifest",
+  appleWebApp: {
+    title: "Medialane",
+    statusBarStyle: "black-translucent",
+  },
+  formatDetection: {
+    telephone: false,
   },
 };
 
@@ -27,8 +41,26 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Medialane Protocol',
+    url: 'https://dapp.medialane.xyz',
+    logo: 'https://dapp.medialane.xyz/favicon.ico',
+    description: "Create, Trade, Remix, and Monetize on the Integrity Web.",
+    sameAs: [
+      'https://twitter.com/medialane',
+    ]
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className={`${inter.variable} font-sans antialiased text-foreground overflow-x-hidden`}>
         <ThemeProvider
           attribute="class"

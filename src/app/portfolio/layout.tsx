@@ -1,17 +1,13 @@
 import { Metadata } from 'next'
 
-export const metadata: Metadata = {
-    title: 'IP Portfolio',
+import { constructMetadata } from '@/utils/seo'
+
+export const metadata: Metadata = constructMetadata({
+    title: 'IP Portfolio | Medialane',
     description: 'Manage your intellectual property portfolio on Starknet. View your collections, assets, and track your digital asset holdings.',
-    openGraph: {
-        title: 'IP Portfolio | Medialane',
-        description: 'Manage your intellectual property portfolio on Starknet. View your collections, assets, and track your digital asset holdings.',
-    },
-    robots: {
-        index: false,
-        follow: false,
-    },
-}
+    url: '/portfolio',
+    noIndex: true
+})
 
 export default function PortfolioLayout({
     children,

@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { constructMetadata } from "@/utils/seo";
 import CollectionDetails from "@/components/collection-details";
 
 interface CollectionPageProps {
@@ -11,27 +12,41 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
   const { collectionAddress } = await params;
 
   // Dynamic metadata based on address
-  const title = `Collection ${collectionAddress.substring(0, 8)}... | Medialane`;
-  const description = "Explore this onchain IP collection.";
+  // This will be expanded when server-side data fetching is implemented
+  const title = `IP Collection ${collectionAddress.substring(0, 8)}... | Medialane`;
+  const description = `Explore the IP collection deployed at ${collectionAddress} on the Medialane Integrity Web.`;
+  const url = `/collections/${collectionAddress}`;
 
-  return {
-    title: title,
-    description: description,
-    openGraph: {
-      title: title,
-      description: description,
-      siteName: "Medialane",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: title,
-      description: description,
-    }
-  };
+  return constructMetadata({
+    title,
+    description,
+    url,
+  });
 }
 
 export default async function Page({ params }: CollectionPageProps) {
   const { collectionAddress } = await params;
-  return <CollectionDetails collectionAddress={collectionAddress} />;
+
+  // JSON-LD explicit schema
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Collection',
+    name: `IP Collection ${collectionAddress.substring(0, 8)}...`,
+    description: `Explore the IP collection deployed at ${collectionAddress} on the Medialane Integrity Web.`,
+    url: `https://dapp.medialane.xyz/collections/${collectionAddress}`,
+    publisher: {
+      '@type': 'Organization',
+      name: 'Medialane Protocol'
+    }
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <CollectionDetails collectionAddress={collectionAddress} />
+    </>
+  );
 }

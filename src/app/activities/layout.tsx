@@ -1,13 +1,12 @@
 import { Metadata } from 'next'
 
-export const metadata: Metadata = {
-    title: 'Community Activities',
-    description: 'Track the latest IP activities on Mediolano. See minting, transfers, remixes, and other on-chain events from the creator community.',
-    openGraph: {
-        title: 'Community Activities | Medialane',
-        description: 'Track the latest IP activities on Mediolano. See minting, transfers, remixes, and other on-chain events from the creator community.',
-    },
-}
+import { constructMetadata } from '@/utils/seo'
+
+export const metadata: Metadata = constructMetadata({
+    title: 'Community Activities | Medialane',
+    description: 'Track the latest IP activities on Medialane. See minting, transfers, remixes, and other on-chain events from the creator community.',
+    url: '/activities'
+})
 
 export default function ActivitiesLayout({
     children,
