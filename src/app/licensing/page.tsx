@@ -2,8 +2,7 @@
 
 import { PageHeader } from "@/components/page-header";
 import { LicensingExplorer } from "./LicensingExplorer";
-import { Card, CardContent } from "@/components/ui/card";
-import { ShieldCheck, Sparkles, Handshake, Landmark } from "lucide-react";
+import { ShieldCheck, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function LicensingPage() {
@@ -26,37 +25,12 @@ export default function LicensingPage() {
                     </div>
 
                     <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-balance">
-                        Monetize and Acquire True Digital Assets
+                        Discover and Acquire IP Licenses
                     </h1>
 
-                    <p className="text-lg text-muted-foreground mb-10 max-w-2xl text-pretty leading-relaxed">
-                        Transform your intellectual property into programmable assets. Set your terms, manage global rights, and automate revenue sharing seamlessly on-chain.
+                    <p className="text-lg text-muted-foreground max-w-2xl text-pretty leading-relaxed">
+                        Explore public collections and secure commercial usage rights for top-tier intellectual property seamlessly on-chain.
                     </p>
-
-                    <div className="grid sm:grid-cols-2 gap-4">
-                        <Card className="bg-white/5 border-white/10">
-                            <CardContent className="p-4 flex items-start gap-4">
-                                <div className="p-2.5 rounded-lg bg-primary/10 text-primary shrink-0">
-                                    <Landmark className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold text-sm mb-1">For Creators</h3>
-                                    <p className="text-xs text-muted-foreground leading-snug">Define bespoke licensing terms, manage adaptations, and secure your creative rights.</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card className="bg-white/5 border-white/10">
-                            <CardContent className="p-4 flex items-start gap-4">
-                                <div className="p-2.5 rounded-lg bg-blue-500/10 text-blue-500 shrink-0">
-                                    <Handshake className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold text-sm mb-1">For Businesses</h3>
-                                    <p className="text-xs text-muted-foreground leading-snug">Discover ready-to-license IP, make offers, and secure usage rights instantly.</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
                 </div>
             </motion.div>
 

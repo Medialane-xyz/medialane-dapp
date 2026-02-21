@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useContract } from "@starknet-react/core";
+import { useQuery } from "@tanstack/react-query";
 import type { Abi } from "starknet";
 import { COLLECTION_NFT_ABI } from "@/abis/ip_nft";
 import {
@@ -10,83 +11,6 @@ import {
   IPFSMetadata,
 } from "@/utils/ipfs";
 import { DisplayAsset } from "@/lib/types";
-
-const RETRY_DELAY_MS = 1200;
-const MAX_RETRIES = 3;
-const BACKOFF_BASE_MS = 800;
-const BACKOFF_MAX_MS = 8000;
-const CACHE_TTL_MS = 30000;
-const MAX_CACHE_ENTRIES = 500;
-
-type CachedAsset = { value: AssetDetail; timestamp: number };
-const assetCache: Map<string, CachedAsset> = new Map();
-const notFoundCache: Map<string, number> = new Map();
-
-type CacheOptions = { ttl?: number; maxEntries?: number };
-
-type CacheMeta = { createdAt: number; lastAccessedAt: number };
-
-// Per-Map metadata store to support TTL pruning and LRU without changing stored values
-const mapToMetaStore: WeakMap<Map<unknown, unknown>, Map<unknown, CacheMeta>> = new WeakMap();
-
-function getMetaStore<K>(map: Map<K, unknown>): Map<K, CacheMeta> {
-  let meta = mapToMetaStore.get(map as unknown as Map<unknown, unknown>) as Map<K, CacheMeta> | undefined;
-  if (!meta) {
-    meta = new Map<K, CacheMeta>();
-    mapToMetaStore.set(map as unknown as Map<unknown, unknown>, meta as unknown as Map<unknown, CacheMeta>);
-  }
-  return meta;
-}
-
-function pruneCache<K, V>(map: Map<K, V>, options?: CacheOptions) {
-  const ttl = options?.ttl ?? CACHE_TTL_MS;
-  const maxEntries = options?.maxEntries ?? MAX_CACHE_ENTRIES;
-  const now = Date.now();
-  const meta = getMetaStore(map);
-
-  // Remove stale by ttl based on createdAt
-  if (ttl > 0 && meta.size > 0) {
-    for (const [key, info] of meta) {
-      if (now - info.createdAt > ttl) {
-        meta.delete(key as unknown as K);
-        map.delete(key as unknown as K);
-      }
-    }
-  }
-
-  // Enforce maxEntries with LRU (least recently used by lastAccessedAt)
-  if (maxEntries > 0 && map.size > maxEntries) {
-    const entries: Array<{ key: K; info: CacheMeta }> = [];
-    for (const [key, info] of meta as Map<K, CacheMeta>) {
-      // Only consider keys that still exist in the map
-      if (map.has(key)) entries.push({ key, info });
-    }
-    entries.sort((a, b) => a.info.lastAccessedAt - b.info.lastAccessedAt);
-    const toRemoveCount = map.size - maxEntries;
-    for (let i = 0; i < toRemoveCount && i < entries.length; i++) {
-      const k = entries[i].key;
-      meta.delete(k);
-      map.delete(k);
-    }
-  }
-}
-
-function addToCache<K, V>(map: Map<K, V>, key: K, value: V, options?: CacheOptions) {
-  const now = Date.now();
-  map.set(key, value);
-  const meta = getMetaStore(map);
-  meta.set(key, { createdAt: now, lastAccessedAt: now });
-  pruneCache(map, options);
-}
-
-function touchCache<K, V>(map: Map<K, V>, key: K) {
-  const meta = getMetaStore(map);
-  const existing = meta.get(key);
-  if (existing) {
-    existing.lastAccessedAt = Date.now();
-    meta.set(key, existing);
-  }
-}
 
 export interface AssetDetail {
   id: string; // `${nftAddress}-${tokenId}`
@@ -119,8 +43,7 @@ export interface LoadingState {
 }
 
 export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
-  const [asset, setAsset] = useState<AssetDetail | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  // We keep a local state for granular loading progress since useQuery doesn't track steps
   const [loadingState, setLoadingState] = useState<LoadingState>({
     isInitializing: false,
     isFetchingOnchainData: false,
@@ -129,102 +52,31 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
     currentStep: "",
     progress: 0,
   });
-  const [error, setError] = useState<string | null>(null);
-  const [notFound, setNotFound] = useState<boolean>(false);
-
-  const inFlightRef = useRef<boolean>(false);
-  const lastLoadedIdRef = useRef<string | null>(null);
-  const retryAttemptRef = useRef<number>(0);
 
   const { contract } = useContract({
     abi: COLLECTION_NFT_ABI as unknown as Abi,
     address: (nftAddress as `0x${string}`) || undefined,
   });
 
-  const load = useCallback(async () => {
-    if (inFlightRef.current) {
-      return;
-    }
-    if (
-      !nftAddress ||
-      tokenIdInput === undefined ||
-      tokenIdInput === null ||
-      !contract
-    ) {
-      // Keep initial state as loading; show clear step while provider/contract is not ready
-      setLoading(true);
-      setError(null);
-      setNotFound(false);
-      setLoadingState({
-        isInitializing: true,
-        isFetchingOnchainData: false,
-        isFetchingMetadata: false,
-        isComplete: false,
-        currentStep: "Establishing connection...",
-        progress: 10,
-      });
-      return;
+  const currentId = nftAddress && tokenIdInput != null ? `${nftAddress}-${Number(tokenIdInput)}` : null;
+
+  const fetchAssetDetails = async () => {
+    if (!nftAddress || tokenIdInput === undefined || !contract) {
+      throw new Error("Missing required parameters for fetching asset");
     }
 
-    inFlightRef.current = true;
+    const tokenId = Number(tokenIdInput);
+
+    setLoadingState({
+      isInitializing: true,
+      isFetchingOnchainData: false,
+      isFetchingMetadata: false,
+      isComplete: false,
+      currentStep: "Loading asset...",
+      progress: 10,
+    });
+
     try {
-      const tokenId = Number(tokenIdInput);
-      const currentId = `${nftAddress}-${tokenId}`;
-
-      // Serve from cache if fresh (avoid toggling loading if we can return immediately)
-      const cached = assetCache.get(currentId);
-      if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-        touchCache(assetCache, currentId);
-        setAsset(cached.value);
-        setLoadingState((prev) => ({
-          ...prev,
-          isInitializing: false,
-          isFetchingOnchainData: false,
-          isFetchingMetadata: false,
-          isComplete: true,
-          currentStep: "Ready!",
-          progress: 100,
-        }));
-        lastLoadedIdRef.current = currentId;
-        retryAttemptRef.current = 0;
-        setLoading(false);
-        return;
-      }
-
-      // Short-circuit if recently known as not found (avoid showing loader)
-      const nfCachedAt = notFoundCache.get(currentId);
-      if (nfCachedAt && Date.now() - nfCachedAt < CACHE_TTL_MS) {
-        touchCache(notFoundCache, currentId);
-        setAsset(null);
-        setNotFound(true);
-        setLoadingState((prev) => ({
-          ...prev,
-          isInitializing: false,
-          isFetchingOnchainData: false,
-          isFetchingMetadata: false,
-          isComplete: true,
-          currentStep: "Asset not found",
-          progress: 100,
-        }));
-        lastLoadedIdRef.current = currentId;
-        retryAttemptRef.current = 0;
-        setLoading(false);
-        return;
-      }
-
-      // Proceed with fresh load
-      setLoading(true);
-      setError(null);
-      setNotFound(false);
-      setLoadingState({
-        isInitializing: true,
-        isFetchingOnchainData: false,
-        isFetchingMetadata: false,
-        isComplete: false,
-        currentStep: "Loading asset...",
-        progress: 10,
-      });
-
       // Step 1: Fetch onchain data
       setLoadingState((prev) => ({
         ...prev,
@@ -235,36 +87,15 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
       }));
 
       const onchainTimeout = new Promise((_, reject) =>
-        setTimeout(
-          () =>
-            reject(
-              new Error(
-                "Connection timeout - Please check your internet connection and try again"
-              )
-            ),
-          15000
-        )
+        setTimeout(() => reject(new Error("Connection timeout")), 15000)
       );
 
       const onchainData = (await Promise.race([
         (async () => {
           // owner
-          const ownerRaw = await (
-            contract as unknown as {
-              owner_of?: (id: number) => Promise<unknown>;
-              ownerOf?: (id: number) => Promise<unknown>;
-            }
-          )
-            .owner_of?.(tokenId)
-            .catch(async () => {
-              const owned = await (
-                contract as unknown as {
-                  ownerOf: (id: number) => Promise<unknown>;
-                }
-              ).ownerOf(tokenId);
-              return owned;
-            });
-          // Ensure owner is a hex string
+          const ownerRaw = await (contract as any).owner_of?.(tokenId).catch(async () => {
+            return await (contract as any).ownerOf(tokenId);
+          });
           let owner: `0x${string}` | undefined;
           if (ownerRaw) {
             try {
@@ -275,43 +106,21 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
           }
 
           // token URI
-          const uriRaw = await (
-            contract as unknown as {
-              token_uri?: (id: number) => Promise<unknown>;
-              tokenURI?: (id: number) => Promise<unknown>;
-            }
-          )
-            .token_uri?.(tokenId)
-            .catch(async () => {
-              const r = await (
-                contract as unknown as {
-                  tokenURI: (id: number) => Promise<unknown>;
-                }
-              ).tokenURI(tokenId);
-              return r;
-            });
+          const uriRaw = await (contract as any).token_uri?.(tokenId).catch(async () => {
+            return await (contract as any).tokenURI(tokenId);
+          });
           const tokenURI = String(uriRaw || "");
 
-          // collection ID
-          const collectionIdRaw = await (
-            contract as unknown as {
-              get_collection_id?: () => Promise<unknown>;
-            }
-          )
-            .get_collection_id?.()
-            .catch(() => null);
+          // collection & name
+          const collectionIdRaw = await (contract as any).get_collection_id?.().catch(() => null);
+          const contractNameRaw = await (contract as any).name?.().catch(() => null);
 
-          // contract name (as collection name fallback)
-          const contractNameRaw = await (
-            contract as unknown as {
-              name?: () => Promise<unknown>;
-            }
-          ).name?.().catch(() => null);
-
-          const collectionId = collectionIdRaw ? String(collectionIdRaw) : undefined;
-          const contractName = contractNameRaw ? String(contractNameRaw) : undefined;
-
-          return { owner, tokenURI, collectionId, contractName };
+          return {
+            owner,
+            tokenURI,
+            collectionId: collectionIdRaw ? String(collectionIdRaw) : undefined,
+            contractName: contractNameRaw ? String(contractNameRaw) : undefined
+          };
         })(),
         onchainTimeout,
       ])) as { owner: `0x${string}`; tokenURI: string; collectionId?: string; contractName?: string };
@@ -332,42 +141,25 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
         let cid = "";
         const uri = onchainData.tokenURI;
 
-        if (uri.startsWith("ipfs://")) {
-          cid = uri.replace("ipfs://", "");
-        } else if (uri.includes("/ipfs/")) {
-          cid = uri.split("/ipfs/")[1]?.split("?")[0] || "";
-        } else if (uri.match(/^[a-zA-Z0-9]{46,59}$/)) {
-          cid = uri;
-        }
+        if (uri.startsWith("ipfs://")) cid = uri.replace("ipfs://", "");
+        else if (uri.includes("/ipfs/")) cid = uri.split("/ipfs/")[1]?.split("?")[0] || "";
+        else if (uri.match(/^[a-zA-Z0-9]{46,59}$/)) cid = uri;
 
         if (cid) {
           ipfsCid = cid;
           const metadataTimeout = new Promise<IPFSMetadata | null>(
-            (_, reject) =>
-              setTimeout(
-                () =>
-                  reject(
-                    new Error(
-                      "Unable to load asset details - Some information may be missing"
-                    )
-                  ),
-                10000
-              )
+            (_, reject) => setTimeout(() => reject(new Error("Metadata timeout")), 10000)
           );
 
           try {
-            metadata = await Promise.race([
-              fetchIPFSMetadata(cid),
-              metadataTimeout,
-            ]);
+            metadata = await Promise.race([fetchIPFSMetadata(cid), metadataTimeout]);
           } catch (metadataError) {
             console.warn("Failed to fetch IPFS metadata:", metadataError);
-            // Continue without metadata rather than failing completely
           }
         }
       }
 
-      // Step 3: Process and combine data
+      // Step 3: Process and combine
       setLoadingState((prev) => ({
         ...prev,
         isFetchingMetadata: false,
@@ -375,25 +167,16 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
         progress: 90,
       }));
 
-      const next: AssetDetail = {
-        id: `${nftAddress}-${tokenId}`,
+      const finalAsset: AssetDetail = {
+        id: currentId!,
         nftAddress,
         tokenId,
         name: (metadata?.name as string) || `IP Asset #${tokenId}`,
         description: (metadata?.description as string) || "",
-        image: processIPFSHashToUrl(
-          (metadata?.image as string) || "",
-          "/placeholder.svg"
-        ),
-        type:
-          (metadata?.type as string) ||
-          (metadata?.assetType as string | undefined),
+        image: processIPFSHashToUrl((metadata?.image as string) || "", "/placeholder.svg"),
+        type: (metadata?.type as string) || (metadata?.assetType as string | undefined),
         registrationDate: metadata?.registrationDate as string | undefined,
-        attributes:
-          (metadata?.attributes as Array<{
-            trait_type: string;
-            value: string;
-          }>) || undefined,
+        attributes: (metadata?.attributes as Array<{ trait_type: string; value: string; }>) || undefined,
         properties: metadata?.properties || undefined,
         external_url: metadata?.external_url || undefined,
         owner: onchainData.owner,
@@ -405,98 +188,57 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
         collectionId: onchainData.collectionId || metadata?.collection as string | undefined,
       };
 
-      setAsset(next);
-      addToCache(assetCache, next.id, { value: next, timestamp: Date.now() }, { ttl: CACHE_TTL_MS, maxEntries: MAX_CACHE_ENTRIES });
-      lastLoadedIdRef.current = next.id;
-      retryAttemptRef.current = 0;
-
-      // Step 4: Complete
       setLoadingState((prev) => ({
         ...prev,
         isComplete: true,
         currentStep: "Ready!",
         progress: 100,
       }));
-    } catch (e) {
-      const errorMessage = e instanceof Error ? e.message : String(e);
-      const currentId =
-        nftAddress && tokenIdInput != null
-          ? `${nftAddress}-${Number(tokenIdInput)}`
-          : null;
 
-      // Detect not-found conditions using exact contract revert message
-      const notFoundDetected = /erc721:\s*invalid\s*token\s*id/i.test(errorMessage || "");
+      return finalAsset;
 
-      if (notFoundDetected) {
-        setNotFound(true);
-        setError(null);
-        if (currentId) {
-          addToCache(notFoundCache, currentId, Date.now(), { ttl: CACHE_TTL_MS, maxEntries: MAX_CACHE_ENTRIES });
-        }
+    } catch (e: any) {
+      const isNotFound = /erc721:\s*invalid\s*token\s*id/i.test(e?.message || "");
+      if (isNotFound) {
         setLoadingState((prev) => ({
           ...prev,
-          isInitializing: false,
-          isFetchingOnchainData: false,
-          isFetchingMetadata: false,
           isComplete: true,
           currentStep: "Asset not found",
           progress: 100,
         }));
-      } else {
-        setError(errorMessage);
-        setLoadingState((prev) => ({
-          ...prev,
-          isInitializing: false,
-          isFetchingOnchainData: false,
-          isFetchingMetadata: false,
-          isComplete: false,
-          currentStep: "Error occurred",
-          progress: 0,
-        }));
+        throw new Error("NOT_FOUND"); // Special error string we check later
       }
-    } finally {
-      setLoading(false);
-      inFlightRef.current = false;
+
+      setLoadingState((prev) => ({
+        ...prev,
+        isComplete: false,
+        currentStep: "Error occurred",
+        progress: 0,
+      }));
+      throw e;
     }
-  }, [nftAddress, tokenIdInput, contract]);
+  };
 
-  // Removed auto-retry to minimize RPC calls
-  const loadWithRetry = load;
+  const {
+    data: asset,
+    isLoading,
+    isError,
+    error: queryError,
+    refetch
+  } = useQuery({
+    queryKey: ["asset", currentId],
+    queryFn: fetchAssetDetails,
+    enabled: !!currentId && !!contract,
+    retry: (failureCount, error: any) => {
+      if (error?.message === "NOT_FOUND") return false;
+      return failureCount < 3;
+    },
+    retryDelay: (attemptIndex) => Math.min(800 * 2 ** attemptIndex, 8000), // Exponential backoff
+    staleTime: 30000, // 30 seconds
+  });
 
-  const loadRef = useRef(load);
-  useEffect(() => {
-    loadRef.current = load;
-  }, [load]);
-
-  useEffect(() => {
-    const currentId = nftAddress && tokenIdInput != null ? `${nftAddress}-${Number(tokenIdInput)}` : null;
-    if (currentId && lastLoadedIdRef.current === currentId && inFlightRef.current) {
-      return;
-    }
-    setAsset(null);
-    lastLoadedIdRef.current = currentId;
-    retryAttemptRef.current = 0;
-    loadWithRetry();
-  }, [loadWithRetry, nftAddress, tokenIdInput]);
-
-  useEffect(() => {
-    if (!asset && error && !notFound) {
-      if (retryAttemptRef.current >= MAX_RETRIES) {
-        return;
-      }
-      const attempt = retryAttemptRef.current;
-      const delay = Math.min(BACKOFF_BASE_MS * Math.pow(2, attempt), BACKOFF_MAX_MS);
-      setError(null);
-      setLoading(true);
-      const timer: ReturnType<typeof setTimeout> = setTimeout(() => {
-        retryAttemptRef.current = attempt + 1;
-        if (!inFlightRef.current) {
-          loadRef.current?.();
-        }
-      }, attempt === 0 ? RETRY_DELAY_MS : delay);
-      return () => clearTimeout(timer);
-    }
-  }, [asset, error, notFound]);
+  const isNotFound = queryError?.message === "NOT_FOUND";
+  const errorMessage = isNotFound ? null : queryError?.message || null;
 
   const displayAsset = useMemo(() => {
     if (!asset) return null;
@@ -505,38 +247,10 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
       ? "0x" + BigInt(asset.owner).toString(16)
       : "Unknown";
 
-    // Extract license information from attributes
-    const licenseAttributeTerms = asset.attributes?.find(
-      (attr) => attr.trait_type?.toLowerCase() === "license"
-    );
-    const licenseAttributeType = asset.attributes?.find(
-      (attr) => attr.trait_type?.toLowerCase() === "type"
-    );
-    const commercialUseAttribute = asset.attributes?.find(
-      (attr) => attr.trait_type?.toLowerCase() === "commercial use"
-    );
-    const modificationsAttribute = asset.attributes?.find(
-      (attr) => attr.trait_type?.toLowerCase() === "modifications"
-    );
-    const attributionAttribute = asset.attributes?.find(
-      (attr) => attr.trait_type?.toLowerCase() === "attribution"
-    );
-    const ipVersionAttribute = asset.attributes?.find(
-      (attr) => attr.trait_type?.toLowerCase() === "ip version"
-    );
+    const getAttr = (name: string) => asset.attributes?.find(a => a.trait_type?.toLowerCase() === name)?.value;
 
-    const collectionAttribute = asset.attributes?.find(
-      (attr) => attr.trait_type?.toLowerCase() === "collection"
-    );
-
-    // Extract creator and collection from properties
     const creator = asset.properties?.creator || tokenOwnerAddress;
-    const collection =
-      asset.properties?.collection ||
-      asset.collectionName ||
-      collectionAttribute?.value ||
-      asset.collectionId ||
-      "";
+    const collection = asset.properties?.collection || asset.collectionName || getAttr("collection") || asset.collectionId || "";
 
     return {
       id: asset.id,
@@ -569,58 +283,55 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
       description: asset.description || "",
       template: asset.type || "Asset",
       image: asset.image || "/background.jpg",
-      createdAt:
-        asset.registrationDate ||
-        asset.properties?.registration_date ||
-        new Date().toLocaleDateString(),
+      createdAt: asset.registrationDate || asset.properties?.registration_date || new Date().toLocaleDateString(),
       collection: collection || "IP Collection",
       blockchain: "Starknet",
       tokenStandard: "ERC-721",
-      licenseType: asset.licenseType || licenseAttributeType?.value || "",
+      licenseType: asset.licenseType || getAttr("type") || "",
       licenseDetails: "Unknown",
-      version: ipVersionAttribute?.value || "1.0",
-      commercialUse: commercialUseAttribute?.value === "true",
-      modifications: modificationsAttribute?.value === "true",
-      attribution: attributionAttribute?.value === "true",
-      licenseTerms: licenseAttributeTerms?.value || "Unknown",
+      version: getAttr("ip version") || "1.0",
+      commercialUse: getAttr("commercial use") === "true",
+      modifications: getAttr("modifications") === "true",
+      attribution: getAttr("attribution") === "true",
+      licenseTerms: getAttr("license") || "Unknown",
       contract: (asset.nftAddress as string) || "",
       attributes: asset.attributes || [
         { trait_type: "Asset", value: "Programmable IP" },
         { trait_type: "Protection", value: "Proof of Ownership" },
       ],
       licenseInfo: {
-        type: licenseAttributeType?.value || asset.licenseType || "Unknown",
-        terms: licenseAttributeTerms?.value || "Unknown",
-        allowCommercial: commercialUseAttribute?.value === "true",
-        allowDerivatives: modificationsAttribute?.value === "true",
-        requireAttribution: attributionAttribute?.value === "true",
+        type: getAttr("type") || asset.licenseType || "Unknown",
+        terms: getAttr("license") || "Unknown",
+        allowCommercial: getAttr("commercial use") === "true",
+        allowDerivatives: getAttr("modifications") === "true",
+        requireAttribution: getAttr("attribution") === "true",
         royaltyPercentage: 5,
       },
       ipfsCid: asset.ipfsCid,
-      type: asset.type || licenseAttributeType?.value || "",
+      type: asset.type || getAttr("type") || "",
     } as DisplayAsset;
   }, [asset]);
 
   const uiState = useMemo<"loading" | "ready" | "not_found" | "error">(() => {
-    if (notFound) return "not_found";
-    if (loading) return "loading";
-    if (error) return "error";
-    return asset ? "ready" : "loading";
-  }, [notFound, loading, error, asset]);
+    if (isNotFound) return "not_found";
+    if (isLoading || (!asset && !isError)) return "loading";
+    if (isError) return "error";
+    return "ready";
+  }, [isNotFound, isLoading, isError, asset]);
 
   return useMemo(
     () => ({
-      asset,
+      asset: asset || null,
       displayAsset,
-      loading,
+      loading: uiState === "loading",
       loadingState,
-      error,
-      notFound,
+      error: errorMessage,
+      notFound: isNotFound,
       uiState,
       showSkeleton: uiState === "loading",
-      reload: loadWithRetry,
+      reload: refetch,
     }),
-    [asset, displayAsset, loading, loadingState, error, notFound, uiState, loadWithRetry]
+    [asset, displayAsset, uiState, loadingState, errorMessage, isNotFound, refetch]
   );
 }
 

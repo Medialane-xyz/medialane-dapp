@@ -6,7 +6,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { getOrderParametersTypedData, getOrderCancellationTypedData, stringifyBigInts } from "@/utils/marketplace-utils";
 
 interface UseMarketplaceReturn {
-    createListing: (params: any) => Promise<string | undefined>;
+    createListing: (
+        assetContractAddress: string,
+        tokenId: string,
+        price: string,
+        currencySymbol: string,
+        durationSeconds: number
+    ) => Promise<string | undefined>;
     buyItem: (orderParams: any, fulfillmentParams: any) => Promise<string | undefined>;
     cancelOrder: (orderHash: string) => Promise<string | undefined>;
     cancelListing: (orderHash: string) => Promise<string | undefined>;
@@ -39,7 +45,13 @@ export function useMarketplace(): UseMarketplaceReturn {
         setIsProcessing(false);
     }, []);
 
-    const createListing = useCallback(async (params: any) => {
+    const createListing = useCallback(async (
+        assetContractAddress: string,
+        tokenId: string,
+        price: string,
+        currencySymbol: string,
+        durationSeconds: number
+    ) => {
         if (!account || !medialaneContract || !chain) {
             const msg = "Account, contract, or network not available";
             setError(msg);
@@ -51,18 +63,52 @@ export function useMarketplace(): UseMarketplaceReturn {
         setError(null);
 
         try {
-            // 1. Fetch current nonce
+            // 1. Calculate Order Parameters
+            const now = Math.floor(Date.now() / 1000)
+            const startTime = now + 300 // 5 minutes in future buffer for tx inclusion
+            const endTime = now + durationSeconds
+            const salt = Math.floor(Math.random() * 1000000).toString()
+
+            const decimals = currencySymbol === "USDC" || currencySymbol === "USDT" ? 6 : 18
+            const priceWei = BigInt(Math.floor(parseFloat(price) * Math.pow(10, decimals))).toString()
+
+            // Safe import of SUPPORTED_TOKENS might require adjusting if it causes circular deps, 
+            // but assuming it's available from @/lib/constants
+            const { SUPPORTED_TOKENS } = await import("@/lib/constants");
+            const currencyAddress = SUPPORTED_TOKENS.find((t: any) => t.symbol === currencySymbol)?.address
+
+            if (!currencyAddress) throw new Error("Unsupported currency selected");
+
+            // 2. Fetch current nonce
             console.log("Fetching nonce for:", account.address);
             const currentNonce = await medialaneContract.nonces(account.address);
             console.log("Current nonce:", currentNonce.toString());
 
-            // 2. Prepare order parameters for signing
+            // 3. Prepare full order parameters for signing
             const orderParams = {
-                ...params,
+                offerer: account.address,
+                offer: {
+                    item_type: "ERC721",
+                    token: assetContractAddress,
+                    identifier_or_criteria: tokenId,
+                    start_amount: "1",
+                    end_amount: "1"
+                },
+                consideration: {
+                    item_type: "ERC20",
+                    token: currencyAddress,
+                    identifier_or_criteria: "0",
+                    start_amount: priceWei,
+                    end_amount: priceWei,
+                    recipient: account.address
+                },
+                start_time: startTime.toString(),
+                end_time: endTime.toString(),
+                salt: salt,
                 nonce: currentNonce.toString(),
             };
 
-            // 3. Generate typed data and sign
+            // 4. Generate typed data and sign
             const chainId = chain.id as any as constants.StarknetChainId;
             const typedData = stringifyBigInts(getOrderParametersTypedData(orderParams, chainId));
 
@@ -75,7 +121,7 @@ export function useMarketplace(): UseMarketplaceReturn {
 
             console.log("Signature generated:", signatureArray);
 
-            // 4. Register the order (with shortString encoding for item_type)
+            // 5. Register the order (with shortString encoding for item_type)
             const registerPayload = stringifyBigInts({
                 parameters: {
                     ...orderParams,

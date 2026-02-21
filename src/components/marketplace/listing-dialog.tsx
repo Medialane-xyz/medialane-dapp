@@ -1,10 +1,12 @@
 "use client"
 
 import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 import {
     Dialog,
     DialogContent,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger
@@ -12,25 +14,26 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
 import {
     Loader2,
     AlertCircle,
     Tag,
-    Clock,
     CheckCircle2,
     ExternalLink,
-    Store
 } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { cn } from "@/lib/utils"
 import { useMarketplace } from "@/hooks/use-marketplace"
-import { ItemType } from "@/types/marketplace"
-import { useAccount } from "@starknet-react/core"
-import { SUPPORTED_TOKENS, EXPLORER_URL } from "@/lib/constants"
-import { constants } from "starknet"
+import { EXPLORER_URL } from "@/lib/constants"
 import { useTokenMetadata } from "@/hooks/use-token-metadata"
 
 
@@ -54,8 +57,36 @@ const DURATION_OPTIONS = [
     { value: "180d", label: "6 Months", seconds: 15552000 },
 ]
 
+// Determine supported currencies - ideally this comes from SUPPORTED_TOKENS directly
+// But for schema defining at module level, we explicitly define the core valid ones
+const SUPPORTED_CURRENCY_SYMBOLS = ["STRK", "USDC", "USDT"] as const;
+
+// Strict form validation schema
+const listingSchema = z.object({
+    price: z.string()
+        .min(1, { message: "Price is required" })
+        .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
+            message: "Price must be a positive number",
+        })
+        .refine((val) => {
+            // Check for excessive decimals
+            if (val.includes(".")) {
+                const decimalPlaces = val.split(".")[1].length;
+                return decimalPlaces <= 18; // generic cap, actual decimal limits per token handle later if needed
+            }
+            return true;
+        }, {
+            message: "Too many decimal places",
+        }),
+    currency: z.enum(SUPPORTED_CURRENCY_SYMBOLS, {
+        required_error: "Please select a currency",
+    }),
+    durationSeconds: z.number().min(86400, "Duration must be at least 1 day"),
+})
+
+type ListingFormValues = z.infer<typeof listingSchema>
+
 export function ListingDialog({ trigger, asset }: ListingDialogProps) {
-    const { address } = useAccount()
     const { createListing, isProcessing, txHash, error, resetState } = useMarketplace()
     const metadata = useTokenMetadata(asset.tokenId, asset.collectionAddress)
     const { name: mName, image: mImage, loading: isLoadingMetadata } = metadata
@@ -64,58 +95,28 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
     const displayImage = mImage || asset.image
 
     const [open, setOpen] = useState(false)
-    const [price, setPrice] = useState("")
-    const [currency, setCurrency] = useState("USDC")
-    const [duration, setDuration] = useState(DURATION_OPTIONS[2]) // Default 30 days
 
     // Derived state
     const stage = txHash ? "success" : isProcessing ? "processing" : error ? "error" : "input"
 
-    // Generate Order Params for Submitting
-    const getOrderParameters = () => {
-        if (!price || parseFloat(price) <= 0 || !address) return null;
+    // Initialize React Hook Form
+    const form = useForm<ListingFormValues>({
+        resolver: zodResolver(listingSchema),
+        defaultValues: {
+            price: "",
+            currency: "USDC",
+            durationSeconds: 2592000, // 30 days default
+        },
+    })
 
-        const now = Math.floor(Date.now() / 1000)
-        const startTime = now + 300 // 5 minutes in future
-        const endTime = now + duration.seconds
-        const salt = Math.floor(Math.random() * 1000000).toString()
-
-        const decimals = currency === "USDC" || currency === "USDT" ? 6 : 18
-        const priceWei = BigInt(Math.floor(parseFloat(price) * Math.pow(10, decimals))).toString()
-
-        const currencyAddress = SUPPORTED_TOKENS.find(t => t.symbol === currency)?.address
-
-        if (!currencyAddress) return null;
-
-        return {
-            offerer: address,
-            offer: {
-                item_type: "ERC721",
-                token: asset.collectionAddress,
-                identifier_or_criteria: asset.tokenId,
-                start_amount: "1",
-                end_amount: "1"
-            },
-            consideration: {
-                item_type: "ERC20",
-                token: currencyAddress,
-                identifier_or_criteria: "0",
-                start_amount: priceWei,
-                end_amount: priceWei,
-                recipient: address
-            },
-            start_time: startTime.toString(),
-            end_time: endTime.toString(),
-            salt: salt,
-        }
-    }
-
-    const debugParams = getOrderParameters();
-
-    const handleCreateListing = async () => {
-        const orderParameters = getOrderParameters();
-        if (!orderParameters) return;
-        await createListing(orderParameters)
+    const onSubmit = async (data: ListingFormValues) => {
+        await createListing(
+            asset.collectionAddress,
+            asset.tokenId,
+            data.price,
+            data.currency,
+            data.durationSeconds
+        )
     }
 
     const handleOpenChange = (isOpen: boolean) => {
@@ -124,7 +125,7 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
             // Delay reset to avoid UI flicker during close animation
             setTimeout(() => {
                 resetState()
-                setPrice("")
+                form.reset()
             }, 300)
         }
     }
@@ -145,7 +146,7 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                         <div className="space-y-2">
                             <h2 className="text-2xl font-bold tracking-tight">Listing Live!</h2>
                             <p className="text-muted-foreground">
-                                Your asset is now available for <span className="font-semibold text-foreground">{price} {currency}</span> on the marketplace.
+                                Your asset is now available for <span className="font-semibold text-foreground">{form.getValues().price} {form.getValues().currency}</span> on the marketplace.
                             </p>
                         </div>
                         <div className="w-full space-y-3 pt-2">
@@ -158,7 +159,7 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                         </div>
                     </div>
                 ) : (
-                    <div className="p-6 space-y-6">
+                    <div className="p-6 pt-2 space-y-6">
                         {/* Compact Asset Preview */}
                         <div className="flex items-center gap-4 p-3 rounded-xl bg-muted/30 border border-border/50 group hover:bg-muted/40 transition-colors">
                             <div className="h-14 w-14 rounded-lg overflow-hidden border border-border/50 bg-background shrink-0 shadow-sm relative">
@@ -184,84 +185,101 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                             </div>
                         </div>
 
-                        <div className="space-y-5">
-                            <div className="space-y-2.5">
-                                <Label htmlFor="listing-price" className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                                    Set Price
-                                </Label>
-                                <div className="relative group">
-                                    <Input
-                                        id="listing-price"
-                                        type="number"
-                                        placeholder="0.00"
-                                        value={price}
-                                        onChange={(e) => setPrice(e.target.value)}
-                                        className="h-12 pl-4 pr-16 bg-muted/20 border-border focus:ring-1 focus:ring-primary/20 text-lg font-medium"
-                                        disabled={isProcessing}
-                                    />
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-background border rounded-md text-xs font-bold shadow-sm">
-                                        {currency}
-                                    </div>
-                                </div>
-                            </div>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                                <FormField
+                                    control={form.control}
+                                    name="price"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2.5">
+                                            <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                                                Set Price
+                                            </FormLabel>
+                                            <div className="relative group">
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        step="any"
+                                                        placeholder="0.00"
+                                                        className="h-12 pl-4 pr-16 bg-muted/20 border-border focus:ring-1 focus:ring-primary/20 text-lg font-medium"
+                                                        disabled={isProcessing}
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <div className="absolute right-3 top-[9px] px-2.5 py-1.5 bg-background border rounded-md text-xs font-bold shadow-sm">
+                                                    {form.watch("currency")}
+                                                </div>
+                                            </div>
+                                            <FormMessage className="text-xs ml-1" />
+                                        </FormItem>
+                                    )}
+                                />
 
-                            <div className="space-y-2.5">
-                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
-                                    Listing Duration
-                                </Label>
-                                <div className="grid grid-cols-4 gap-2">
-                                    {DURATION_OPTIONS.map(opt => (
-                                        <Button
-                                            key={opt.value}
-                                            variant={duration.value === opt.value ? "default" : "outline"}
-                                            size="sm"
-                                            onClick={() => setDuration(opt)}
-                                            className={cn(
-                                                "h-10 text-xs font-medium transition-all",
-                                                duration.value === opt.value ? "shadow-md scale-[1.02]" : "hover:bg-muted/50"
-                                            )}
-                                            disabled={isProcessing}
-                                        >
-                                            {opt.label}
-                                        </Button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+                                <FormField
+                                    control={form.control}
+                                    name="durationSeconds"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2.5">
+                                            <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">
+                                                Listing Duration
+                                            </FormLabel>
+                                            <FormControl>
+                                                <div className="grid grid-cols-4 gap-2">
+                                                    {DURATION_OPTIONS.map(opt => (
+                                                        <Button
+                                                            key={opt.value}
+                                                            type="button"
+                                                            variant={field.value === opt.seconds ? "default" : "outline"}
+                                                            size="sm"
+                                                            onClick={() => field.onChange(opt.seconds)}
+                                                            className={cn(
+                                                                "h-10 text-xs font-medium transition-all",
+                                                                field.value === opt.seconds ? "shadow-md scale-[1.02]" : "hover:bg-muted/50"
+                                                            )}
+                                                            disabled={isProcessing}
+                                                        >
+                                                            {opt.label}
+                                                        </Button>
+                                                    ))}
+                                                </div>
+                                            </FormControl>
+                                            <FormMessage className="text-xs ml-1" />
+                                        </FormItem>
+                                    )}
+                                />
 
-                        {stage === "error" && (
-                            <Alert variant="destructive" className="bg-destructive/5 border-destructive/20 py-3">
-                                <AlertCircle className="h-4 w-4" />
-                                <AlertDescription className="text-xs font-medium pl-2">{error || "Listing failed. Please try again."}</AlertDescription>
-                            </Alert>
-                        )}
-
-                        <div className="pt-2 flex flex-col gap-3">
-                            <Button
-                                onClick={handleCreateListing}
-                                disabled={isProcessing || !price}
-                                className="w-full h-12 text-sm font-bold tracking-wide shadow-lg shadow-primary/10 transition-all hover:scale-[1.01]"
-                            >
-                                {isProcessing ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                        Confirming Order...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Tag className="w-4 h-4 mr-2" />
-                                        Complete Listing
-                                    </>
+                                {stage === "error" && (
+                                    <Alert variant="destructive" className="bg-destructive/5 border-destructive/20 py-3 mt-4">
+                                        <AlertCircle className="h-4 w-4" />
+                                        <AlertDescription className="text-xs font-medium pl-2">{error || "Listing failed. Please try again."}</AlertDescription>
+                                    </Alert>
                                 )}
-                            </Button>
 
-                            <p className="text-[10px] text-center text-muted-foreground px-4 leading-relaxed">
-                                Listing is free. You will be prompted to sign a message and approve the asset for sale in one atomic transaction.
-                            </p>
-                        </div>
+                                <div className="pt-4 flex flex-col gap-3">
+                                    <Button
+                                        type="submit"
+                                        disabled={isProcessing}
+                                        className="w-full h-12 text-sm font-bold tracking-wide shadow-lg shadow-primary/10 transition-all hover:scale-[1.01]"
+                                    >
+                                        {isProcessing ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                Confirming Order...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Tag className="w-4 h-4 mr-2" />
+                                                Complete Listing
+                                            </>
+                                        )}
+                                    </Button>
 
-                        {/* Debug Toggle (optional, keeping it for now but making it more subtle) */}
-
+                                    <p className="text-[10px] text-center text-muted-foreground px-4 leading-relaxed">
+                                        Listing is free. You will be prompted to sign a message and approve the asset for sale in one atomic transaction.
+                                    </p>
+                                </div>
+                            </form>
+                        </Form>
                     </div>
                 )}
             </DialogContent>
