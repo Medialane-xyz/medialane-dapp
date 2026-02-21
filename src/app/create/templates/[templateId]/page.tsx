@@ -256,31 +256,14 @@ export default function CreateAssetFromTemplate() {
           const now = Math.floor(Date.now() / 1000)
           const duration = 30 * 24 * 60 * 60
 
-          const orderParams = {
-            offerer: walletAddress,
-            offer: {
-              item_type: ItemType.ERC721,
-              token: nftAddress,
-              identifier_or_criteria: tokenId,
-              start_amount: "1",
-              end_amount: "1",
-            },
-            consideration: {
-              item_type: ItemType.ERC20,
-              token: usdcAddress,
-              identifier_or_criteria: "0",
-              start_amount: priceInSmallestUnit,
-              end_amount: priceInSmallestUnit,
-              recipient: walletAddress,
-            },
-            start_time: "0",
-            end_time: (now + duration).toString(),
-            salt: `0x${Math.floor(Math.random() * 0xFFFFFFFF).toString(16)}`,
-            nonce: "0",
-          }
-
           setMintProgress(95)
-          const listingTxHash = await createListing(orderParams)
+          const listingTxHash = await createListing(
+            nftAddress,
+            tokenId,
+            formState.listingPrice,
+            "USDC",
+            duration
+          )
 
           if (listingTxHash) {
             toast({

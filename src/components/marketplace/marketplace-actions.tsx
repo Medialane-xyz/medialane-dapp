@@ -58,7 +58,7 @@ export function MarketplaceActions({
                         <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Current Price</p>
                         <div className="flex items-baseline gap-2">
                             <span className="text-3xl font-bold tracking-tight text-foreground">
-                                {listing.start_amount} {listing.currency || "USDC"}
+                                {listing.formattedPrice} {listing.currencySymbol || "USDC"}
                             </span>
                         </div>
                     </div>
@@ -110,8 +110,8 @@ export function MarketplaceActions({
                                     asset={{
                                         id: assetId,
                                         name: assetName,
-                                        price: listing.start_amount || "0",
-                                        currency: listing.currency || "USDC",
+                                        price: listing.formattedPrice || "0",
+                                        currency: listing.currencySymbol || "USDC",
                                         image: `/api/assets/image?address=${nftAddress}&tokenId=${tokenId}`,
                                         collectionName: "Collection",
                                         listing: listing
@@ -133,8 +133,8 @@ export function MarketplaceActions({
                                 asset={{
                                     id: assetId,
                                     name: assetName,
-                                    floorPrice: listing?.start_amount,
-                                    currency: listing?.currency || "USDC",
+                                    floorPrice: listing?.formattedPrice,
+                                    currency: listing?.currencySymbol || "USDC",
                                     image: `/api/assets/image?address=${nftAddress}&tokenId=${tokenId}`,
                                     collectionName: "Digital Asset",
                                     nftAddress: nftAddress,

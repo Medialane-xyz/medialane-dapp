@@ -31,7 +31,7 @@ import {
   Info,
 } from "lucide-react"
 import Image from "next/image"
-import type { Asset, IPType } from "@/types/asset"
+import type { Asset, IPType, LicenseType } from "@/types/asset"
 
 interface RemixAssetDialogProps {
   open: boolean
@@ -40,7 +40,7 @@ interface RemixAssetDialogProps {
   onRemixCreated?: (remixAsset: Asset) => void
 }
 
-const typeIcons: Record<IPType, any> = {
+const typeIcons: Record<string, any> = {
   Art: Palette,
   Audio: Music,
   Video: Video,
@@ -68,7 +68,7 @@ export function RemixAssetDialog({ open, onOpenChange, originalAsset, onRemixCre
     name: `${originalAsset.name} (Remix)`,
     description: `A creative remix of "${originalAsset.name}" by ${originalAsset.creator}`,
     file: null as File | null,
-    licenseType: "cc-by",
+    licenseType: "cc-by" as LicenseType,
     customLicense: "",
     royaltyPercentage: 5,
     allowCommercial: true,
@@ -101,7 +101,7 @@ export function RemixAssetDialog({ open, onOpenChange, originalAsset, onRemixCre
       verified: false,
       image: originalAsset.image, // In real app, this would be the new uploaded file
       collection: `${originalAsset.collection} Remixes`,
-      licenseType: remixData.licenseType,
+      licenseType: remixData.licenseType as LicenseType,
       description: remixData.description,
       registrationDate: new Date().toLocaleDateString("en-US", {
         month: "long",
@@ -120,8 +120,6 @@ export function RemixAssetDialog({ open, onOpenChange, originalAsset, onRemixCre
         royaltyPercentage: remixData.royaltyPercentage,
       },
       owner: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
-      createdAt: new Date().toISOString(),
-      numericValue: 100,
     }
 
     setIsCreating(false)
@@ -199,19 +197,17 @@ export function RemixAssetDialog({ open, onOpenChange, originalAsset, onRemixCre
                 ].map((type) => (
                   <Card
                     key={type.value}
-                    className={`cursor-pointer transition-colors ${
-                      remixData.remixType === type.value
-                        ? "border-primary bg-primary/5"
-                        : "hover:border-muted-foreground/50"
-                    }`}
+                    className={`cursor-pointer transition-colors ${remixData.remixType === type.value
+                      ? "border-primary bg-primary/5"
+                      : "hover:border-muted-foreground/50"
+                      }`}
                     onClick={() => setRemixData({ ...remixData, remixType: type.value as any })}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-4 h-4 rounded-full border-2 ${
-                            remixData.remixType === type.value ? "border-primary bg-primary" : "border-muted-foreground"
-                          }`}
+                          className={`w-4 h-4 rounded-full border-2 ${remixData.remixType === type.value ? "border-primary bg-primary" : "border-muted-foreground"
+                            }`}
                         />
                         <div>
                           <h4 className="font-medium">{type.title}</h4>

@@ -20,7 +20,6 @@ interface UseMarketplaceReturn {
         currencySymbol: string,
         durationSeconds: number
     ) => Promise<string | undefined>;
-    buyItem: (orderParams: any, fulfillmentParams: any) => Promise<string | undefined>;
     checkoutCart: (items: any[]) => Promise<string | undefined>;
     cancelOrder: (orderHash: string) => Promise<string | undefined>;
     cancelListing: (orderHash: string) => Promise<string | undefined>;
@@ -165,9 +164,34 @@ export function useMarketplace(): UseMarketplaceReturn {
                 console.warn("Could not verify hash mismatch:", hashErr);
             }
 
-            // Execute transaction via account for better control/compatibility
-            const call = medialaneContract.populate("register_order", [registerPayload]);
-            const tx = await account.execute(call);
+            // 6. Construct Approve call for the ERC721
+            const { cairo } = await import("starknet");
+            const tokenIdUint256 = cairo.uint256(tokenId);
+
+            const approveCall = {
+                contractAddress: assetContractAddress,
+                entrypoint: "approve",
+                calldata: [medialaneContract.address, tokenIdUint256.low.toString(), tokenIdUint256.high.toString()],
+            };
+
+            const registerCall = medialaneContract.populate("register_order", [registerPayload]);
+
+            // Check if already approved to save gas and avoid prompt
+            let isAlreadyApproved = false;
+            try {
+                const isApprovedRes = await provider.callContract({
+                    contractAddress: assetContractAddress,
+                    entrypoint: "get_approved",
+                    calldata: [tokenIdUint256.low.toString(), tokenIdUint256.high.toString()]
+                });
+                isAlreadyApproved = BigInt(isApprovedRes[0]).toString() === BigInt(medialaneContract.address).toString();
+                console.log("Is already approved for token:", isAlreadyApproved);
+            } catch (err) {
+                console.warn("Failed to check approval status", err);
+            }
+
+            const calls = isAlreadyApproved ? [registerCall] : [approveCall, registerCall];
+            const tx = await account.execute(calls);
             console.log("Transaction sent:", tx.transaction_hash);
 
             // Wait for transaction confirmation
@@ -336,106 +360,7 @@ export function useMarketplace(): UseMarketplaceReturn {
         }
     }, [account, medialaneContract, chain, toast, provider]);
 
-    const buyItem = useCallback(async (order: any, fulfillment: any) => {
-        if (!account || !medialaneContract || !chain) {
-            const msg = "Account, contract, or network not available";
-            setError(msg);
-            toast({ title: "Error", description: msg, variant: "destructive" });
-            return undefined;
-        }
 
-        setIsProcessing(true);
-        setError(null);
-
-        try {
-            // 1. We must execute an Approve for the ERC20 token, and then the Fulfill call.
-            // When buying, the buyer is the "fulfiller". The seller is the "offerer".
-            // The item the buyer gives up is in the `consideration` array.
-
-            // Validate that we have a proper consideration
-            if (!order || !order.consideration) {
-                throw new Error("Invalid order data for fulfillment");
-            }
-
-            // Extract what the buyer has to pay
-            const currencyAddress = order.consideration.token;
-            const priceWei = order.consideration.start_amount; // e.g. "1000000"
-
-            if (!currencyAddress || !priceWei) {
-                throw new Error("Missing currency or price in order parameters");
-            }
-
-            // 2. Fetch current nonce for the buyer
-            console.log("Fetching nonce for buyer:", account.address);
-            const currentNonce = await medialaneContract.nonces(account.address);
-            console.log("Current nonce:", currentNonce.toString());
-
-            // 3. Prepare Fulfillment Request Typed Data
-            // We need to sign an OrderFulfillment struct
-            const { getOrderFulfillmentTypedData } = await import("@/utils/marketplace-utils");
-
-            const fulfillmentParams = {
-                order_hash: fulfillment.order_hash,
-                fulfiller: account.address,
-                nonce: currentNonce.toString(),
-            };
-
-            const chainId = chain.id as any as constants.StarknetChainId;
-            const typedData = stringifyBigInts(getOrderFulfillmentTypedData(fulfillmentParams, chainId));
-
-            console.log("Signing fulfillment typed data:", typedData);
-            const signature = await account.signMessage(typedData);
-
-            const signatureArray = Array.isArray(signature)
-                ? signature
-                : [signature.r.toString(), signature.s.toString()];
-
-            console.log("Fulfillment signature generated:", signatureArray);
-
-            // 4. Construct payload for fulfill_order
-            const fulfillPayload = {
-                fulfillment: fulfillmentParams,
-                signature: signatureArray,
-            };
-
-            console.log("Fulfilling order with payload:", fulfillPayload);
-
-            const fulfillCall = medialaneContract.populate("fulfill_order", [fulfillPayload]);
-
-            // 5. Construct Appprove call for the ERC20
-            const { cairo } = await import("starknet");
-            const amountUint256 = cairo.uint256(priceWei);
-
-            const approveCall = {
-                contractAddress: currencyAddress,
-                entrypoint: "approve",
-                calldata: [medialaneContract.address, amountUint256.low.toString(), amountUint256.high.toString()],
-            };
-
-            // 6. Execute atomic MultiCall!
-            const tx = await account.execute([approveCall, fulfillCall]);
-            console.log("Purchase MultiCall sent:", tx.transaction_hash);
-
-            console.log("Waiting for transaction confirmation:", tx.transaction_hash);
-            await provider.waitForTransaction(tx.transaction_hash);
-
-            setTxHash(tx.transaction_hash);
-            toast({
-                title: "Purchase Successful",
-                description: "The item has been successfully purchased and transferred to your wallet.",
-            });
-
-            return tx.transaction_hash;
-        } catch (err: any) {
-            console.error("Error in buyItem:", err);
-            const msg = err.message || "Failed to complete purchase";
-            setError(msg);
-            toast({ title: "Error", description: msg, variant: "destructive" });
-            return undefined;
-        } finally {
-            setIsProcessing(false);
-        }
-    }, [account, medialaneContract, chain, toast, provider]);
 
     const checkoutCart = useCallback(async (items: any[]) => {
         if (!account || !medialaneContract || !chain || items.length === 0) {
@@ -607,7 +532,6 @@ export function useMarketplace(): UseMarketplaceReturn {
     return {
         createListing,
         makeOffer,
-        buyItem,
         checkoutCart,
         cancelOrder,
         cancelListing: cancelOrder,

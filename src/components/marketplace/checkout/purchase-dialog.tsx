@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useAccount, useBalance } from "@starknet-react/core"
 import {
     Dialog,
     DialogContent,
@@ -16,7 +17,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import Link from "next/link"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { useMarketplace } from "@/hooks/use-marketplace"
-import { Listing, Fulfillment } from "@/types/marketplace"
+import { Fulfillment } from "@/types/marketplace"
+import { MarketplaceOrder } from "@/hooks/use-marketplace-events"
 import { EXPLORER_URL } from "@/lib/constants"
 import { useTokenMetadata } from "@/hooks/use-token-metadata"
 
@@ -29,13 +31,28 @@ interface PurchaseDialogProps {
         currency: string
         image: string
         collectionName: string
-        listing?: Listing
+        listing?: MarketplaceOrder & { formattedPrice?: string; currencySymbol?: string }
     }
 }
 
 export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
-    const { buyItem, isProcessing, txHash, error, resetState } = useMarketplace()
+    const { checkoutCart, isProcessing, txHash, error, resetState } = useMarketplace()
+    const { address } = useAccount()
     const [open, setOpen] = useState(false)
+
+    // Check Token Balance
+    const considerationAmount = asset.listing?.considerationAmount
+    const considerationToken = asset.listing?.considerationToken as `0x${string}` | undefined
+
+    const { data: balanceData } = useBalance({
+        address,
+        token: considerationToken,
+        watch: true
+    })
+
+    const hasInsufficientBalance = balanceData && considerationAmount
+        ? balanceData.value < BigInt(considerationAmount)
+        : false
 
     // Parse NFT Address and Token ID from asset.id (contract-tokenId)
     const [nftAddress, tokenId] = asset.id.split("-")
@@ -54,13 +71,7 @@ export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
             return
         }
 
-        const fulfillment: Fulfillment = {
-            fulfiller: "0x0",
-            order_hash: asset.listing.orderHash || "0x0",
-            nonce: "0"
-        }
-
-        await buyItem(asset.listing.parameters, fulfillment)
+        await checkoutCart([asset.listing])
     }
 
     const handleOpenChange = (isOpen: boolean) => {
@@ -165,6 +176,16 @@ export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
                             </Alert>
                         )}
 
+                        {/* Balance Warning */}
+                        {hasInsufficientBalance && (
+                            <Alert className="bg-destructive/10 border-destructive/20 text-destructive">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertDescription className="text-xs font-medium ml-2">
+                                    Insufficient balance. You need {asset.price} {asset.currency} to complete this purchase.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
 
                         <div className="flex items-center gap-3 pt-2">
                             <Button
@@ -177,7 +198,7 @@ export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
                             </Button>
                             <Button
                                 onClick={handlePurchase}
-                                disabled={stage === "processing" || !asset.listing}
+                                disabled={stage === "processing" || !asset.listing || hasInsufficientBalance}
                                 className="flex-[2] h-12 font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all active:scale-[0.98]"
                             >
                                 {stage === "processing" ? (
@@ -188,7 +209,7 @@ export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
                                 ) : (
                                     <>
                                         <ShoppingBag className="mr-2 h-4 w-4" />
-                                        Buy Now
+                                        {hasInsufficientBalance ? "Insufficient Balance" : "Buy Now"}
                                     </>
                                 )}
                             </Button>

@@ -4,8 +4,7 @@ import { useContract, useNetwork } from "@starknet-react/core";
 import { useQuery } from "@tanstack/react-query";
 import { Abi } from "starknet";
 import { IPMarketplaceABI } from "@/abis/ip_market";
-import { Listing } from "@/types/marketplace";
-import { useMarketplaceListings, findListingForToken } from "@/hooks/use-marketplace-events";
+import { useMarketplaceListings, findListingForToken, MarketplaceOrder } from "@/hooks/use-marketplace-events";
 import { SUPPORTED_TOKENS } from "@/lib/constants";
 import { normalizeStarknetAddress } from "@/lib/utils";
 
@@ -41,7 +40,7 @@ export function useListing(assetContract: string, tokenId: string) {
 
     return useQuery({
         queryKey: ['listing', assetContract, tokenId, listings.length],
-        queryFn: async (): Promise<Listing | null> => {
+        queryFn: async (): Promise<(MarketplaceOrder & { formattedPrice: string; currencySymbol: string }) | null> => {
             if (!assetContract || !tokenId) return null;
 
             // Find matching listing from event-based scan
@@ -53,9 +52,9 @@ export function useListing(assetContract: string, tokenId: string) {
             const formattedPrice = formatPrice(matchingOrder.considerationAmount, decimals);
 
             return {
-                orderHash: matchingOrder.orderHash,
-                start_amount: formattedPrice,
-                currency: symbol,
+                ...matchingOrder,
+                formattedPrice,
+                currencySymbol: symbol,
             };
         },
         enabled: !eventsLoading && !!assetContract && !!tokenId,
