@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,11 +30,12 @@ import { ReportCollectionDialog } from "@/components/report-collection-dialog";
 import Link from "next/link";
 import Image from "next/image";
 import { LazyImage } from "@/components/ui/lazy-image";
-import NFTCard from "@/components/nft-card";
+import AssetCard from "@/components/asset-card";
 import {
     useCollectionMetadata,
     useCollectionAssets,
 } from "@/hooks/use-collection-new";
+import { useMarketplaceListings } from "@/hooks/use-marketplace-events";
 import { Asset } from "@/types/asset";
 
 interface CollectionDetailsProps {
@@ -73,6 +74,23 @@ export default function CollectionDetails({ collectionAddress }: CollectionDetai
             asset.type.toLowerCase() === filterType.toLowerCase();
         return matchesSearch && matchesType;
     });
+
+    // Load active marketplace listings
+    const { listings } = useMarketplaceListings();
+
+    // Create a fast map of active listings by contract + tokenId
+    const activeListingsMap = useMemo(() => {
+        const map = new Map<string, any>();
+        if (!listings) return map;
+
+        listings.forEach(listing => {
+            if (listing.status === "active" && (listing.offerType === "ERC721" || listing.offerType === "ERC1155")) {
+                const key = `${listing.offerToken.toLowerCase()}-${listing.offerIdentifier}`;
+                map.set(key, listing);
+            }
+        });
+        return map;
+    }, [listings]);
 
     const creator = (collection as any)?.creator;
 
@@ -336,9 +354,13 @@ export default function CollectionDetails({ collectionAddress }: CollectionDetai
                         <AssetsSkeleton />
                     ) : filteredAssets.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {filteredAssets.map((asset) => (
-                                <NFTCard key={asset.id} asset={asset as Asset} />
-                            ))}
+                            {filteredAssets.map((asset) => {
+                                const tokenId = asset.id.split('-').pop();
+                                const contractAddr = (asset.collection || collectionAddress).toLowerCase();
+                                const key = `${contractAddr}-${tokenId}`;
+                                const matchedListing = activeListingsMap.get(key);
+                                return <AssetCard key={asset.id} asset={asset as Asset} listing={matchedListing} />;
+                            })}
                         </div>
                     ) : (
                         <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">

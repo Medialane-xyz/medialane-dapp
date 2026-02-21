@@ -59,7 +59,7 @@ export function normalizeStarknetAddress(address: string): string {
   if (!address || address === "N/A") return address;
   try {
     const bigIntAddr = BigInt(address);
-    return "0x" + bigIntAddr.toString(16).padStart(64, "0").toLowerCase();
+    return "0x" + bigIntAddr.toString(16).toLowerCase();
   } catch {
     return address;
   }

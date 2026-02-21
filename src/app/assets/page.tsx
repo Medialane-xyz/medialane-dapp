@@ -33,8 +33,9 @@ import {
     Eye,
 } from "lucide-react"
 import { useRecentAssets, type RecentAsset } from "@/hooks/use-recent-assets"
+import { useMarketplaceListings } from "@/hooks/use-marketplace-events"
 
-import { AssetCardItem, AssetCardSkeleton } from "@/components/assets/asset-card-item"
+import { AssetCard } from "@/components/asset-card"
 
 export default function AssetsPage() {
     const [searchQuery, setSearchQuery] = useState("")
@@ -52,6 +53,23 @@ export default function AssetsPage() {
                 asset.collectionId.includes(searchQuery)
         )
     }, [assets, searchQuery])
+
+    // Load active marketplace listings
+    const { listings } = useMarketplaceListings()
+
+    // Create a fast map of active listings by contract + tokenId
+    const activeListingsMap = useMemo(() => {
+        const map = new Map<string, any>()
+        if (!listings) return map
+
+        listings.forEach(listing => {
+            if (listing.status === "active" && (listing.offerType === "ERC721" || listing.offerType === "ERC1155")) {
+                const key = `${listing.offerToken.toLowerCase()}-${listing.offerIdentifier}`
+                map.set(key, listing)
+            }
+        })
+        return map
+    }, [listings])
 
     return (
         <div className="min-h-screen py-10">
@@ -138,9 +156,11 @@ export default function AssetsPage() {
                     ) : (
                         <>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {filteredAssets.map((asset) => (
-                                    <AssetCardItem key={asset.id} asset={asset} />
-                                ))}
+                                {filteredAssets.map((asset) => {
+                                    const key = `${asset.collectionAddress.toLowerCase()}-${asset.tokenId}`
+                                    const matchedListing = activeListingsMap.get(key)
+                                    return <AssetCard key={asset.id} asset={asset} listing={matchedListing} />
+                                })}
                             </div>
 
                             {/* Load More Pagination */}

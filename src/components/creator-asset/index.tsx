@@ -65,7 +65,18 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
   const resolvedParams = use(params);
   const { slug } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug || "").replace(/%2D/g, "-");
-  const [nftAddress, tokenIdStr] = (decodedSlug || "").split("-");
+  const [rawAddress, tokenIdStr] = (decodedSlug || "").split("-");
+
+  // Resiliently handle both decimal and hex contract addresses
+  let nftAddress = rawAddress;
+  if (nftAddress && !nftAddress.startsWith("0x")) {
+    try {
+      nftAddress = "0x" + BigInt(nftAddress).toString(16);
+    } catch (e) {
+      console.warn("Could not parse decimal address from slug", e);
+    }
+  }
+
   const router = useRouter();
   const { address } = useAccount();
   const { toast } = useToast();

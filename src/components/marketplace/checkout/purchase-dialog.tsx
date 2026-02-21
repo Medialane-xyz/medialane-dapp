@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, AlertCircle, CheckCircle2, ShoppingBag, ExternalLink } from "lucide-react"
+import { Loader2, AlertCircle, CheckCircle2, ShoppingBag, ExternalLink, Shield } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import Link from "next/link"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
@@ -81,20 +81,24 @@ export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
                 </DialogHeader>
 
                 {stage === "success" ? (
-                    <div className="py-6 flex flex-col items-center text-center space-y-4">
-                        <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center">
-                            <CheckCircle2 className="h-10 w-10 text-primary" />
+                    <div className="py-8 flex flex-col items-center text-center space-y-6">
+                        <div className="h-20 w-20 bg-emerald-500/10 rounded-full flex items-center justify-center">
+                            <CheckCircle2 className="h-10 w-10 text-emerald-500" />
                         </div>
-                        <div className="space-y-1">
-                            <h2 className="text-xl font-bold">Purchase Successful!</h2>
-                            <p className="text-sm text-muted-foreground">
-                                You have successfully purchased <span className="font-medium text-foreground">{asset.name}</span>
+                        <div className="space-y-2">
+                            <h2 className="text-2xl font-bold tracking-tight">Purchase Live!</h2>
+                            <p className="text-sm text-muted-foreground w-64 mx-auto">
+                                You have successfully purchased <span className="font-semibold text-foreground">{asset.name}</span>
                             </p>
                         </div>
-                        <Link href={`${EXPLORER_URL}/tx/${txHash}`} target="_blank" className="text-primary text-sm flex items-center gap-1 hover:underline">
-                            View Transaction <ExternalLink className="w-3 h-3" />
-                        </Link>
-                        <Button onClick={() => setOpen(false)} className="w-full mt-2">Close</Button>
+                        <div className="w-full space-y-3 pt-2">
+                            <Button asChild variant="outline" className="w-full">
+                                <Link href={`${EXPLORER_URL}/tx/${txHash}`} target="_blank" className="flex items-center justify-center gap-2">
+                                    View Transaction <ExternalLink className="w-4 h-4" />
+                                </Link>
+                            </Button>
+                            <Button onClick={() => setOpen(false)} className="w-full h-11">Done</Button>
+                        </div>
                     </div>
                 ) : (
                     <div className="space-y-6 pt-2">
@@ -143,34 +147,43 @@ export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
                             </div>
                         </div>
 
+                        <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 flex gap-3 shadow-inner">
+                            <Shield className="w-4 h-4 text-primary shrink-0 mt-0.5 opacity-80" />
+                            <div className="space-y-1">
+                                <p className="text-[11px] font-bold text-foreground/80">On-Chain Binding</p>
+                                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                                    You will be prompted to approve the total payable amount, which will immediately be swapped for the asset.
+                                </p>
+                            </div>
+                        </div>
+
                         {/* Error Display */}
                         {stage === "error" && (
-                            <Alert variant="destructive">
+                            <Alert className="bg-destructive/10 border-destructive/20 text-destructive animate-in shake-in-1 duration-300">
                                 <AlertCircle className="h-4 w-4" />
-                                <AlertTitle>Error</AlertTitle>
-                                <AlertDescription className="text-xs">{error || "Transaction failed. Please try again."}</AlertDescription>
+                                <AlertDescription className="text-xs font-medium ml-2">{error || "Transaction failed. Please try again."}</AlertDescription>
                             </Alert>
                         )}
 
-                        <div className="bg-amber-500/5 border border-amber-500/10 rounded-lg p-3">
-                            <p className="text-[11px] text-amber-600 font-medium leading-tight text-center">
-                                You are interacting with the Medialane Beta Marketplace.
-                            </p>
-                        </div>
 
-                        <DialogFooter>
-                            <Button variant="ghost" onClick={() => setOpen(false)} disabled={stage === "processing"}>
+                        <div className="flex items-center gap-3 pt-2">
+                            <Button
+                                variant="ghost"
+                                onClick={() => setOpen(false)}
+                                disabled={stage === "processing"}
+                                className="flex-1 font-semibold text-muted-foreground"
+                            >
                                 Cancel
                             </Button>
                             <Button
                                 onClick={handlePurchase}
                                 disabled={stage === "processing" || !asset.listing}
-                                className="min-w-[140px]"
+                                className="flex-[2] h-12 font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all active:scale-[0.98]"
                             >
                                 {stage === "processing" ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Processing...
+                                        Confirming...
                                     </>
                                 ) : (
                                     <>
@@ -179,7 +192,7 @@ export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
                                     </>
                                 )}
                             </Button>
-                        </DialogFooter>
+                        </div>
                     </div>
                 )}
             </DialogContent>

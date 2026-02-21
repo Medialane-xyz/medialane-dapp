@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
-import type { Asset } from "@/lib/types"
+import type { Asset } from "@/types/asset"
 
 export function RelatedAssetsCarousel({ assets }: { assets: Asset[] }) {
   const router = useRouter()
@@ -26,7 +26,7 @@ export function RelatedAssetsCarousel({ assets }: { assets: Asset[] }) {
       <div ref={carouselRef} className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide space-x-4 pb-4">
         {assets.map((asset) => (
           <div key={asset.id} className="snap-start flex-shrink-0 w-64">
-            <AssetCard asset={asset} onClick={() => router.push(`/asset/${asset.id}`)} />
+            <CarouselAssetCard asset={asset} onClick={() => router.push(`/asset/${asset.id}`)} />
           </div>
         ))}
       </div>
@@ -50,7 +50,7 @@ export function RelatedAssetsCarousel({ assets }: { assets: Asset[] }) {
   )
 }
 
-function AssetCard({ asset, onClick }: { asset: Asset; onClick: () => void }) {
+function CarouselAssetCard({ asset, onClick }: { asset: Asset; onClick: () => void }) {
   return (
     <Card className="overflow-hidden cursor-pointer" onClick={onClick}>
       <div className="relative aspect-square">
@@ -60,7 +60,7 @@ function AssetCard({ asset, onClick }: { asset: Asset; onClick: () => void }) {
         <div className="flex justify-between items-start">
           <div>
             <h3 className="font-semibold truncate">{asset.name}</h3>
-            <p className="text-sm text-muted-foreground">{asset.collection.name}</p>
+            <p className="text-sm text-muted-foreground">{asset.collection}</p>
           </div>
           <AssetCardMenu assetId={asset.id} />
         </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useMarketplaceListings } from "@/hooks/use-marketplace-events"
-import { AssetCard } from "./asset-card"
+import { AssetCard } from "@/components/asset-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AlertCircle, Loader2, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"

@@ -6,8 +6,8 @@ import type {
   ActivityRecord,
   PortfolioStats,
   OwnershipRecord,
-  User,
 } from "@/types/asset"
+import type { User } from "@/lib/types"
 
 // Enhanced  creators data with more comprehensive profiles
 export const creators: Creator[] = [
@@ -116,6 +116,7 @@ export const portfolioStats: PortfolioStats = {
   createdAssets: 0,
   licensedAssets: 0,
   protectionLevel: 0,
+  recentViews: 0,
 }
 
 //  provenance data

@@ -191,7 +191,7 @@ export default function RemixDiscoveryPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.05 }}
                           >
-                            <AssetCard
+                            <RemixAssetCard
                               asset={asset}
                               nftAddress={
                                 myCollections.find(c => c.id.toString() === asset.collection_id)?.nftAddress || ""
@@ -338,7 +338,7 @@ export default function RemixDiscoveryPage() {
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: i * 0.05 }}
                               >
-                                <AssetCard
+                                <RemixAssetCard
                                   asset={{
                                     name: asset.name,
                                     image: asset.image,
@@ -378,7 +378,7 @@ export default function RemixDiscoveryPage() {
 // --- Subcomponents ---
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function AssetCard({ asset, onRemix }: { asset: any, nftAddress: string, onRemix: () => void }) {
+function RemixAssetCard({ asset, onRemix }: { asset: any, nftAddress: string, onRemix: () => void }) {
   return (
     <Card className="overflow-hidden group hover:shadow-2xl transition-all duration-500 glass-card border-white/5 dark:border-white/5 bg-white/5 dark:bg-black/20 hover:border-primary/30 dark:hover:border-primary/30">
       <div className="aspect-square relative bg-muted/20 overflow-hidden">

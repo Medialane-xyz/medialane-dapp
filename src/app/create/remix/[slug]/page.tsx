@@ -20,8 +20,18 @@ export default function RemixPage({ params }: RemixPageProps) {
     // Parse asset slug [address]-[tokenid]
     // Handle potentially encoded slugs
     const decodedSlug = decodeURIComponent(slug)
-    const [nftAddress, tokenIdStr] = (decodedSlug || "").split("-")
+    const [rawAddress, tokenIdStr] = (decodedSlug || "").split("-")
     const tokenId = parseInt(tokenIdStr)
+
+    // Resiliently handle both decimal and hex contract addresses
+    let nftAddress = rawAddress;
+    if (nftAddress && !nftAddress.startsWith("0x")) {
+        try {
+            nftAddress = "0x" + BigInt(nftAddress).toString(16);
+        } catch (e) {
+            console.warn("Could not parse decimal address from slug", e);
+        }
+    }
 
     if (!decodedSlug || !nftAddress || isNaN(tokenId)) {
         return (

@@ -129,12 +129,12 @@ export function useMarketplaceListings() {
 
                         return {
                             orderHash,
-                            offerer: details.offerer.toString(),
-                            offerToken: details.offer.token.toString(),
+                            offerer: normalizeStarknetAddress(details.offerer.toString()),
+                            offerToken: normalizeStarknetAddress(details.offer.token.toString()),
                             offerIdentifier: details.offer.identifier_or_criteria.toString(),
                             offerAmount: details.offer.start_amount.toString(),
                             offerType: shortString.decodeShortString(num.toHex(details.offer.item_type)),
-                            considerationToken: details.consideration.token.toString(),
+                            considerationToken: normalizeStarknetAddress(details.consideration.token.toString()),
                             considerationIdentifier: details.consideration.identifier_or_criteria.toString(),
                             considerationAmount: details.consideration.start_amount.toString(),
                             considerationType: shortString.decodeShortString(num.toHex(details.consideration.item_type)),

@@ -216,7 +216,7 @@ export function useCollectionMetadata(collectionAddress: string) {
           symbol: symbol || "MIP",
           description: description,
           image: image,
-          nftAddress: collectionAddress,
+          nftAddress: normalizedAddress as string,
           owner: owner,
           isActive: collectionDetails.is_active,
           totalMinted: Number(totalSupply),
@@ -328,12 +328,12 @@ export function useCollectionAssets(collectionAddress: string) {
           const typeAttribute = metadata.attributes?.find((attr: any) => attr.trait_type === "Type");
 
           return {
-            id: `${collectionAddress}-${tokenId}`,
+            id: `${normalizedAddress}-${tokenId}`,
             name: metadata.name || `Asset #${tokenId}`,
             creator: owner,
             verified: true,
             image: resolveIpfsUrl(metadata.image || metadata.assetUrl),
-            collection: collectionAddress,
+            collection: normalizedAddress as string,
             licenseType,
             description: metadata.description || "",
             type: typeAttribute?.value || "Unknown",

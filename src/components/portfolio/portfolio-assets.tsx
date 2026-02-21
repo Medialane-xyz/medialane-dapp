@@ -17,6 +17,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { TokenData } from "@/hooks/use-portfolio";
+import AssetCardGlobal from "@/components/asset-card";
 
 interface PortfolioAssetsProps {
     tokens: Record<string, TokenData[]>;
@@ -90,11 +91,19 @@ export function PortfolioAssets({ tokens, loading, collections = [] }: Portfolio
                             const nftAddress = collection?.nftAddress || asset.collection_id;
 
                             return (
-                                <AssetCard
+                                <AssetCardGlobal
                                     key={`${asset.collection_id}-${asset.token_id}`}
-                                    asset={asset}
-                                    collectionName={collection?.name}
-                                    nftAddress={nftAddress}
+                                    asset={{
+                                        id: `${nftAddress}-${asset.token_id}`,
+                                        name: asset.name || `Token #${asset.token_id}`,
+                                        description: asset.description || "",
+                                        image: asset.image || "/placeholder.svg",
+                                        collection: nftAddress,
+                                        creator: "",
+                                        owner: asset.owner,
+                                        type: "NFT",
+                                        licenseType: "all-rights-reserved",
+                                    }}
                                 />
                             );
                         })}
@@ -118,97 +127,7 @@ export function PortfolioAssets({ tokens, loading, collections = [] }: Portfolio
     );
 }
 
-function AssetCard({ asset, collectionName, nftAddress }: { asset: TokenData; collectionName?: string; nftAddress: string }) {
-    const isOwner = true; // Since this is "My Assets", the user is the owner.
 
-    return (
-        <Card className="overflow-hidden group glass-card">
-            <Link href={`/asset/${nftAddress}-${asset.token_id}`}>
-                <div className="aspect-square relative bg-muted/50 overflow-hidden cursor-pointer">
-                    <Image
-                        src={asset.image || "/placeholder.svg"}
-                        alt={asset.name || "Asset"}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                </div>
-            </Link>
-            <CardContent className="p-4 space-y-3">
-                <div className="space-y-1">
-                    <div className="flex items-start justify-between gap-2">
-                        <Link href={`/asset/${nftAddress}-${asset.token_id}`} className="flex-1 min-w-0">
-                            <h3 className="font-semibold truncate text-base hover:text-primary transition-colors" title={asset.name}>
-                                {asset.name}
-                            </h3>
-                        </Link>
-                    </div>
-
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <Link href={`/collections/${nftAddress}`} className="hover:underline truncate max-w-[70%] font-medium text-foreground/80">
-                            {collectionName || `Collection ${asset.collection_id}`}
-                        </Link>
-                    </div>
-                </div>
-
-                <div className="pt-2 flex gap-2">
-                    <Button asChild variant="outline" size="sm" className="flex-1 h-8 text-xs gap-1">
-                        <Link href={`/asset/${nftAddress}-${asset.token_id}`}>
-                            View Asset
-                        </Link>
-                    </Button>
-
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 shrink-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-
-                            <DropdownMenuItem asChild>
-                                <Link href={`/create/remix/${nftAddress}-${asset.token_id}`} className="cursor-pointer">
-                                    <Sparkles className="mr-2 h-4 w-4" />
-                                    Remix Asset
-                                </Link>
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem asChild>
-                                <Link href={`/provenance/${nftAddress}-${asset.token_id}`} className="cursor-pointer">
-                                    <History className="mr-2 h-4 w-4" />
-                                    Open Provenance
-                                </Link>
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem asChild>
-                                <Link href={`/proof-of-ownership/${nftAddress}-${asset.token_id}`} className="cursor-pointer">
-                                    <ShieldCheck className="mr-2 h-4 w-4" />
-                                    View Proof
-                                </Link>
-                            </DropdownMenuItem>
-
-                            <DropdownMenuSeparator />
-
-                            {isOwner && (
-                                <DropdownMenuItem asChild>
-                                    <Link href={`/transfer/${nftAddress}-${asset.token_id}`} className="cursor-pointer">
-                                        <Send className="mr-2 h-4 w-4" />
-                                        Transfer Asset
-                                    </Link>
-                                </DropdownMenuItem>
-                            )}
-
-                            <DropdownMenuItem>
-                                <Flag className="mr-2 h-4 w-4" />
-                                Report Asset
-                            </DropdownMenuItem>
-
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            </CardContent>
-        </Card>
-    );
-}
 
 function AssetCardSkeleton() {
     return (

@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2 } from "lucide-react";
 import { CollectionAsset } from "@/hooks/use-collection-assets";
+import { Asset } from "@/types/asset";
+import AssetCardGlobal from "@/components/asset-card";
 
 interface ProgressiveAssetGridProps {
   assets: CollectionAsset[];
@@ -60,9 +62,20 @@ export function ProgressiveAssetGrid({
 
       {/* Assets Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-        {/* Render loaded assets */}
         {assets.map((asset) => (
-          <AssetCard key={asset.id} asset={asset} />
+          <AssetCardGlobal
+            key={asset.id}
+            asset={{
+              id: asset.id,
+              name: asset.name,
+              description: "",
+              image: asset.image || "",
+              collection: asset.id.split('-')[0] || "",
+              creator: "",
+              type: "NFT",
+              licenseType: "all-rights-reserved",
+            }}
+          />
         ))}
 
         {/* Render loading skeletons for remaining items */}
@@ -79,30 +92,7 @@ export function ProgressiveAssetGrid({
   );
 }
 
-function AssetCard({ asset }: { asset: CollectionAsset }) {
-  return (
-    <Link href={`/asset/${asset.id}`}>
-      <Card className="overflow-hidden transition-all duration-200 hover:shadow-lg hover:scale-[1.02] cursor-pointer group">
-        <div className="relative aspect-square overflow-hidden">
-          <Image
-            src={asset.image || "/placeholder.svg"}
-            alt={asset.name}
-            fill
-            className="object-cover transition-transform duration-200 group-hover:scale-105"
-          />
-        </div>
-        <CardContent className="p-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium truncate" title={asset.name}>
-              {asset.name}
-            </span>
-            <Badge variant="outline">#{asset.tokenId}</Badge>
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
+
 
 function AssetSkeleton() {
   return (
