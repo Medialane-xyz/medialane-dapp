@@ -6,6 +6,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+import { SUPPORTED_TOKENS } from "./constants";
+
 // Helper function to shorten address
 export const shortenAddress = (address: string) => {
   if (!address || address === "N/A" || address.length < 10) return address || "N/A";
@@ -16,6 +18,28 @@ export const shortenAddress = (address: string) => {
 export const formatAmount = (hex: string) => {
   const decimal = parseInt(hex, 16);
   return decimal.toString();
+};
+
+export const getCurrency = (tokenAddress: string) => {
+  if (!tokenAddress) return { symbol: "TOKEN", decimals: 18 };
+  const normalized = normalizeStarknetAddress(tokenAddress).toLowerCase();
+  for (const token of SUPPORTED_TOKENS) {
+    const tokenNormalized = normalizeStarknetAddress(token.address).toLowerCase();
+    if (tokenNormalized === normalized) {
+      return { symbol: token.symbol, decimals: token.decimals };
+    }
+  }
+  return { symbol: "TOKEN", decimals: 18 };
+};
+
+export const formatPrice = (amount: string, decimals: number) => {
+  if (!amount) return "0";
+  try {
+    const val = BigInt(amount);
+    return (Number(val) / Math.pow(10, decimals)).toFixed(decimals <= 6 ? 2 : 4);
+  } catch (e) {
+    return "0";
+  }
 };
 
 // Helper function to truncate long strings

@@ -21,6 +21,7 @@ interface UseMarketplaceReturn {
         durationSeconds: number
     ) => Promise<string | undefined>;
     buyItem: (orderParams: any, fulfillmentParams: any) => Promise<string | undefined>;
+    checkoutCart: (items: any[]) => Promise<string | undefined>;
     cancelOrder: (orderHash: string) => Promise<string | undefined>;
     cancelListing: (orderHash: string) => Promise<string | undefined>;
 
@@ -436,6 +437,107 @@ export function useMarketplace(): UseMarketplaceReturn {
         }
     }, [account, medialaneContract, chain, toast, provider]);
 
+    const checkoutCart = useCallback(async (items: any[]) => {
+        if (!account || !medialaneContract || !chain || items.length === 0) {
+            const msg = "Account, contract, network not available, or cart empty";
+            setError(msg);
+            toast({ title: "Error", description: msg, variant: "destructive" });
+            return undefined;
+        }
+
+        setIsProcessing(true);
+        setError(null);
+
+        try {
+            // 1. Group Required Approvals by Currency
+            const tokenTotals = new Map<string, bigint>();
+            items.forEach((item) => {
+                const token = item.considerationToken;
+                const amount = BigInt(item.considerationAmount);
+                tokenTotals.set(token, (tokenTotals.get(token) || 0n) + amount);
+            });
+
+            const { cairo } = await import("starknet");
+            const approveCalls = Array.from(tokenTotals.entries()).map(([token, totalWei]) => {
+                const amountUint256 = cairo.uint256(totalWei.toString());
+                return {
+                    contractAddress: token,
+                    entrypoint: "approve",
+                    calldata: [medialaneContract.address, amountUint256.low.toString(), amountUint256.high.toString()],
+                };
+            });
+
+            // 2. Fetch Base Nonce
+            const currentNonce = await medialaneContract.nonces(account.address);
+            const baseNonce = BigInt(currentNonce);
+
+            // 3. Generate Signatures & Fulfillment Calls Sequentially
+            const { getOrderFulfillmentTypedData } = await import("@/utils/marketplace-utils");
+            const chainId = chain.id as any as constants.StarknetChainId;
+            const fulfillCalls = [];
+
+            // We must prompt signatures one by one due to SNIP-12 specifications,
+            // but the transaction execution will be entirely atomic.
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const executionNonce = baseNonce + BigInt(i);
+
+                const fulfillmentParams = {
+                    order_hash: item.orderHash,
+                    fulfiller: account.address,
+                    nonce: executionNonce.toString(),
+                };
+
+                const typedData = stringifyBigInts(getOrderFulfillmentTypedData(fulfillmentParams, chainId));
+
+                toast({
+                    title: `Signature Required (${i + 1}/${items.length})`,
+                    description: `Please clear the signature request for ${item.offerIdentifier}`,
+                });
+
+                const signature = await account.signMessage(typedData);
+                const signatureArray = Array.isArray(signature)
+                    ? signature
+                    : [signature.r.toString(), signature.s.toString()];
+
+                const fulfillPayload = {
+                    fulfillment: fulfillmentParams,
+                    signature: signatureArray,
+                };
+
+                fulfillCalls.push(medialaneContract.populate("fulfill_order", [fulfillPayload]));
+            }
+
+            // 4. Execute atomic MultiCall
+            toast({
+                title: "Executing Purchase",
+                description: "Approve the final transaction to sweep the cart.",
+            });
+
+            const tx = await account.execute([...approveCalls, ...fulfillCalls]);
+            console.log("Cart Checkout MultiCall sent:", tx.transaction_hash);
+
+            console.log("Waiting for transaction confirmation:", tx.transaction_hash);
+            await provider.waitForTransaction(tx.transaction_hash);
+
+            setTxHash(tx.transaction_hash);
+            toast({
+                title: "Purchase Successful",
+                description: `Successfully procured ${items.length} items.`,
+            });
+
+            return tx.transaction_hash;
+        } catch (err: any) {
+            console.error("Error in checkoutCart:", err);
+            const msg = err.message || "Failed to complete checkout";
+            setError(msg);
+            toast({ title: "Error", description: msg, variant: "destructive" });
+            return undefined;
+        } finally {
+            setIsProcessing(false);
+        }
+    }, [account, medialaneContract, chain, toast, provider]);
+
     const cancelOrder = useCallback(async (orderHash: string) => {
         if (!account || !medialaneContract || !chain) {
             const msg = "Account, contract, or network not available";
@@ -506,6 +608,7 @@ export function useMarketplace(): UseMarketplaceReturn {
         createListing,
         makeOffer,
         buyItem,
+        checkoutCart,
         cancelOrder,
         cancelListing: cancelOrder,
         isProcessing,

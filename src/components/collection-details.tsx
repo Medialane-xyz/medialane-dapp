@@ -37,6 +37,7 @@ import {
 } from "@/hooks/use-collection-new";
 import { useMarketplaceListings } from "@/hooks/use-marketplace-events";
 import { Asset } from "@/types/asset";
+import { CollectionOfferDialog } from "@/components/marketplace/checkout/collection-offer-dialog";
 
 interface CollectionDetailsProps {
     collectionAddress: string;
@@ -223,6 +224,22 @@ export default function CollectionDetails({ collectionAddress }: CollectionDetai
                                     </p>
 
                                     <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-4">
+                                        <CollectionOfferDialog
+                                            collection={{
+                                                name: collection.name,
+                                                image: collection.image || "/placeholder.svg",
+                                                nftAddress: collection.nftAddress,
+                                            }}
+                                            trigger={
+                                                <Button
+                                                    variant="default"
+                                                    className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 font-bold"
+                                                >
+                                                    Make Collection Offer
+                                                </Button>
+                                            }
+                                        />
+
                                         <Button
                                             variant="outline"
                                             size="icon"

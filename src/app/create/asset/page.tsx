@@ -238,41 +238,16 @@ export default function CreateAssetPage() {
           const usdcAddress = usdcToken?.address || "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8";
           const usdcDecimals = usdcToken?.decimals || 6;
 
-          // Convert price to smallest unit (e.g., 10 USDC = 10_000_000)
-          const priceInSmallestUnit = BigInt(
-            Math.round(parseFloat(formState.listingPrice) * Math.pow(10, usdcDecimals))
-          ).toString();
-
-          const now = Math.floor(Date.now() / 1000);
-          const startTime = now + 300; // 5 minutes in future
           const duration = 30 * 24 * 60 * 60; // 30 days default
 
-          // Build Seaport-style OrderParameters
-          const orderParams = {
-            offerer: walletAddress,
-            offer: {
-              item_type: "ERC721",
-              token: nftAddress,
-              identifier_or_criteria: tokenId,
-              start_amount: "1",
-              end_amount: "1",
-            },
-            consideration: {
-              item_type: "ERC20",
-              token: usdcAddress,
-              identifier_or_criteria: "0",
-              start_amount: priceInSmallestUnit,
-              end_amount: priceInSmallestUnit,
-              recipient: walletAddress,
-            },
-            start_time: startTime.toString(),
-            end_time: (now + duration).toString(),
-            salt: Math.floor(Math.random() * 1000000).toString(),
-            nonce: "0",
-          };
-
           setMintProgress(95);
-          const listingTxHash = await createListing(orderParams);
+          const listingTxHash = await createListing(
+            nftAddress,
+            tokenId,
+            formState.listingPrice,
+            "USDC",
+            duration
+          );
 
           if (listingTxHash) {
             toast({

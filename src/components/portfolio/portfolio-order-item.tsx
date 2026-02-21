@@ -60,7 +60,12 @@ export function PortfolioOrderItem({ listing, onCancel }: PortfolioOrderItemProp
     };
 
     const formattedPrice = formatPrice(paymentAmount, currency.decimals);
-    const assetUrl = `/asset/${displayToken}-${displayIdentifier}`;
+
+    // Collection Offer routing
+    const isCollectionOffer = isBid && displayIdentifier === "0";
+    const assetUrl = isCollectionOffer ? `/collections/${displayToken}` : `/asset/${displayToken}-${displayIdentifier}`;
+    const displayName = isCollectionOffer ? "Collection Offer (Any)" : (name || `Asset #${displayIdentifier}`);
+
     const timeText = startTime > 0 ? formatDistanceToNow(startTime * 1000, { addSuffix: true }) : "Recently";
 
     return (
@@ -79,7 +84,7 @@ export function PortfolioOrderItem({ listing, onCancel }: PortfolioOrderItemProp
                 </div>
                 <div className="min-w-0">
                     <h4 className="text-sm font-bold truncate text-foreground group-hover:text-primary transition-colors">
-                        {name || `Asset #${displayIdentifier}`}
+                        {displayName}
                     </h4>
                     <p className="text-[10px] text-muted-foreground font-mono truncate">
                         {displayToken.slice(0, 6)}...{displayToken.slice(-4)}
@@ -111,8 +116,8 @@ export function PortfolioOrderItem({ listing, onCancel }: PortfolioOrderItemProp
             {/* Status */}
             <div>
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${status === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.1)]' :
-                        status === 'fulfilled' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
-                            'bg-muted/10 text-muted-foreground border-border/20'
+                    status === 'fulfilled' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+                        'bg-muted/10 text-muted-foreground border-border/20'
                     }`}>
                     {status}
                 </span>

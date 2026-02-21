@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils"
 import { ShoppingBag, Rocket, User, ChevronDown, Command, Boxes } from "lucide-react";
 import { Logo } from "@/components/header/logo"
 import { ThemeToggle } from "@/components/header/theme-toggle"
+import { useCart } from "@/store/use-cart"
+import { CartDrawer } from "@/components/cart-drawer"
 
 const WalletConnect = dynamic(() => import("./header/wallet-connect").then(mod => mod.WalletConnect), {
   ssr: false,
@@ -13,8 +15,11 @@ const WalletConnect = dynamic(() => import("./header/wallet-connect").then(mod =
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const { items, setIsOpen } = useCart()
 
   useEffect(() => {
+    setMounted(true)
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
     }
@@ -79,6 +84,21 @@ export function Header() {
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
 
+          {/* Cart Trigger */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsOpen(true)}
+            className="relative h-9 w-9 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-all text-foreground"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            {mounted && items.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-outrun-cyan text-black text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center border border-background">
+                {items.length}
+              </span>
+            )}
+          </Button>
+
           {/* Wallet Connect */}
           <WalletConnect />
 
@@ -115,6 +135,7 @@ export function Header() {
 
         </div>
       </div>
+      <CartDrawer />
     </header>
   )
 }

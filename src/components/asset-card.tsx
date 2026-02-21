@@ -2,8 +2,8 @@
 
 import { MarketplaceOrder } from "@/hooks/use-marketplace-events"
 import { Skeleton } from "@/components/ui/skeleton"
-import { normalizeStarknetAddress } from "@/lib/utils"
-import { SUPPORTED_TOKENS, EXPLORER_URL } from "@/lib/constants"
+import { normalizeStarknetAddress, getCurrency, formatPrice } from "@/lib/utils"
+import { EXPLORER_URL } from "@/lib/constants"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +22,7 @@ import {
 import Link from "next/link"
 import Image from "next/image"
 import { useState } from "react"
+import { useCart } from "@/store/use-cart"
 import { useTokenMetadata } from "@/hooks/use-token-metadata"
 import { cn } from "@/lib/utils"
 import {
@@ -59,32 +60,25 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
 
   const [imageError, setImageError] = useState(false);
 
+  // Cart integration
+  const { items, addItem, removeItem, setIsOpen } = useCart();
+  const isInCart = listing && items.some((i) => i.listing.orderHash === listing.orderHash);
+
+  const handleCartAction = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!listing || !asset) return;
+
+    if (isInCart) {
+      removeItem(listing.orderHash);
+    } else {
+      addItem({ listing, asset: asset as Asset | RecentAsset });
+      setIsOpen(true);
+    }
+  };
+
   // Resolve currency details for listings
-  const getCurrency = (tokenAddress: string) => {
-    if (!tokenAddress) return { symbol: "TOKEN", decimals: 18 };
-    const normalized = normalizeStarknetAddress(tokenAddress).toLowerCase();
-    for (const token of SUPPORTED_TOKENS) {
-      const tokenNormalized = normalizeStarknetAddress(token.address).toLowerCase();
-      if (tokenNormalized === normalized) {
-        return { symbol: token.symbol, decimals: token.decimals };
-      }
-    }
-    return { symbol: "TOKEN", decimals: 18 };
-  };
-
   const currency = getCurrency(listing?.considerationToken || "");
-
-  // Price formatting
-  const formatPrice = (amount: string, decimals: number) => {
-    if (!amount) return "0";
-    try {
-      const val = BigInt(amount);
-      return (Number(val) / Math.pow(10, decimals)).toFixed(decimals <= 6 ? 2 : 4);
-    } catch (e) {
-      return "0";
-    }
-  };
-
   const formattedPrice = formatPrice(listing?.considerationAmount || "0", currency.decimals);
 
   // Final Display Values
@@ -179,15 +173,14 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
 
       <CardFooter className="p-4 pt-0 gap-2 grid grid-cols-[1fr,1fr,auto]">
         {listing ? (
-          <Link href={assetUrl} className="w-full">
-            <Button
-              variant="default"
-              className="w-full h-9 gap-2 font-medium shadow-sm transition-all active:scale-[0.98]"
-            >
-              <ShoppingBag className="h-3.5 w-3.5" />
-              Buy
-            </Button>
-          </Link>
+          <Button
+            variant={isInCart ? "secondary" : "default"}
+            onClick={handleCartAction}
+            className="w-full h-9 gap-2 font-medium shadow-sm transition-all active:scale-[0.98]"
+          >
+            <ShoppingBag className="h-3.5 w-3.5" />
+            {isInCart ? "In Cart" : "Add to Cart"}
+          </Button>
         ) : (
           <Link href={assetUrl} className="w-full">
             <Button

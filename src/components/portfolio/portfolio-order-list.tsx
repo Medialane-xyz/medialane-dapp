@@ -33,6 +33,17 @@ export function PortfolioOrderList({ searchQuery = "", mode }: PortfolioOrderLis
         return set;
     }, [tokens]);
 
+    // Fast lookup for owned collections (used for wildcard collection offers)
+    const ownedCollections = useMemo(() => {
+        const set = new Set<string>();
+        Object.keys(tokens).forEach(collectionId => {
+            if (tokens[collectionId] && tokens[collectionId].length > 0) {
+                set.add(normalizeStarknetAddress(collectionId).toLowerCase());
+            }
+        });
+        return set;
+    }, [tokens]);
+
     const filteredBids = useMemo(() => {
         if (!address || (!listings && !allOrders)) return [];
 
@@ -44,8 +55,14 @@ export function PortfolioOrderList({ searchQuery = "", mode }: PortfolioOrderLis
             const isUserOfferer = normalizedOfferer === normalizedUser;
             const isCurrencyOffer = listing.offerType === "ERC20" || listing.offerType === "Native";
 
+            const targetCollection = normalizeStarknetAddress(listing.considerationToken).toLowerCase();
+            const isCollectionOffer = listing.considerationIdentifier === "0";
+
             const isNFTOfferReceived = (listing.considerationType === "ERC721" || listing.considerationType === "ERC1155") &&
-                ownedTokenSet.has(`${normalizeStarknetAddress(listing.considerationToken).toLowerCase()}-${listing.considerationIdentifier}`);
+                (
+                    (isCollectionOffer && ownedCollections.has(targetCollection)) ||
+                    (!isCollectionOffer && ownedTokenSet.has(`${targetCollection}-${listing.considerationIdentifier}`))
+                );
 
             if (mode === "offers-made") {
                 if (!isUserOfferer || !isCurrencyOffer) return false;
