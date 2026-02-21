@@ -10,6 +10,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { WalletConnectCTA } from "@/components/portfolio/wallet-connect-cta";
 import { PageHeader } from "@/components/page-header";
+import { PortfolioTabs } from "@/components/portfolio/portfolio-tabs";
 
 const PortfolioListings = dynamic<any>(() =>
     import("@/components/portfolio/portfolio-listings").then(mod => mod.PortfolioListings), {
@@ -42,32 +43,7 @@ export default function ListingsClientPage() {
             </PageHeader>
 
             {/* Quick Navigation Tabs */}
-            <div className="flex gap-4 mb-8 border-b border-border/40 pb-px">
-                <Link
-                    href="/portfolio/listings"
-                    className="px-4 py-2 text-sm font-bold text-primary border-b-2 border-primary"
-                >
-                    My Listings
-                </Link>
-                <Link
-                    href="/portfolio/offers"
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent"
-                >
-                    Offers Made
-                </Link>
-                <Link
-                    href="/portfolio/offers-received"
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent"
-                >
-                    Offers Received
-                </Link>
-                <Link
-                    href="/portfolio/bid-history"
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent"
-                >
-                    Bid History
-                </Link>
-            </div>
+            <PortfolioTabs activePath="/portfolio/listings" />
 
             {/* Content Area */}
             <div className="relative">

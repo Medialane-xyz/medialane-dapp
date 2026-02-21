@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { PortfolioTabs } from "@/components/portfolio/portfolio-tabs";
 
 export default function BidHistoryClientPage() {
     const [searchQuery, setSearchQuery] = useState("");
 
     return (
-        <div className="container max-w-7xl mx-auto px-4 py-20">
+        <div className="container max-w-7xl mx-auto px-4 py-10">
             {/* Header Section */}
             <PageHeader
                 title="Bid History"
@@ -22,7 +23,7 @@ export default function BidHistoryClientPage() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
                         placeholder="Search history..."
-                        className="pl-10 bg-muted/20 border-border/50 focus:border-primary/50 transition-all rounded-xl"
+                        className="pl-10 h-11 bg-muted/40 border-border/40 focus:bg-background transition-all rounded-xl"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -30,32 +31,7 @@ export default function BidHistoryClientPage() {
             </PageHeader>
 
             {/* Quick Navigation Tabs */}
-            <div className="flex gap-4 mb-8 border-b border-border/40 pb-px overflow-x-auto no-scrollbar">
-                <Link
-                    href="/portfolio/listings"
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent whitespace-nowrap"
-                >
-                    My Listings
-                </Link>
-                <Link
-                    href="/portfolio/offers"
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent whitespace-nowrap"
-                >
-                    Offers Made
-                </Link>
-                <Link
-                    href="/portfolio/offers-received"
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent whitespace-nowrap"
-                >
-                    Offers Received
-                </Link>
-                <Link
-                    href="/portfolio/bid-history"
-                    className="px-4 py-2 text-sm font-bold text-primary border-b-2 border-primary whitespace-nowrap"
-                >
-                    Bid History
-                </Link>
-            </div>
+            <PortfolioTabs activePath="/portfolio/bid-history" />
 
             {/* Content Area */}
             <div className="relative">

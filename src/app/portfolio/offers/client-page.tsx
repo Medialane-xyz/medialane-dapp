@@ -7,6 +7,7 @@ import { Search, History } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
+import { PortfolioTabs } from "@/components/portfolio/portfolio-tabs";
 
 export default function OffersClientPage() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -37,32 +38,7 @@ export default function OffersClientPage() {
             </PageHeader>
 
             {/* Quick Navigation Tabs */}
-            <div className="flex gap-4 mb-8 border-b border-border/40 pb-px overflow-x-auto no-scrollbar">
-                <Link
-                    href="/portfolio/listings"
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent whitespace-nowrap"
-                >
-                    My Listings
-                </Link>
-                <Link
-                    href="/portfolio/offers"
-                    className="px-4 py-2 text-sm font-bold text-primary border-b-2 border-primary whitespace-nowrap"
-                >
-                    Offers Made
-                </Link>
-                <Link
-                    href="/portfolio/offers-received"
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent whitespace-nowrap"
-                >
-                    Offers Received
-                </Link>
-                <Link
-                    href="/portfolio/bid-history"
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border-b-2 border-transparent whitespace-nowrap"
-                >
-                    Bid History
-                </Link>
-            </div>
+            <PortfolioTabs activePath="/portfolio/offers" />
 
             {/* Content Area */}
             <div className="relative">
