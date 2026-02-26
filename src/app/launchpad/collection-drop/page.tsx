@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useDropForm } from '@/hooks/use-drop-form';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,14 @@ import { format } from 'date-fns';
 import { useDropzone } from 'react-dropzone';
 import { licenseTypes, geographicScopes } from '@/types/asset';
 import { PageHeader } from "@/components/page-header"
+import { useCollection } from "@/hooks/use-collection";
+import { useIpfsUpload } from "@/hooks/use-ipfs";
+import { useAccount, useProvider } from "@starknet-react/core";
+import { useNetwork } from "@/components/starknet-provider";
+import { MintSuccessDrawer, MintDrawerStep } from "@/components/mint-success-drawer";
+import { COLLECTION_CONTRACT_ADDRESS } from "@/lib/constants";
+import { num, hash, Contract } from "starknet";
+import { ipCollectionAbi } from "@/abis/ip_collection";
 
 export default function CreateDropPage() {
     const {
@@ -47,6 +56,21 @@ export default function CreateDropPage() {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Deployment & Progress State
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [creationStep, setCreationStep] = useState<MintDrawerStep>("idle");
+    const [progress, setProgress] = useState(0);
+    const [txHash, setTxHash] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [mintResult, setMintResult] = useState<any>(null);
+
+    const { uploadToIpfs, loading: upload_loading } = useIpfsUpload();
+    const { createCollection, isCreating } = useCollection();
+    const { address: walletAddress, chainId } = useAccount();
+    const { provider } = useProvider();
+    const { networkConfig } = useNetwork();
+
     // Dropzone Callbacks
     const onDropCover = useCallback((acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) setCoverImage(acceptedFiles[0]);
@@ -69,11 +93,140 @@ export default function CreateDropPage() {
     });
 
     const handleSubmit = async () => {
-        setIsSubmitting(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        setIsSubmitting(false);
-        toast.success("Collection Drop Created!", { description: "Your drop is now live on the testnet." });
+        if (!walletAddress) {
+            toast.error("Wallet not connected", { description: "Please connect your wallet to deploy a drop." });
+            return;
+        }
+
+        // Check Network
+        if (chainId && BigInt(chainId).toString() !== networkConfig.chainId) {
+            toast.error("Wrong Network", { description: `Please switch to ${networkConfig.name} to deploy.` });
+            return;
+        }
+
+        // Setup preview for drawer
+        if (coverImage) {
+            setPreviewImage(URL.createObjectURL(coverImage));
+        }
+
+        setError(null);
+        setTxHash(null);
+        setProgress(0);
+        setCreationStep("idle");
+        setIsDrawerOpen(true);
+    };
+
+    const handleConfirmMint = async () => {
+        try {
+            setCreationStep("uploading");
+            setProgress(0);
+
+            // 1. Prepare Metadata
+            const metadata = {
+                name,
+                description,
+                symbol,
+                attributes: [
+                    { trait_type: "Total Supply", value: supply },
+                    { trait_type: "Mint Price", value: price },
+                    { trait_type: "Max Per Wallet", value: maxPerWallet },
+                    { trait_type: "Start Date", value: startDate?.toISOString() || "Now" },
+                    { trait_type: "Reveal Mode", value: revealType },
+                    { trait_type: "License Type", value: licenseType },
+                    { trait_type: "Royalty Percentage", value: royaltyPercentage },
+                    { trait_type: "Payout Address", value: payoutAddress },
+                    { trait_type: "Geographic Scope", value: territory ? `${geographicScope} - ${territory}` : geographicScope },
+                    { trait_type: "License Duration", value: licenseDuration },
+                    { trait_type: "Field of Use", value: fieldOfUse },
+                    { trait_type: "AI Policy", value: aiRights },
+                ]
+            };
+
+            // 2. Upload to IPFS
+            setProgress(10);
+            if (!coverImage) throw new Error("Cover image is required");
+
+            const result = await uploadToIpfs(coverImage, metadata);
+            setProgress(40);
+
+            if (!result || !result.metadataUrl) {
+                throw new Error("Failed to upload metadata to IPFS.");
+            }
+
+            // 3. Contract Call
+            setCreationStep("processing");
+            setProgress(60);
+
+            const txHashResponse = await createCollection({
+                name,
+                symbol: symbol || "DROP",
+                base_uri: result.metadataUrl
+            });
+
+            if (txHashResponse) {
+                setTxHash(txHashResponse);
+                setProgress(80);
+
+                // Wait for transaction
+                const receipt = await provider.waitForTransaction(txHashResponse);
+
+                let collectionId = "collections";
+                const collectionCreatedSelector = hash.getSelectorFromName("CollectionCreated");
+
+                if (receipt.isSuccess() && 'events' in receipt) {
+                    const events = (receipt as any).events;
+                    let creationEvent = events.find(
+                        (e: any) =>
+                            e.from_address?.toLowerCase() === COLLECTION_CONTRACT_ADDRESS.toLowerCase() &&
+                            e.keys[0] === collectionCreatedSelector
+                    );
+
+                    if (creationEvent && creationEvent.data && creationEvent.data.length > 0) {
+                        collectionId = num.toBigInt(creationEvent.data[0]).toString();
+                    }
+                }
+
+                // If event parsing failed, fallback robustly (fetch from chain)
+                if (collectionId === "collections" && walletAddress) {
+                    try {
+                        const contract = new Contract({ abi: ipCollectionAbi, address: COLLECTION_CONTRACT_ADDRESS });
+                        contract.connect(provider);
+                        const userCollections = await contract.list_user_collections(walletAddress);
+                        if (userCollections && userCollections.length > 0) {
+                            const lastId = userCollections[userCollections.length - 1];
+                            collectionId = typeof lastId === 'object' && 'low' in lastId ? num.toBigInt(lastId.low).toString() : num.toBigInt(lastId).toString();
+                        }
+                    } catch (err) { /* ignore */ }
+                }
+
+                let collectionAddressForLink = collectionId;
+                if (collectionId !== "collections") {
+                    try {
+                        const contract = new Contract({ abi: ipCollectionAbi, address: COLLECTION_CONTRACT_ADDRESS });
+                        contract.connect(provider);
+                        const collectionData = await contract.get_collection(collectionId);
+                        if (collectionData && collectionData.ip_nft) {
+                            collectionAddressForLink = "0x" + num.toBigInt(collectionData.ip_nft).toString(16);
+                        }
+                    } catch (err) { /* ignore */ }
+                }
+
+                setMintResult({
+                    transactionHash: txHashResponse,
+                    tokenId: collectionAddressForLink,
+                    assetSlug: collectionAddressForLink
+                });
+
+                setProgress(100);
+                setCreationStep("success");
+                toast.success("Collection Drop Created!");
+            }
+
+        } catch (err: any) {
+            console.error("Error creating drop:", err);
+            setError(err.message || "Failed to create collection drop");
+            setCreationStep("idle");
+        }
     };
 
     const getLicenseIcon = () => {
@@ -117,10 +270,15 @@ export default function CreateDropPage() {
                             <CardContent className="p-8 space-y-12">
 
                                 {/* Section 1: Collection Identity */}
-                                <section className="space-y-6">
+                                <motion.section
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    className="space-y-6"
+                                >
                                     <div className="flex items-center gap-3 pb-2 border-b border-border/40">
-                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20">1</div>
-                                        <h2 className="text-xl font-semibold">Collection Identity</h2>
+                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.1)]">1</div>
+                                        <h2 className="text-xl font-semibold tracking-tight">Collection Identity</h2>
                                     </div>
 
                                     <div className="space-y-4">
@@ -161,13 +319,19 @@ export default function CreateDropPage() {
                                             />
                                         </div>
                                     </div>
-                                </section>
+                                </motion.section>
 
                                 {/* Section 2: Assets & Reveal */}
-                                <section className="space-y-6">
+                                <motion.section
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.1 }}
+                                    className="space-y-6"
+                                >
                                     <div className="flex items-center gap-3 pb-2 border-b border-border/40">
-                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20">2</div>
-                                        <h2 className="text-xl font-semibold">Assets & Reveal</h2>
+                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.1)]">2</div>
+                                        <h2 className="text-xl font-semibold tracking-tight">Assets & Reveal</h2>
                                     </div>
 
                                     <div className="space-y-6">
@@ -285,13 +449,19 @@ export default function CreateDropPage() {
                                             </div>
                                         )}
                                     </div>
-                                </section>
+                                </motion.section>
 
                                 {/* Section 3: Licensing Model */}
-                                <section className="space-y-6">
+                                <motion.section
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.2 }}
+                                    className="space-y-6"
+                                >
                                     <div className="flex items-center gap-3 pb-2 border-b border-border/40">
-                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20">3</div>
-                                        <h2 className="text-xl font-semibold">Licensing Model</h2>
+                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.1)]">3</div>
+                                        <h2 className="text-xl font-semibold tracking-tight">Licensing Model</h2>
                                     </div>
 
                                     <div className="space-y-6">
@@ -418,13 +588,19 @@ export default function CreateDropPage() {
                                             </div>
                                         </div>
                                     </div>
-                                </section>
+                                </motion.section>
 
                                 {/* Section 4: Mint Schedule */}
-                                <section className="space-y-6">
+                                <motion.section
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.3 }}
+                                    className="space-y-6"
+                                >
                                     <div className="flex items-center gap-3 pb-2 border-b border-border/40">
-                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20">4</div>
-                                        <h2 className="text-xl font-semibold">Mint Schedule</h2>
+                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.1)]">4</div>
+                                        <h2 className="text-xl font-semibold tracking-tight">Mint Schedule</h2>
                                     </div>
 
                                     <div className="space-y-6">
@@ -542,13 +718,19 @@ export default function CreateDropPage() {
                                             )}
                                         </div>
                                     </div>
-                                </section>
+                                </motion.section>
 
                                 {/* Section 5: Economics */}
-                                <section className="space-y-6">
+                                <motion.section
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.4 }}
+                                    className="space-y-6"
+                                >
                                     <div className="flex items-center gap-3 pb-2 border-b border-border/40">
-                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20">5</div>
-                                        <h2 className="text-xl font-semibold">Economics</h2>
+                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.1)]">5</div>
+                                        <h2 className="text-xl font-semibold tracking-tight">Economics</h2>
                                     </div>
 
                                     <div className="space-y-6">
@@ -587,7 +769,7 @@ export default function CreateDropPage() {
                                             </p>
                                         </div>
                                     </div>
-                                </section>
+                                </motion.section>
 
                             </CardContent>
                         </Card>
@@ -730,6 +912,29 @@ export default function CreateDropPage() {
 
                 </div>
             </main>
+
+            {/* Progress & Success Drawer */}
+            <MintSuccessDrawer
+                isOpen={isDrawerOpen}
+                onOpenChange={setIsDrawerOpen}
+                step={creationStep}
+                progress={progress}
+                mintResult={mintResult}
+                assetTitle={name || "New Collection Drop"}
+                assetDescription={description}
+                assetType="Collection Drop"
+                error={error}
+                onConfirm={handleConfirmMint}
+                cost="0.001 STRK" /* Estimate */
+                previewImage={previewImage}
+                basePath="/collections/"
+                data={{
+                    Symbol: symbol || "DROP",
+                    Supply: supply,
+                    Price: `${price} USDC`,
+                    License: licenseType,
+                }}
+            />
         </div>
     );
 }

@@ -366,4 +366,5 @@ export interface DisplayAsset {
   ipfsCid?: string;
   type: string;
   collectionId?: string;
+  nftAddress?: string;
 }

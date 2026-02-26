@@ -1,5 +1,4 @@
 import { Shield, Box, Grid3X3, RefreshCw } from "lucide-react"
-import type { CinematicOption } from "@/lib/creation-data-types"
 
 // Defining the type locally to avoid circular dependencies if needed, 
 // but sticking to the request import. 

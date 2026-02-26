@@ -35,8 +35,8 @@ const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "";
 
 export function useSmartContract() {
   const { contract } = useContract({
-    abi: contractAbi,
-    address: contractAddress,
+    abi: contractAbi as any,
+    address: contractAddress as `0x${string}`,
   });
   return contract as Contract;
 }

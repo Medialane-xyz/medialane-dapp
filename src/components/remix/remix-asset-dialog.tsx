@@ -297,7 +297,7 @@ export function RemixAssetDialog({ open, onOpenChange, originalAsset, onRemixCre
               <Label>License Type</Label>
               <Select
                 value={remixData.licenseType}
-                onValueChange={(value) => setRemixData({ ...remixData, licenseType: value })}
+                onValueChange={(value) => setRemixData({ ...remixData, licenseType: value as LicenseType })}
               >
                 <SelectTrigger>
                   <SelectValue />

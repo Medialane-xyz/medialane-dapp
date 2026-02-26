@@ -55,7 +55,7 @@ export interface BlockchainPortfolioStats {
 
 export function useBlockchainPortfolio() {
   const { account } = useAccount();
-  
+
   const [userAssets, setUserAssets] = useState<BlockchainAsset[]>([]);
   const [userCollections, setUserCollections] = useState<BlockchainCollection[]>([]);
   const [portfolioStats, setPortfolioStats] = useState<BlockchainPortfolioStats>({
@@ -81,19 +81,19 @@ export function useBlockchainPortfolio() {
       setError("Wallet not connected");
       return;
     }
-    
+
     if (!contractAddress) {
       setIsLoading(false);
       setError("Contract address not configured. Please set NEXT_PUBLIC_IP_COLLECTION_ADDRESS environment variable.");
       return;
     }
-    
+
     try {
-      const ipContract = new Contract(
-        abi as Abi,
-        contractAddress as `0x${string}`,
-        account
-      );
+      const ipContract = new Contract({
+        abi: abi as Abi,
+        address: contractAddress as `0x${string}`,
+        providerOrAccount: account
+      });
       setContract(ipContract);
     } catch (err) {
       console.error("Error initializing contract:", err);
@@ -109,7 +109,7 @@ export function useBlockchainPortfolio() {
         setIsLoadingTokens(false);
         return;
       }
-      
+
       try {
         setIsLoadingTokens(true);
         const result = await contract.call("list_user_tokens", [account.address]);
@@ -120,29 +120,29 @@ export function useBlockchainPortfolio() {
         setIsLoadingTokens(false);
       }
     };
-    
+
     fetchUserTokens();
   }, [contract, account]);
 
   const fetchTokenMetadata = useCallback(async (tokenId: string): Promise<BlockchainAsset | null> => {
     try {
       if (!contract) return null;
-      
+
       // Fetch token URI from the contract
       const tokenURI = await contract.call("token_uri", [num.toBigInt(tokenId)]);
-      
+
       if (!tokenURI) return null;
-      
+
       const tokenURIString = tokenURI.toString();
-      
+
       try {
         const response = await fetch(tokenURIString);
         if (!response.ok) {
           throw new Error(`Failed to fetch metadata: ${response.statusText}`);
         }
-        
+
         const metadata = await response.json();
-        
+
         // Map the metadata to BlockchainAsset format
         return {
           id: tokenId,
@@ -166,7 +166,7 @@ export function useBlockchainPortfolio() {
         };
       } catch (fetchError) {
         console.error("Error fetching or parsing metadata:", fetchError);
-        
+
         // Fallback to default values if metadata fetch fails
         return {
           id: tokenId,
@@ -208,7 +208,18 @@ export function useBlockchainPortfolio() {
         description: asset.collectionDescription || "Mediolano IP Collection",
         floorPrice: asset.floorPrice || 0.1,
         image: asset.collectionImage || asset.image || "/placeholder.svg",
-        itemCount: asset.collectionItemCount || 1
+        itemCount: asset.collectionItemCount || 1,
+        nftAddress: "",
+        owner: "",
+        isActive: true,
+        totalMinted: 0,
+        totalBurned: 0,
+        totalTransfers: 0,
+        lastMintTime: "",
+        lastBurnTime: "",
+        lastTransferTime: "",
+        totalSupply: 1,
+        baseUri: ""
       },
       price: asset.floorPrice || 0.1,
       rarity: asset.rarity || "Common",
@@ -228,7 +239,18 @@ export function useBlockchainPortfolio() {
       description: `Collection with ${collection.tokenCount} tokens`,
       floorPrice: collection.floorPrice,
       image: collection.image,
-      itemCount: collection.tokenCount
+      itemCount: collection.tokenCount,
+      nftAddress: "",
+      owner: "",
+      isActive: true,
+      totalMinted: 0,
+      totalBurned: 0,
+      totalTransfers: 0,
+      lastMintTime: "",
+      lastBurnTime: "",
+      lastTransferTime: "",
+      totalSupply: 1,
+      baseUri: ""
     }));
   }, []);
 
@@ -236,37 +258,37 @@ export function useBlockchainPortfolio() {
   useEffect(() => {
     const fetchAllUserAssets = async () => {
       if (!userTokens.length || !contract || isLoadingTokens) return;
-      
+
       setIsLoading(true);
       setError(null);
-      
+
       try {
         console.log(`Fetching metadata for ${userTokens.length} tokens...`);
-        
+
         // Fetch metadata for each token
-        const assetsPromises = userTokens.map(tokenId => 
+        const assetsPromises = userTokens.map(tokenId =>
           fetchTokenMetadata(tokenId)
             .catch(error => {
               console.error(`Error fetching metadata for token ${tokenId}:`, error);
               return null;
             })
         );
-        
+
         const assets = (await Promise.all(assetsPromises)).filter(asset => asset !== null) as BlockchainAsset[];
-        
+
         console.log(`Successfully fetched metadata for ${assets.length} of ${userTokens.length} tokens`);
-        
+
         if (assets.length === 0) {
           setError("No valid assets found. There might be an issue with the metadata.");
           setIsLoading(false);
           return;
         }
-        
+
         setUserAssets(assets);
-        
+
         // Group assets by collection to create collections data
         const collectionMap = new Map<string, BlockchainCollection>();
-        
+
         assets.forEach(asset => {
           if (!collectionMap.has(asset.collection)) {
             collectionMap.set(asset.collection, {
@@ -280,26 +302,26 @@ export function useBlockchainPortfolio() {
           } else {
             const collection = collectionMap.get(asset.collection)!;
             collection.tokenCount += 1;
-            
+
             // Update floor price if this asset has a lower price
             if (asset.floorPrice < collection.floorPrice) {
               collection.floorPrice = asset.floorPrice;
             }
           }
         });
-        
+
         setUserCollections(Array.from(collectionMap.values()));
-        
+
         // Calculate portfolio stats
         if (assets.length > 0) {
           // Find the collection with the most tokens
-          const topCollection = Array.from(collectionMap.values()).sort((a, b) => 
+          const topCollection = Array.from(collectionMap.values()).sort((a, b) =>
             b.tokenCount - a.tokenCount
           )[0];
-          
+
           // Calculate total value
           const totalValue = assets.reduce((sum, asset) => sum + asset.floorPrice, 0);
-          
+
           setPortfolioStats({
             totalValue,
             totalNFTs: assets.length,
@@ -317,7 +339,7 @@ export function useBlockchainPortfolio() {
         setIsLoading(false);
       }
     };
-    
+
     fetchAllUserAssets();
   }, [userTokens, contract, isLoadingTokens, fetchTokenMetadata]);
 

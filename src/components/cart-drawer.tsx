@@ -1,6 +1,7 @@
 "use client";
 
-import { useCart } from "@/store/use-cart";
+import { useCart, useCartTotals, useCheckout } from "@/store/use-cart";
+import { useAccount } from "@starknet-react/core";
 import {
     Sheet,
     SheetContent,
@@ -9,48 +10,24 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ShoppingBag, X, Loader2, Trash2 } from "lucide-react";
-import Image from "next/image";
-import { getCurrency, formatPrice } from "@/lib/utils";
-import { useMemo } from "react";
-import { useMarketplace } from "@/hooks/use-marketplace";
+import { ShoppingBag, Loader2, AlertTriangle } from "lucide-react";
+import { CartItemRow } from "@/components/cart-item-row";
+import { isOwnListing } from "@/lib/ownership";
 
 export function CartDrawer() {
     const { items, isOpen, setIsOpen, removeItem, clearCart } = useCart();
+    const { address } = useAccount();
+    const totals = useCartTotals();
+    const { checkout, isProcessing } = useCheckout();
 
-    // Calculate totals per currency
-    const totals = useMemo(() => {
-        const map = new Map<string, { amount: bigint; decimals: number }>();
-        items.forEach((item) => {
-            const currency = getCurrency(item.listing.considerationToken);
-            const symbol = currency.symbol;
-            const amount = BigInt(item.listing.considerationAmount);
-
-            if (map.has(symbol)) {
-                const current = map.get(symbol)!;
-                map.set(symbol, { amount: current.amount + amount, decimals: currency.decimals });
-            } else {
-                map.set(symbol, { amount, decimals: currency.decimals });
-            }
-        });
-        return Array.from(map.entries()).map(([symbol, data]) => ({
-            symbol,
-            formatted: formatPrice(data.amount.toString(), data.decimals),
-        }));
-    }, [items]);
-
-    const { checkoutCart, isProcessing } = useMarketplace();
+    // Defensive: filter out own assets from display (handles stale persisted data)
+    const displayItems = items.filter(
+        (i) => !isOwnListing(i.listing.offerer, address)
+    );
+    const ownItemCount = items.length - displayItems.length;
 
     const handleCheckout = async () => {
-        if (items.length === 0) return;
-
-        const orders = items.map((i) => i.listing);
-        const txHash = await checkoutCart(orders);
-
-        if (txHash) {
-            clearCart();
-            setIsOpen(false);
-        }
+        await checkout();
     };
 
     return (
@@ -62,14 +39,14 @@ export function CartDrawer() {
                             <ShoppingBag className="w-5 h-5 text-outrun-cyan" />
                             Your Cart
                             <span className="text-sm font-normal text-muted-foreground ml-2">
-                                ({items.length} items)
+                                ({displayItems.length} items)
                             </span>
                         </SheetTitle>
                     </div>
                 </SheetHeader>
 
                 <div className="flex-1 overflow-hidden">
-                    {items.length === 0 ? (
+                    {displayItems.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-muted-foreground space-y-4">
                             <ShoppingBag className="w-12 h-12 opacity-20" />
                             <p>Your cart is empty</p>
@@ -84,60 +61,25 @@ export function CartDrawer() {
                     ) : (
                         <ScrollArea className="h-full p-6">
                             <div className="space-y-4">
-                                {items.map((item) => {
-                                    const name = item.asset.name || "Unknown Asset";
-                                    const image = item.asset.image || "/placeholder.svg";
-                                    const currency = getCurrency(item.listing.considerationToken);
-                                    const price = formatPrice(
-                                        item.listing.considerationAmount,
-                                        currency.decimals
-                                    );
-
-                                    return (
-                                        <div
-                                            key={item.listing.orderHash}
-                                            className="flex items-start gap-4 p-3 rounded-lg border border-border/50 bg-muted/20"
-                                        >
-                                            <div className="relative w-16 h-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
-                                                <Image
-                                                    src={image}
-                                                    alt={name}
-                                                    fill
-                                                    className="object-cover"
-                                                    unoptimized={image.startsWith("http")}
-                                                />
-                                            </div>
-                                            <div className="flex-1 min-w-0 pr-2">
-                                                <h4 className="font-semibold text-sm truncate" title={name}>
-                                                    {name}
-                                                </h4>
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    {(item.asset as any).collectionName || (typeof (item.asset as any).collection === 'object' ? (item.asset as any).collection.name : (item.asset as any).collection) || "IP Asset"}
-                                                </p>
-                                                <div className="flex items-baseline gap-1 mt-2">
-                                                    <span className="font-medium text-foreground">{price}</span>
-                                                    <span className="text-[10px] text-muted-foreground uppercase">
-                                                        {currency.symbol}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0 mt-2"
-                                                onClick={() => removeItem(item.listing.orderHash)}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    );
-                                })}
+                                {ownItemCount > 0 && (
+                                    <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-medium">
+                                        <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                                        {ownItemCount} item{ownItemCount > 1 ? "s" : ""} removed — you own {ownItemCount > 1 ? "these assets" : "this asset"}
+                                    </div>
+                                )}
+                                {displayItems.map((item) => (
+                                    <CartItemRow
+                                        key={item.listing.orderHash}
+                                        item={item}
+                                        onRemove={removeItem}
+                                    />
+                                ))}
                             </div>
                         </ScrollArea>
                     )}
                 </div>
 
-                {items.length > 0 && (
+                {displayItems.length > 0 && (
                     <div className="p-6 border-t border-border/40 bg-card mt-auto space-y-4">
                         <div className="space-y-2">
                             <div className="flex justify-between items-center text-sm font-medium text-muted-foreground mb-1">
@@ -162,7 +104,7 @@ export function CartDrawer() {
                                 Clear
                             </Button>
                             <Button
-                                className="flex-[2] bg-outrun-cyan text-black hover:bg-outrun-cyan/90 transition-all font-semibold"
+                                className="flex-[2] font-semibold transition-all"
                                 onClick={handleCheckout}
                                 disabled={isProcessing}
                             >

@@ -5,7 +5,8 @@ const provider = new RpcProvider({ nodeUrl: "https://starknet-mainnet.g.alchemy.
 const marketplaceAddress = "0x059deafbbafbf7051c315cf75a94b03c5547892bc0c6dfa36d7ac7290d4cc33a";
 
 async function checkHash() {
-    const contract = new Contract(IPMarketplaceABI, marketplaceAddress, provider);
+    // @ts-ignore - starknet.js v6 types can be strict with the constructor
+    const contract = new Contract(IPMarketplaceABI as any, marketplaceAddress, provider);
 
     // Example Bid parameters from user's error trace
     const params = {

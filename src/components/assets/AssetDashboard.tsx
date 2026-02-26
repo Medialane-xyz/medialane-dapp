@@ -19,8 +19,8 @@ export default function AssetDashboard({ initialAssets }: { initialAssets: Asset
   const [isSaving, setIsSaving] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-  const categories = Array.from(new Set(assets.map((asset) => asset.category).filter(Boolean)))
-  const collections = Array.from(new Set(assets.map((asset) => asset.collection).filter(Boolean)))
+  const categories = Array.from(new Set(assets.map((asset) => asset.category).filter(Boolean))) as string[]
+  const collections = Array.from(new Set(assets.map((asset) => asset.collection).filter(Boolean))) as string[]
 
   const toggleVisibility = (id: string) => {
     setAssets((prevAssets) =>
@@ -102,7 +102,7 @@ export default function AssetDashboard({ initialAssets }: { initialAssets: Asset
                 <TableRow key={asset.id}>
                   <TableCell className="font-medium">
                     <Link
-                      href={asset.externalUrl}
+                      href={asset.externalUrl || "#"}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center hover:underline"

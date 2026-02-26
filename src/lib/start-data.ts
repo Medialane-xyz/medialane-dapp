@@ -169,7 +169,7 @@ export function getAssetsByCreator(creatorName: string): Asset[] {
 }
 
 export function getCollectionsByCreator(creatorName: string): Collection[] {
-  return collections.filter((collection) => collection.creator === creatorName)
+  return collections.filter((collection) => collection.creator.name === creatorName)
 }
 
 export function getAssetProvenance(assetId: string) {
@@ -177,7 +177,7 @@ export function getAssetProvenance(assetId: string) {
 }
 
 export function getUserByAddress(address: string): User | undefined {
-  return users.find((user) => user.address === address)
+  return users.find((user: any) => user.address === address || user.wallet === address)
 }
 
 export function getRemixAssetsByCreator(creatorName: string): Asset[] {

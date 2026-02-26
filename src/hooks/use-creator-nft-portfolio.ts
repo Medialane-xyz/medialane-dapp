@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Abi } from "starknet";
 import { abi } from "@/abis/abi";
 import { pinataClient } from "@/utils/pinataClient";
-import { useMIP } from "./useMIP";
+import { useMIP } from "./use-mip";
 
 export type SortOption =
   | "price-high"

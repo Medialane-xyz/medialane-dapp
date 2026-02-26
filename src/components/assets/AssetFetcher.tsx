@@ -1,11 +1,11 @@
 import type { Asset } from "@/types/asset"
-import { Assets } from "@/lib/start-data"
+import { assets } from "@/lib/start-data"
 import type React from "react" // Import React
 
 async function fetchAssets(): Promise<Asset[]> {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 1000))
-  return Assets
+  return assets
 }
 
 export default async function AssetFetcher({ children }: { children: (assets: Asset[]) => React.ReactNode }) {

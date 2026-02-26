@@ -41,7 +41,7 @@ export function OverviewTab({ asset }: OverviewTabProps) {
     const anyAsset = asset as any;
     return {
       name: asset.name,
-      // description: asset.description || "",
+      description: anyAsset.description || "",
       image: asset.image || "/placeholder.svg",
       attributes: asset.attributes || [],
       id: asset.id,
@@ -50,9 +50,9 @@ export function OverviewTab({ asset }: OverviewTabProps) {
       blockchain: "Starknet",
       tokenStandard: "ERC-721",
       contract: anyAsset.nftAddress || anyAsset.contract || "Unknown",
-      author: { name: anyAsset.creatorName || asset.owner || "Unknown" },
+      author: { name: anyAsset.creatorName || anyAsset.creator || "Unknown" },
       licenseType: anyAsset.licenseType || "Rights Reserved",
-      owner: asset.owner || "Unknown",
+      owner: anyAsset.owner || "Unknown",
       version: "1.0",
     };
   };

@@ -69,7 +69,9 @@ export function LicenseOfferModal({
                     usage,
                     price, // Ensure this is converted to BigInt string if needed by service, but service accepts string
                     royalty: parseFloat(royalty),
-                    duration: parseInt(duration) * 86400 // Convert days to seconds
+                    duration: parseInt(duration) * 86400, // Convert days to seconds
+                    licenseType: "custom",
+                    geographicScope: "worldwide"
                 }
             });
 

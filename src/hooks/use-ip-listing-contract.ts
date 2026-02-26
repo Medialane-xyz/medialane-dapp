@@ -7,24 +7,30 @@ import { IPListingABI } from "@/abis/ip_listing";
 import { Abi } from "starknet";
 import { Listing } from "@/types/marketplace";
 
-export const useCreateIPLising = (data: Listing) => {
-  const { address } = useAccount();
+export interface CreateListingParams {
+  assetContract: string;
+  tokenId: string;
+  startTime: number;
+  secondsUntilEndTime: number;
+  quantityToList: number;
+  currencyToAccept: string;
+  buyoutPricePerToken: string;
+  tokenTypeOfListing: number;
+}
+
+export const useCreateIPLising = (data: CreateListingParams) => {
+  const { address, account } = useAccount();
 
   // Initialize contract
   const { contract: IPListingContract } = useContract({
     address: process.env.NEXT_PUBLIC_LISTING_CONTRACT_ADDRESS as `0x${string}`,
-    abi: IPListingABI as Abi,
-  });
-
-  // Set up the transaction
-  const { sendAsync, error: createListingError } = useSendTransaction({
-    calls: [],
+    abi: IPListingABI as any, // fallback for tight Abi constraint issues
   });
 
   const createListing = async () => {
     try {
-      if (!IPListingContract || !address) {
-        console.error("Contract or address not available");
+      if (!IPListingContract || !account) {
+        console.error("Contract or account not available");
         return false;
       }
 
@@ -44,54 +50,44 @@ export const useCreateIPLising = (data: Listing) => {
 
       console.log("Formatted data:", formattedData);
 
-      // Create the transaction call
-      const calls = IPListingContract.populate("create_listing", formattedData);
+      // Create the transaction call directly via account.execute
+      const call = IPListingContract.populate("create_listing", formattedData);
 
-      // Send the transaction
-      const result = await sendAsync([calls]);
+      const result = await account.execute([call]);
       console.log("Transaction sent:", result);
       return true;
     } catch (error) {
-      console.error("Error creating listing:", error, createListingError);
+      console.error("Error creating listing:", error);
       return false;
     }
   };
 
   return {
     createListing,
-    createListingError,
+    createListingError: null,
   };
 };
 
 export const useUpdateIPMarketplaceAddress = (newAddress: string) => {
-  const { address } = useAccount();
+  const { address, account } = useAccount();
 
   console.log("address", address);
 
   // Initialize contract
   const { contract: IPListingContract } = useContract({
     address: process.env.NEXT_PUBLIC_LISTING_CONTRACT_ADDRESS as `0x${string}`,
-    abi: IPListingABI as Abi,
-  });
-
-  // Creating listing
-  const { send, error: createListingError } = useSendTransaction({
-    calls:
-      IPListingContract && address
-        ? [
-            IPListingContract.populate("update_ip_marketplace_address", [
-              newAddress,
-            ]),
-          ]
-        : undefined,
+    abi: IPListingABI as any,
   });
 
   // Updating marketplace address
-  const updateAddress = () => {
+  const updateAddress = async () => {
     console.log("creating listing...");
 
     try {
-      send();
+      if (IPListingContract && account) {
+        const call = IPListingContract.populate("update_ip_marketplace_address", [newAddress]);
+        await account.execute([call]);
+      }
     } catch (error) {
       console.log("mint error", error);
     }
@@ -99,7 +95,7 @@ export const useUpdateIPMarketplaceAddress = (newAddress: string) => {
 
   return {
     updateAddress,
-    createListingError,
+    createListingError: null,
   };
 };
 // 0x03ea0f81ff87b75f465e186ec1f8440409e2d835b3f42b6d3e2baa4b4cc89e4a

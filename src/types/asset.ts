@@ -7,19 +7,23 @@ export interface Asset {
   owner?: string;
   verified?: boolean;
   image: string;
-  collection?: string;
+  collection?: string | any; // allow any for mock data shape differences
   licenseType: LicenseType;
   description: string;
   registrationDate?: string;
   value?: string;
   views?: number;
-  type: IPType;
+  type: IPType | string;
   templateType?: string;
   templateId?: string;
   metadata?: Record<string, any>;
   protectionLevel?: number;
   ownershipHistory?: OwnershipRecord[];
   licensingTerms?: LicensingTerms;
+  category?: string;
+  isVisible?: boolean;
+  externalUrl?: string;
+  tokenId?: string;
 }
 
 // asset type definitions

@@ -15,7 +15,7 @@ const features: LaunchpadFeatureData[] = [
         title: "Collection Drop",
         description: "Launch a premium NFT drop with a dedicated landing page, minting mechanics, and visual storytelling.",
         icon: "Sparkles",
-        href: "/create/collection-drop",
+        href: "/launchpad/collection-drop",
         gradient: "from-amber-500 to-orange-600",
         tags: ["Drop", "NFT", "Launch"],
         active: true,

@@ -183,7 +183,7 @@ const creationOptions = [
       "Set up roadmap and team info",
       "Launch your public drop page",
     ],
-    href: "/create/collection-drop",
+    href: "/launchpad/collection-drop",
     useCase: "Perfect for high-profile NFT launches and community building.",
     gradient: "from-amber-500 to-amber-700",
     iconColor: "text-amber-500",

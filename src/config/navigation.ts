@@ -45,7 +45,7 @@ export const navigation = {
     launchpad: [
         { title: "Creator Launchpad", href: "/launchpad", icon: Rocket, description: "Creator tools dashboard" },
         { title: "Create Panel", href: "/create", icon: Rocket, description: "Creator studio" },
-        { title: "Collection Drop", href: "/create/collection-drop", icon: Layers, description: "Deploy a collection drop" },
+        { title: "Collection Drop", href: "/launchpad/collection-drop", icon: Layers, description: "Deploy a collection drop" },
         { title: "Standard Collection", href: "/create/collection", icon: PlusCircle, description: "Start from scratch" },
         { title: "Mint Asset", href: "/create/asset", icon: Box, description: "Mint single asset" },
         { title: "Create with IP Templates", href: "/create/templates", icon: LayoutTemplate, description: "Use legal templates" },

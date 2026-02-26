@@ -21,6 +21,7 @@ import { Fulfillment } from "@/types/marketplace"
 import { MarketplaceOrder } from "@/hooks/use-marketplace-events"
 import { EXPLORER_URL } from "@/lib/constants"
 import { useTokenMetadata } from "@/hooks/use-token-metadata"
+import { isOwnListing } from "@/lib/ownership"
 
 interface PurchaseDialogProps {
     trigger?: React.ReactNode
@@ -61,6 +62,9 @@ export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
 
     const displayName = mName || asset.name
     const displayImage = mImage || asset.image
+
+    // Ownership guard
+    const isOwn = isOwnListing(asset.listing?.offerer, address)
 
     // Derived state from hook
     const stage = txHash ? "success" : isProcessing ? "processing" : error ? "error" : "review"
@@ -186,6 +190,16 @@ export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
                             </Alert>
                         )}
 
+                        {/* Own Asset Warning */}
+                        {isOwn && (
+                            <Alert className="bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertDescription className="text-xs font-medium ml-2">
+                                    You cannot purchase your own asset.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
 
                         <div className="flex items-center gap-3 pt-2">
                             <Button
@@ -198,7 +212,7 @@ export function PurchaseDialog({ trigger, asset }: PurchaseDialogProps) {
                             </Button>
                             <Button
                                 onClick={handlePurchase}
-                                disabled={stage === "processing" || !asset.listing || hasInsufficientBalance}
+                                disabled={stage === "processing" || !asset.listing || hasInsufficientBalance || isOwn}
                                 className="flex-[2] h-12 font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all active:scale-[0.98]"
                             >
                                 {stage === "processing" ? (

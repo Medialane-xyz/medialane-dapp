@@ -1,5 +1,7 @@
 "use client"
 
+import { useAccount } from "@starknet-react/core"
+
 import { MarketplaceOrder } from "@/hooks/use-marketplace-events"
 import { Skeleton } from "@/components/ui/skeleton"
 import { normalizeStarknetAddress, getCurrency, formatPrice } from "@/lib/utils"
@@ -34,6 +36,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import type { Asset } from "@/types/asset"
 import type { RecentAsset } from "@/hooks/use-recent-assets"
+import { isOwnListing } from "@/lib/ownership"
 
 interface AssetCardProps {
   listing?: MarketplaceOrder;
@@ -60,19 +63,25 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
 
   const [imageError, setImageError] = useState(false);
 
+  // Wallet connection
+  const { address } = useAccount();
+
+  // Ownership detection — covers both listed (offerer) and unlisted (owner/creator) assets
+  const isOwn = isOwnListing(listing?.offerer || asset?.owner || asset?.creator, address);
+
   // Cart integration
   const { items, addItem, removeItem, setIsOpen } = useCart();
-  const isInCart = listing && items.some((i) => i.listing.orderHash === listing.orderHash);
+  const isInCart = listing && !isOwn && items.some((i) => i.listing.orderHash === listing.orderHash);
 
   const handleCartAction = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!listing || !asset) return;
+    if (!listing || !asset || isOwn) return;
 
     if (isInCart) {
       removeItem(listing.orderHash);
     } else {
-      addItem({ listing, asset: asset as Asset | RecentAsset });
+      addItem(listing, asset as Asset | RecentAsset, address);
       setIsOpen(true);
     }
   };
@@ -121,16 +130,21 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
           <div className="flex items-center justify-between mt-2">
             <div className="flex items-center gap-2 max-w-[70%]">
               {creatorAddress ? (
-                <>
-                  <div className="w-5 h-5 flex-shrink-0 rounded-full bg-muted border border-border/50 flex items-center justify-center overflow-hidden">
-                    <span className="text-[8px] font-medium text-muted-foreground uppercase">{creatorAddress.slice(2, 4)}</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground/70 font-mono truncate hover:underline" title={creatorAddress}>
-                    <Link href={`/creator/${creatorAddress}`}>
-                      {creatorAddress.slice(0, 6)}...{creatorAddress.slice(-4)}
-                    </Link>
-                  </p>
-                </>
+                isOwn ? (
+                  <>
+                    <span className="text-[11px] text-primary/80 font-semibold">
+                      You
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-[11px] text-muted-foreground/70 font-mono truncate hover:underline" title={creatorAddress}>
+                      <Link href={`/creator/${creatorAddress}`}>
+                        {creatorAddress.slice(0, 6)}...{creatorAddress.slice(-4)}
+                      </Link>
+                    </p>
+                  </>
+                )
               ) : (
                 <>
                   <div className="w-5 h-5 flex-shrink-0 rounded-full bg-muted border border-border/50 flex items-center justify-center overflow-hidden">
@@ -173,14 +187,26 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
 
       <CardFooter className="p-4 pt-0 gap-2 grid grid-cols-[1fr,1fr,auto]">
         {listing ? (
-          <Button
-            variant={isInCart ? "secondary" : "default"}
-            onClick={handleCartAction}
-            className="w-full h-9 gap-2 font-medium shadow-sm transition-all active:scale-[0.98]"
-          >
-            <ShoppingBag className="h-3.5 w-3.5" />
-            {isInCart ? "In Cart" : "Add to Cart"}
-          </Button>
+          isOwn ? (
+            <Link href={assetUrl} className="w-full">
+              <Button
+                variant="outline"
+                className="w-full h-9 gap-2 font-medium border-primary/30 text-primary hover:bg-primary/5 transition-all active:scale-[0.98]"
+              >
+                <Eye className="h-3.5 w-3.5" />
+                View
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              variant={isInCart ? "secondary" : "default"}
+              onClick={handleCartAction}
+              className="w-full h-9 gap-2 font-medium shadow-sm transition-all active:scale-[0.98]"
+            >
+              <ShoppingBag className="h-3.5 w-3.5" />
+              {isInCart ? "In Cart" : "Add to Cart"}
+            </Button>
+          )
         ) : (
           <Link href={assetUrl} className="w-full">
             <Button
