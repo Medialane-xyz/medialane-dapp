@@ -3,7 +3,7 @@ import { useAccount, useContract, useNetwork, useProvider } from "@starknet-reac
 import { Abi, shortString, constants } from "starknet";
 import { IPMarketplaceABI } from "@/abis/ip_market";
 import { useToast } from "@/components/ui/use-toast";
-import { getOrderParametersTypedData, getOrderCancellationTypedData, stringifyBigInts } from "@/utils/marketplace-utils";
+import { getOrderParametersTypedData, getOrderCancellationTypedData, getOrderFulfillmentTypedData, stringifyBigInts } from "@/utils/marketplace-utils";
 
 interface UseMarketplaceReturn {
     createListing: (
@@ -31,6 +31,13 @@ interface UseMarketplaceReturn {
     resetState: () => void;
 }
 
+// Module-level helpers
+const getDecimals = (currencySymbol: string) =>
+    currencySymbol === "USDC" || currencySymbol === "USDT" ? 6 : 18;
+
+const toWei = (price: string, currencySymbol: string): string =>
+    BigInt(Math.floor(parseFloat(price) * Math.pow(10, getDecimals(currencySymbol)))).toString();
+
 export function useMarketplace(): UseMarketplaceReturn {
     const { account, address } = useAccount();
     const { chain } = useNetwork();
@@ -52,6 +59,90 @@ export function useMarketplace(): UseMarketplaceReturn {
         setIsProcessing(false);
     }, []);
 
+    // Wraps an async operation with isProcessing state and unified error handling.
+    const withProcessing = useCallback(async <T>(
+        fn: () => Promise<T>
+    ): Promise<T | undefined> => {
+        setIsProcessing(true);
+        setError(null);
+        try {
+            return await fn();
+        } catch (err: any) {
+            console.error(err);
+            const msg = err.message || "An unexpected error occurred";
+            setError(msg);
+            toast({ title: "Error", description: msg, variant: "destructive" });
+            return undefined;
+        } finally {
+            setIsProcessing(false);
+        }
+    }, [toast]);
+
+    // Builds shared timing/nonce/currency fields for an order.
+    const buildBaseOrderParams = useCallback(async (
+        currencySymbol: string,
+        durationSeconds: number
+    ) => {
+        const now = Math.floor(Date.now() / 1000);
+        const startTime = (now + 300).toString(); // 5-min future buffer
+        const endTime = (now + durationSeconds).toString();
+        const salt = Math.floor(Math.random() * 1000000).toString();
+
+        const { SUPPORTED_TOKENS } = await import("@/lib/constants");
+        const currencyAddress = SUPPORTED_TOKENS.find((t: any) => t.symbol === currencySymbol)?.address;
+        if (!currencyAddress) throw new Error("Unsupported currency selected");
+
+        const currentNonce = await medialaneContract!.nonces(account!.address);
+        const nonce = currentNonce.toString();
+
+        return { startTime, endTime, salt, currencyAddress, nonce };
+    }, [account, medialaneContract]);
+
+    // Signs the orderParams, verifies the hash against the contract, and returns a
+    // populated register_order call ready to include in a multicall.
+    const signAndBuildRegisterCall = useCallback(async (orderParams: any) => {
+        const chainId = chain!.id as any as constants.StarknetChainId;
+        const typedData = stringifyBigInts(getOrderParametersTypedData(orderParams, chainId));
+
+        console.log("Signing typed data:", typedData);
+        const signature = await account!.signMessage(typedData);
+        const signatureArray = Array.isArray(signature)
+            ? signature
+            : [signature.r.toString(), signature.s.toString()];
+        console.log("Signature generated:", signatureArray);
+
+        const registerPayload = stringifyBigInts({
+            parameters: {
+                ...orderParams,
+                offer: {
+                    ...orderParams.offer,
+                    item_type: shortString.encodeShortString(orderParams.offer.item_type),
+                },
+                consideration: {
+                    ...orderParams.consideration,
+                    item_type: shortString.encodeShortString(orderParams.consideration.item_type),
+                },
+            },
+            signature: signatureArray,
+        });
+
+        // Hash verification
+        try {
+            const localHash = await account!.hashMessage(typedData);
+            const contractHash = await medialaneContract!.get_order_hash(registerPayload.parameters, account!.address);
+            const contractHashHex = "0x" + BigInt(contractHash).toString(16);
+            if (localHash !== contractHashHex) {
+                console.warn("HASH MISMATCH: Local hash does not match contract hash. Signature will likely be rejected.");
+            } else {
+                console.log("HASH MATCH: Local and contract hashes are consistent.");
+            }
+        } catch (hashErr) {
+            console.warn("Could not verify hash:", hashErr);
+        }
+
+        return medialaneContract!.populate("register_order", [registerPayload]);
+    }, [account, chain, medialaneContract]);
+
     const createListing = useCallback(async (
         assetContractAddress: string,
         tokenId: string,
@@ -66,32 +157,11 @@ export function useMarketplace(): UseMarketplaceReturn {
             return undefined;
         }
 
-        setIsProcessing(true);
-        setError(null);
+        return withProcessing(async () => {
+            const priceWei = toWei(price, currencySymbol);
+            const { startTime, endTime, salt, currencyAddress, nonce } =
+                await buildBaseOrderParams(currencySymbol, durationSeconds);
 
-        try {
-            // 1. Calculate Order Parameters
-            const now = Math.floor(Date.now() / 1000)
-            const startTime = now + 300 // 5 minutes in future buffer for tx inclusion
-            const endTime = now + durationSeconds
-            const salt = Math.floor(Math.random() * 1000000).toString()
-
-            const decimals = currencySymbol === "USDC" || currencySymbol === "USDT" ? 6 : 18
-            const priceWei = BigInt(Math.floor(parseFloat(price) * Math.pow(10, decimals))).toString()
-
-            // Safe import of SUPPORTED_TOKENS might require adjusting if it causes circular deps, 
-            // but assuming it's available from @/lib/constants
-            const { SUPPORTED_TOKENS } = await import("@/lib/constants");
-            const currencyAddress = SUPPORTED_TOKENS.find((t: any) => t.symbol === currencySymbol)?.address
-
-            if (!currencyAddress) throw new Error("Unsupported currency selected");
-
-            // 2. Fetch current nonce
-            console.log("Fetching nonce for:", account.address);
-            const currentNonce = await medialaneContract.nonces(account.address);
-            console.log("Current nonce:", currentNonce.toString());
-
-            // 3. Prepare full order parameters for signing
             const orderParams = {
                 offerer: account.address,
                 offer: {
@@ -99,7 +169,7 @@ export function useMarketplace(): UseMarketplaceReturn {
                     token: assetContractAddress,
                     identifier_or_criteria: tokenId,
                     start_amount: "1",
-                    end_amount: "1"
+                    end_amount: "1",
                 },
                 consideration: {
                     item_type: "ERC20",
@@ -107,66 +177,33 @@ export function useMarketplace(): UseMarketplaceReturn {
                     identifier_or_criteria: "0",
                     start_amount: priceWei,
                     end_amount: priceWei,
-                    recipient: account.address
+                    recipient: account.address,
                 },
-                start_time: startTime.toString(),
-                end_time: endTime.toString(),
-                salt: salt,
-                nonce: currentNonce.toString(),
+                start_time: startTime,
+                end_time: endTime,
+                salt,
+                nonce,
             };
 
-            // 4. Generate typed data and sign
-            const chainId = chain.id as any as constants.StarknetChainId;
-            const typedData = stringifyBigInts(getOrderParametersTypedData(orderParams, chainId));
+            const registerCall = await signAndBuildRegisterCall(orderParams);
 
-            console.log("Signing typed data:", typedData);
-            const signature = await account.signMessage(typedData);
-
-            const signatureArray = Array.isArray(signature)
-                ? signature
-                : [signature.r.toString(), signature.s.toString()];
-
-            console.log("Signature generated:", signatureArray);
-
-            // 5. Register the order (with shortString encoding for item_type)
-            const registerPayload = stringifyBigInts({
-                parameters: {
-                    ...orderParams,
-                    offer: {
-                        ...orderParams.offer,
-                        item_type: shortString.encodeShortString(orderParams.offer.item_type)
-                    },
-                    consideration: {
-                        ...orderParams.consideration,
-                        item_type: shortString.encodeShortString(orderParams.consideration.item_type)
-                    },
-                },
-                signature: signatureArray,
-            });
-
-            console.log("Registering order with payload:", registerPayload);
-
-            // Hash verification (Troubleshooting)
-            try {
-                const localHash = await account.hashMessage(typedData);
-                const contractHash = await medialaneContract.get_order_hash(registerPayload.parameters, account.address);
-                const contractHashHex = "0x" + BigInt(contractHash).toString(16);
-
-                console.log("Verification - Local Hash:", localHash);
-                console.log("Verification - Contract Hash:", contractHashHex);
-
-                if (localHash !== contractHashHex) {
-                    console.warn("HASH MISMATCH: Local hash does not match contract hash. Signature will likely be rejected.");
-                } else {
-                    console.log("HASH MATCH: Local and contract hashes are consistent.");
-                }
-            } catch (hashErr) {
-                console.warn("Could not verify hash mismatch:", hashErr);
-            }
-
-            // 6. Construct Approve call for the ERC721
             const { cairo } = await import("starknet");
             const tokenIdUint256 = cairo.uint256(tokenId);
+
+            // Avoid a redundant wallet prompt if the NFT is already approved
+            let isAlreadyApproved = false;
+            try {
+                const isApprovedRes = await provider.callContract({
+                    contractAddress: assetContractAddress,
+                    entrypoint: "get_approved",
+                    calldata: [tokenIdUint256.low.toString(), tokenIdUint256.high.toString()],
+                });
+                isAlreadyApproved =
+                    BigInt(isApprovedRes[0]).toString() === BigInt(medialaneContract.address).toString();
+                console.log("Is already approved for token:", isAlreadyApproved);
+            } catch (err) {
+                console.warn("Failed to check approval status", err);
+            }
 
             const approveCall = {
                 contractAddress: assetContractAddress,
@@ -174,47 +211,16 @@ export function useMarketplace(): UseMarketplaceReturn {
                 calldata: [medialaneContract.address, tokenIdUint256.low.toString(), tokenIdUint256.high.toString()],
             };
 
-            const registerCall = medialaneContract.populate("register_order", [registerPayload]);
-
-            // Check if already approved to save gas and avoid prompt
-            let isAlreadyApproved = false;
-            try {
-                const isApprovedRes = await provider.callContract({
-                    contractAddress: assetContractAddress,
-                    entrypoint: "get_approved",
-                    calldata: [tokenIdUint256.low.toString(), tokenIdUint256.high.toString()]
-                });
-                isAlreadyApproved = BigInt(isApprovedRes[0]).toString() === BigInt(medialaneContract.address).toString();
-                console.log("Is already approved for token:", isAlreadyApproved);
-            } catch (err) {
-                console.warn("Failed to check approval status", err);
-            }
-
             const calls = isAlreadyApproved ? [registerCall] : [approveCall, registerCall];
             const tx = await account.execute(calls);
             console.log("Transaction sent:", tx.transaction_hash);
 
-            // Wait for transaction confirmation
-            console.log("Waiting for transaction confirmation:", tx.transaction_hash);
             await provider.waitForTransaction(tx.transaction_hash);
-
             setTxHash(tx.transaction_hash);
-            toast({
-                title: "Listing Created",
-                description: "Your asset has been listed successfully.",
-            });
-
+            toast({ title: "Listing Created", description: "Your asset has been listed successfully." });
             return tx.transaction_hash;
-        } catch (err: any) {
-            console.error("Error in createListing:", err);
-            const msg = err.message || "Failed to create listing";
-            setError(msg);
-            toast({ title: "Error", description: msg, variant: "destructive" });
-            return undefined;
-        } finally {
-            setIsProcessing(false);
-        }
-    }, [account, medialaneContract, chain, toast, provider]);
+        });
+    }, [account, medialaneContract, chain, toast, provider, withProcessing, buildBaseOrderParams, signAndBuildRegisterCall]);
 
     const makeOffer = useCallback(async (
         assetContractAddress: string,
@@ -230,31 +236,12 @@ export function useMarketplace(): UseMarketplaceReturn {
             return undefined;
         }
 
-        setIsProcessing(true);
-        setError(null);
+        return withProcessing(async () => {
+            const priceWei = toWei(price, currencySymbol);
+            const { startTime, endTime, salt, currencyAddress, nonce } =
+                await buildBaseOrderParams(currencySymbol, durationSeconds);
 
-        try {
-            // 1. Calculate Order Parameters
-            const now = Math.floor(Date.now() / 1000)
-            const startTime = now + 300 // 5 minutes in future buffer for tx inclusion
-            const endTime = now + durationSeconds
-            const salt = Math.floor(Math.random() * 1000000).toString()
-
-            const decimals = currencySymbol === "USDC" || currencySymbol === "USDT" ? 6 : 18
-            const priceWei = BigInt(Math.floor(parseFloat(price) * Math.pow(10, decimals))).toString()
-
-            const { SUPPORTED_TOKENS } = await import("@/lib/constants");
-            const currencyAddress = SUPPORTED_TOKENS.find((t: any) => t.symbol === currencySymbol)?.address
-
-            if (!currencyAddress) throw new Error("Unsupported currency selected");
-
-            // 2. Fetch current nonce
-            console.log("Fetching nonce for:", account.address);
-            const currentNonce = await medialaneContract.nonces(account.address);
-            console.log("Current nonce:", currentNonce.toString());
-
-            // 3. Prepare full order parameters for signing
-            // INVERTED FOR OFFERS: We offer ERC20, we ask for ERC721
+            // Inverted vs. listing: offerer sends ERC20, receives ERC721
             const orderParams = {
                 offerer: account.address,
                 offer: {
@@ -262,7 +249,7 @@ export function useMarketplace(): UseMarketplaceReturn {
                     token: currencyAddress,
                     identifier_or_criteria: "0",
                     start_amount: priceWei,
-                    end_amount: priceWei
+                    end_amount: priceWei,
                 },
                 consideration: {
                     item_type: "ERC721",
@@ -270,97 +257,34 @@ export function useMarketplace(): UseMarketplaceReturn {
                     identifier_or_criteria: tokenId,
                     start_amount: "1",
                     end_amount: "1",
-                    recipient: account.address
+                    recipient: account.address,
                 },
-                start_time: startTime.toString(),
-                end_time: endTime.toString(),
-                salt: salt,
-                nonce: currentNonce.toString(),
+                start_time: startTime,
+                end_time: endTime,
+                salt,
+                nonce,
             };
 
-            // 4. Generate typed data and sign
-            const chainId = chain.id as any as constants.StarknetChainId;
-            const typedData = stringifyBigInts(getOrderParametersTypedData(orderParams, chainId));
-
-            console.log("Signing offer typed data:", typedData);
-            const signature = await account.signMessage(typedData);
-
-            const signatureArray = Array.isArray(signature)
-                ? signature
-                : [signature.r.toString(), signature.s.toString()];
-
-            console.log("Offer signature generated:", signatureArray);
-
-            // 5. Register the order
-            const registerPayload = stringifyBigInts({
-                parameters: {
-                    ...orderParams,
-                    offer: {
-                        ...orderParams.offer,
-                        item_type: shortString.encodeShortString(orderParams.offer.item_type)
-                    },
-                    consideration: {
-                        ...orderParams.consideration,
-                        item_type: shortString.encodeShortString(orderParams.consideration.item_type)
-                    },
-                },
-                signature: signatureArray,
-            });
-
-            console.log("Registering offer with payload:", registerPayload);
-
-            // Verify Hash locally
-            try {
-                const localHash = await account.hashMessage(typedData);
-                const contractHash = await medialaneContract.get_order_hash(registerPayload.parameters, account.address);
-                const contractHashHex = "0x" + BigInt(contractHash).toString(16);
-
-                if (localHash !== contractHashHex) {
-                    console.warn("HASH MISMATCH: Local hash does not match contract hash.");
-                } else {
-                    console.log("HASH MATCH: Local and contract hashes are consistent.");
-                }
-            } catch (hashErr) {
-                console.warn("Could not verify hash mismatch:", hashErr);
-            }
-
-            const call = medialaneContract.populate("register_order", [registerPayload]);
+            const registerCall = await signAndBuildRegisterCall(orderParams);
 
             const { cairo } = await import("starknet");
             const amountUint256 = cairo.uint256(priceWei);
-
             const approveCall = {
                 contractAddress: currencyAddress,
                 entrypoint: "approve",
                 calldata: [medialaneContract.address, amountUint256.low.toString(), amountUint256.high.toString()],
             };
 
-            // Execute BOTH approve and register_order in one atomic multicall!
-            const tx = await account.execute([approveCall, call]);
+            // ERC20 approve + register_order as atomic multicall
+            const tx = await account.execute([approveCall, registerCall]);
             console.log("Offer MultiCall sent:", tx.transaction_hash);
 
-            console.log("Waiting for transaction confirmation:", tx.transaction_hash);
             await provider.waitForTransaction(tx.transaction_hash);
-
             setTxHash(tx.transaction_hash);
-            toast({
-                title: "Offer Placed",
-                description: "Your offer has been submitted and is now live.",
-            });
-
+            toast({ title: "Offer Placed", description: "Your offer has been submitted and is now live." });
             return tx.transaction_hash;
-        } catch (err: any) {
-            console.error("Error in makeOffer:", err);
-            const msg = err.message || "Failed to make offer";
-            setError(msg);
-            toast({ title: "Error", description: msg, variant: "destructive" });
-            return undefined;
-        } finally {
-            setIsProcessing(false);
-        }
-    }, [account, medialaneContract, chain, toast, provider]);
-
-
+        });
+    }, [account, medialaneContract, chain, toast, provider, withProcessing, buildBaseOrderParams, signAndBuildRegisterCall]);
 
     const checkoutCart = useCallback(async (items: any[]) => {
         if (!account || !medialaneContract || !chain || items.length === 0) {
@@ -370,11 +294,8 @@ export function useMarketplace(): UseMarketplaceReturn {
             return undefined;
         }
 
-        setIsProcessing(true);
-        setError(null);
-
-        try {
-            // 1. Group Required Approvals by Currency
+        return withProcessing(async () => {
+            // Group required ERC20 approvals by token address
             const tokenTotals = new Map<string, bigint>();
             items.forEach((item) => {
                 const token = item.considerationToken;
@@ -392,17 +313,14 @@ export function useMarketplace(): UseMarketplaceReturn {
                 };
             });
 
-            // 2. Fetch Base Nonce
+            // Fetch base nonce; each fulfillment increments it sequentially
             const currentNonce = await medialaneContract.nonces(account.address);
             const baseNonce = BigInt(currentNonce);
 
-            // 3. Generate Signatures & Fulfillment Calls Sequentially
-            const { getOrderFulfillmentTypedData } = await import("@/utils/marketplace-utils");
             const chainId = chain.id as any as constants.StarknetChainId;
             const fulfillCalls = [];
 
-            // We must prompt signatures one by one due to SNIP-12 specifications,
-            // but the transaction execution will be entirely atomic.
+            // Prompt one signature per item — must be sequential per SNIP-12
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
                 const executionNonce = baseNonce + BigInt(i);
@@ -417,7 +335,7 @@ export function useMarketplace(): UseMarketplaceReturn {
 
                 toast({
                     title: `Signature Required (${i + 1}/${items.length})`,
-                    description: `Please clear the signature request for ${item.offerIdentifier}`,
+                    description: `Please sign the request for ${item.offerIdentifier}`,
                 });
 
                 const signature = await account.signMessage(typedData);
@@ -425,43 +343,26 @@ export function useMarketplace(): UseMarketplaceReturn {
                     ? signature
                     : [signature.r.toString(), signature.s.toString()];
 
-                const fulfillPayload = {
-                    fulfillment: fulfillmentParams,
-                    signature: signatureArray,
-                };
-
-                fulfillCalls.push(medialaneContract.populate("fulfill_order", [fulfillPayload]));
+                fulfillCalls.push(
+                    medialaneContract.populate("fulfill_order", [{
+                        fulfillment: fulfillmentParams,
+                        signature: signatureArray,
+                    }])
+                );
             }
 
-            // 4. Execute atomic MultiCall
-            toast({
-                title: "Executing Purchase",
-                description: "Approve the final transaction to sweep the cart.",
-            });
+            toast({ title: "Executing Purchase", description: "Approve the final transaction to sweep the cart." });
 
+            // Single atomic multicall: all approvals + all fulfillments
             const tx = await account.execute([...approveCalls, ...fulfillCalls]);
-            console.log("Cart Checkout MultiCall sent:", tx.transaction_hash);
+            console.log("Cart checkout multicall sent:", tx.transaction_hash);
 
-            console.log("Waiting for transaction confirmation:", tx.transaction_hash);
             await provider.waitForTransaction(tx.transaction_hash);
-
             setTxHash(tx.transaction_hash);
-            toast({
-                title: "Purchase Successful",
-                description: `Successfully procured ${items.length} items.`,
-            });
-
+            toast({ title: "Purchase Successful", description: `Successfully purchased ${items.length} item(s).` });
             return tx.transaction_hash;
-        } catch (err: any) {
-            console.error("Error in checkoutCart:", err);
-            const msg = err.message || "Failed to complete checkout";
-            setError(msg);
-            toast({ title: "Error", description: msg, variant: "destructive" });
-            return undefined;
-        } finally {
-            setIsProcessing(false);
-        }
-    }, [account, medialaneContract, chain, toast, provider]);
+        });
+    }, [account, medialaneContract, chain, toast, provider, withProcessing]);
 
     const cancelOrder = useCallback(async (orderHash: string) => {
         if (!account || !medialaneContract || !chain) {
@@ -471,33 +372,23 @@ export function useMarketplace(): UseMarketplaceReturn {
             return undefined;
         }
 
-        setIsProcessing(true);
-        setError(null);
-
-        try {
-            // 1. Fetch current nonce for cancellation
+        return withProcessing(async () => {
             const currentNonce = await medialaneContract.nonces(account.address);
 
-            // 2. Prepare cancellation parameters
-            // OrderCancellation: { order_hash, offerer, nonce }
             const cancelParams = {
                 order_hash: orderHash,
                 offerer: account.address,
                 nonce: currentNonce.toString(),
             };
 
-            // 3. Generate typed data and sign
             const chainId = chain.id as any as constants.StarknetChainId;
             const typedData = stringifyBigInts(getOrderCancellationTypedData(cancelParams, chainId));
 
             console.log("Signing cancellation typed data:", typedData);
             const signature = await account.signMessage(typedData);
-
             const signatureArray = Array.isArray(signature)
                 ? signature
                 : [signature.r.toString(), signature.s.toString()];
-
-            console.log("Cancellation signature generated:", signatureArray);
 
             const cancelRequest = stringifyBigInts({
                 cancelation: cancelParams,
@@ -507,27 +398,12 @@ export function useMarketplace(): UseMarketplaceReturn {
             const call = medialaneContract.populate("cancel_order", [cancelRequest]);
             const tx = await account.execute(call);
 
-            // Wait for transaction confirmation
-            console.log("Waiting for transaction confirmation:", tx.transaction_hash);
             await provider.waitForTransaction(tx.transaction_hash);
-
             setTxHash(tx.transaction_hash);
-            toast({
-                title: "Listing Cancelled",
-                description: "The listing has been successfully cancelled on-chain.",
-            });
-
+            toast({ title: "Listing Cancelled", description: "The listing has been successfully cancelled on-chain." });
             return tx.transaction_hash;
-        } catch (err: any) {
-            console.error("Error in cancelOrder:", err);
-            const msg = err.message || "Failed to cancel listing";
-            setError(msg);
-            toast({ title: "Error", description: msg, variant: "destructive" });
-            return undefined;
-        } finally {
-            setIsProcessing(false);
-        }
-    }, [account, medialaneContract, chain, toast, provider]);
+        });
+    }, [account, medialaneContract, chain, toast, provider, withProcessing]);
 
     return {
         createListing,
@@ -539,6 +415,6 @@ export function useMarketplace(): UseMarketplaceReturn {
         isLoading: isProcessing,
         txHash,
         error,
-        resetState
+        resetState,
     };
 }

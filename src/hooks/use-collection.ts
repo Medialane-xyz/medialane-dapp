@@ -7,7 +7,7 @@ import {
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { Abi } from "starknet";
 import { ipCollectionAbi } from "@/abis/ip_collection";
-import { COLLECTION_CONTRACT_ADDRESS } from "@/lib/constants";
+import { COLLECTION_CONTRACT_ADDRESS, IPFS_URL } from "@/lib/constants";
 import { fetchWithRateLimit } from "@/lib/utils";
 import { isCollectionReported } from "@/lib/reported-content";
 
@@ -54,6 +54,71 @@ export interface UseCollectionReturn {
 }
 
 const COLLECTION_CONTRACT_ABI = ipCollectionAbi as Abi;
+
+// Shared hook to get the collection registry contract instance
+function useCollectionContract() {
+  return useContract({
+    abi: COLLECTION_CONTRACT_ABI,
+    address: COLLECTION_CONTRACT_ADDRESS as `0x${string}`,
+  });
+}
+
+/**
+ * Binary-search-style probe to find the highest valid collection ID.
+ * Starts with IDs 0-20, then probes ahead in increasing offsets until
+ * no new valid IDs are found.
+ */
+async function findMaxCollectionId(contract: any): Promise<number> {
+  let highestFound = -1;
+  let startFound = false;
+
+  const initialBatch = Array.from({ length: 21 }, (_, i) => i);
+  const initialResults = await Promise.all(
+    initialBatch.map((id) =>
+      contract.call("is_valid_collection", [id.toString()]).catch(() => false)
+    )
+  );
+  for (let i = 0; i < initialResults.length; i++) {
+    if (initialResults[i]) {
+      highestFound = Math.max(highestFound, initialBatch[i]);
+      startFound = true;
+    }
+  }
+
+  if (!startFound) {
+    const probes = [50, 100, 1000];
+    const probeResults = await Promise.all(
+      probes.map(id => contract.call("is_valid_collection", [id.toString()]).catch(() => false))
+    );
+    for (let i = 0; i < probes.length; i++) {
+      if (probeResults[i]) {
+        highestFound = probes[i];
+        startFound = true;
+      }
+    }
+    if (!startFound) return -1;
+  }
+
+  let keepProbing = true;
+  while (keepProbing) {
+    const offsets = [1, 2, 3, 4, 5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 5000, 10000];
+    const uniqueProbes = Array.from(new Set(offsets.map(o => highestFound + o)));
+
+    const results = await Promise.all(
+      uniqueProbes.map(id => contract.call("is_valid_collection", [id.toString()]).catch(() => false))
+    );
+
+    let foundNewTotal = false;
+    for (let i = 0; i < uniqueProbes.length; i++) {
+      if (results[i] && uniqueProbes[i] > highestFound) {
+        highestFound = uniqueProbes[i];
+        foundNewTotal = true;
+      }
+    }
+    keepProbing = foundNewTotal;
+  }
+  return highestFound;
+}
 
 // function to process collection metadata with validation
 async function processCollectionMetadata(
@@ -130,7 +195,7 @@ async function processCollectionMetadata(
       if (typeof value === 'string' && value.startsWith('undefined/')) {
         const cid = value.replace('undefined/', '');
         if (cid.match(/^[a-zA-Z0-9]{34,}$/)) {
-          ipfsMetadata[key] = `https://gateway.pinata.cloud/ipfs/${cid}`;
+          ipfsMetadata[key] = `${IPFS_URL}/ipfs/${cid}`;
         }
       }
     });
@@ -195,10 +260,7 @@ export function useCollection(): UseCollectionReturn {
   const { address } = useAccount();
   const queryClient = useQueryClient();
 
-  const { contract } = useContract({
-    abi: COLLECTION_CONTRACT_ABI as Abi,
-    address: COLLECTION_CONTRACT_ADDRESS as `0x${string}`,
-  });
+  const { contract } = useCollectionContract();
 
   const { sendAsync: createCollectionSend } = useSendTransaction({
     calls: [],
@@ -244,70 +306,14 @@ interface UseGetAllCollectionsReturn {
 }
 
 export function useGetAllCollections(): UseGetAllCollectionsReturn {
-  const { contract } = useContract({
-    abi: COLLECTION_CONTRACT_ABI as Abi,
-    address: COLLECTION_CONTRACT_ADDRESS as `0x${string}`,
-  });
-
-  const findMaxCollectionId = async () => {
-    if (!contract) return 0;
-    let highestFound = -1;
-    let startFound = false;
-
-    const initialBatch = Array.from({ length: 21 }, (_, i) => i);
-    const initialResults = await Promise.all(
-      initialBatch.map((id) =>
-        contract.call("is_valid_collection", [id.toString()]).catch(() => false)
-      )
-    );
-    for (let i = 0; i < initialResults.length; i++) {
-      if (initialResults[i]) {
-        highestFound = Math.max(highestFound, initialBatch[i]);
-        startFound = true;
-      }
-    }
-
-    if (!startFound) {
-      const probes = [50, 100, 1000];
-      const probeResults = await Promise.all(
-        probes.map(id => contract.call("is_valid_collection", [id.toString()]).catch(() => false))
-      );
-      for (let i = 0; i < probes.length; i++) {
-        if (probeResults[i]) {
-          highestFound = probes[i];
-          startFound = true;
-        }
-      }
-      if (!startFound) return -1;
-    }
-
-    let keepProbing = true;
-    while (keepProbing) {
-      const offsets = [1, 2, 3, 4, 5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 5000, 10000];
-      const uniqueProbes = Array.from(new Set(offsets.map(o => highestFound + o)));
-
-      const results = await Promise.all(
-        uniqueProbes.map(id => contract.call("is_valid_collection", [id.toString()]).catch(() => false))
-      );
-
-      let foundNewTotal = false;
-      for (let i = 0; i < uniqueProbes.length; i++) {
-        if (results[i] && uniqueProbes[i] > highestFound) {
-          highestFound = uniqueProbes[i];
-          foundNewTotal = true;
-        }
-      }
-      keepProbing = foundNewTotal;
-    }
-    return highestFound;
-  };
+  const { contract } = useCollectionContract();
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["collections", "all"],
     queryFn: async () => {
       if (!contract) throw new Error("Contract not ready");
 
-      const maxId = await findMaxCollectionId();
+      const maxId = await findMaxCollectionId(contract);
       if (maxId < 0) return [];
 
       const allIds = Array.from({ length: maxId + 1 }, (_, i) => i);
@@ -358,10 +364,7 @@ interface UseGetCollectionReturn {
 }
 
 export function useGetCollection(): UseGetCollectionReturn {
-  const { contract } = useContract({
-    abi: COLLECTION_CONTRACT_ABI as Abi,
-    address: COLLECTION_CONTRACT_ADDRESS as `0x${string}`,
-  });
+  const { contract } = useCollectionContract();
 
   const fetchCollection = useCallback(
     async (id: string): Promise<Collection> => {
@@ -394,10 +397,7 @@ interface UseGetCollectionsReturn {
 }
 
 export function useGetCollections(walletAddress?: `0x${string}`): UseGetCollectionsReturn {
-  const { contract } = useContract({
-    abi: COLLECTION_CONTRACT_ABI as Abi,
-    address: COLLECTION_CONTRACT_ADDRESS as `0x${string}`,
-  });
+  const { contract } = useCollectionContract();
 
   const { fetchCollection } = useGetCollection();
 
@@ -432,10 +432,7 @@ export function useGetCollections(walletAddress?: `0x${string}`): UseGetCollecti
 }
 
 export function useIsCollectionOwner() {
-  const { contract } = useContract({
-    abi: COLLECTION_CONTRACT_ABI as Abi,
-    address: COLLECTION_CONTRACT_ADDRESS as `0x${string}`,
-  });
+  const { contract } = useCollectionContract();
 
   const checkOwnership = useCallback(
     async (collectionId: string, owner: string): Promise<boolean> => {
@@ -460,61 +457,7 @@ export interface UsePaginatedCollectionsReturn {
 }
 
 export function usePaginatedCollections(pageSize: number = 12): UsePaginatedCollectionsReturn {
-  const { contract } = useContract({
-    abi: COLLECTION_CONTRACT_ABI as Abi,
-    address: COLLECTION_CONTRACT_ADDRESS as `0x${string}`,
-  });
-
-  const findMaxCollectionId = async () => {
-    if (!contract) return 0;
-    let highestFound = -1;
-    let startFound = false;
-
-    const initialBatch = Array.from({ length: 21 }, (_, i) => i);
-    const initialResults = await Promise.all(
-      initialBatch.map((id) => contract.call("is_valid_collection", [id.toString()]).catch(() => false))
-    );
-    for (let i = 0; i < initialResults.length; i++) {
-      if (initialResults[i]) {
-        highestFound = Math.max(highestFound, initialBatch[i]);
-        startFound = true;
-      }
-    }
-
-    if (!startFound) {
-      const probes = [50, 100, 1000];
-      const probeResults = await Promise.all(
-        probes.map(id => contract.call("is_valid_collection", [id.toString()]).catch(() => false))
-      );
-      for (let i = 0; i < probes.length; i++) {
-        if (probeResults[i]) {
-          highestFound = probes[i];
-          startFound = true;
-        }
-      }
-      if (!startFound) return -1;
-    }
-
-    let keepProbing = true;
-    while (keepProbing) {
-      const offsets = [1, 2, 3, 4, 5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 5000, 10000];
-      const uniqueProbes = Array.from(new Set(offsets.map(o => highestFound + o)));
-
-      const results = await Promise.all(
-        uniqueProbes.map(id => contract.call("is_valid_collection", [id.toString()]).catch(() => false))
-      );
-
-      let foundNewTotal = false;
-      for (let i = 0; i < uniqueProbes.length; i++) {
-        if (results[i] && uniqueProbes[i] > highestFound) {
-          highestFound = uniqueProbes[i];
-          foundNewTotal = true;
-        }
-      }
-      keepProbing = foundNewTotal;
-    }
-    return highestFound;
-  };
+  const { contract } = useCollectionContract();
 
   const fetchBatch = async (startId: number, count: number) => {
     if (!contract) return { data: [], nextStartId: startId };
@@ -584,7 +527,7 @@ export function usePaginatedCollections(pageSize: number = 12): UsePaginatedColl
       // For the first page, we dynamically find the maximum collection ID.
       let startId = pageParam;
       if (startId === null) {
-        startId = await findMaxCollectionId();
+        startId = await findMaxCollectionId(contract);
       }
 
       if (startId < 0) {
@@ -619,10 +562,7 @@ export function usePaginatedCollections(pageSize: number = 12): UsePaginatedColl
 
 
 export function useFeaturedCollections(featuredIds: number[] = []): UseGetAllCollectionsReturn {
-  const { contract } = useContract({
-    abi: COLLECTION_CONTRACT_ABI as Abi,
-    address: COLLECTION_CONTRACT_ADDRESS as `0x${string}`,
-  });
+  const { contract } = useCollectionContract();
 
   const idsKey = featuredIds.join(',');
 

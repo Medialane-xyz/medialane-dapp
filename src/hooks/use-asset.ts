@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import { useContract } from "@starknet-react/core";
 import { useQuery } from "@tanstack/react-query";
 import type { Abi } from "starknet";
@@ -53,6 +53,9 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
     progress: 0,
   });
 
+  // Tracks the active query run ID so state updates from stale async runs are ignored.
+  const activeRunRef = useRef<string | null>(null);
+
   const { contract } = useContract({
     abi: COLLECTION_NFT_ABI as unknown as Abi,
     address: (nftAddress as `0x${string}`) || undefined,
@@ -67,7 +70,16 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
 
     const tokenId = Number(tokenIdInput);
 
-    setLoadingState({
+    // Tag this execution so stale runs from a previous queryKey don't overwrite state.
+    const runId = `${nftAddress}-${tokenId}-${Date.now()}`;
+    activeRunRef.current = runId;
+    const isCurrentRun = () => activeRunRef.current === runId;
+
+    const safeSetLoadingState = (update: Parameters<typeof setLoadingState>[0]) => {
+      if (isCurrentRun()) setLoadingState(update);
+    };
+
+    safeSetLoadingState({
       isInitializing: true,
       isFetchingOnchainData: false,
       isFetchingMetadata: false,
@@ -78,7 +90,7 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
 
     try {
       // Step 1: Fetch onchain data
-      setLoadingState((prev) => ({
+      safeSetLoadingState((prev) => ({
         ...prev,
         isInitializing: false,
         isFetchingOnchainData: true,
@@ -126,7 +138,7 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
       ])) as { owner: `0x${string}`; tokenURI: string; collectionId?: string; contractName?: string };
 
       // Step 2: Fetch IPFS metadata
-      setLoadingState((prev) => ({
+      safeSetLoadingState((prev) => ({
         ...prev,
         isFetchingOnchainData: false,
         isFetchingMetadata: true,
@@ -160,7 +172,7 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
       }
 
       // Step 3: Process and combine
-      setLoadingState((prev) => ({
+      safeSetLoadingState((prev) => ({
         ...prev,
         isFetchingMetadata: false,
         currentStep: "Almost ready...",
@@ -188,7 +200,7 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
         collectionId: onchainData.collectionId || metadata?.collection as string | undefined,
       };
 
-      setLoadingState((prev) => ({
+      safeSetLoadingState((prev) => ({
         ...prev,
         isComplete: true,
         currentStep: "Ready!",
@@ -200,7 +212,7 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
     } catch (e: any) {
       const isNotFound = /erc721:\s*invalid\s*token\s*id/i.test(e?.message || "");
       if (isNotFound) {
-        setLoadingState((prev) => ({
+        safeSetLoadingState((prev) => ({
           ...prev,
           isComplete: true,
           currentStep: "Asset not found",
@@ -209,7 +221,7 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
         throw new Error("NOT_FOUND"); // Special error string we check later
       }
 
-      setLoadingState((prev) => ({
+      safeSetLoadingState((prev) => ({
         ...prev,
         isComplete: false,
         currentStep: "Error occurred",
