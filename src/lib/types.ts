@@ -147,16 +147,6 @@ export interface Deal {
   date: string
 }
 
-export interface Activity {
-  id: string
-  type: string
-  item: string
-  price: number
-  from: string
-  to: string
-  date: string
-}
-
 export interface SocialLink {
   icon: LucideIcon
   url: string

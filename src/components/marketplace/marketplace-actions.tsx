@@ -100,7 +100,7 @@ export function MarketplaceActions({
             <div className="rounded-xl glass-panel p-5 shadow-sm space-y-4">
                 {listing ? (
                     <div className="flex flex-col gap-1">
-                        <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Current Price</p>
+                        <p className="text-xs text-muted-foreground">Current Price</p>
                         <div className="flex items-baseline gap-2">
                             <span className="text-3xl font-bold tracking-tight text-foreground">
                                 {listing.formattedPrice} {listing.currencySymbol || "USDC"}
@@ -119,7 +119,7 @@ export function MarketplaceActions({
                     {isOwner ? (
                         listing ? (
                             <Button
-                                variant="destructive"
+                                variant="secondary"
                                 className="flex-1 h-11"
                                 onClick={handleCancelListing}
                                 disabled={isProcessing}

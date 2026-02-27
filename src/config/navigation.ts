@@ -38,9 +38,10 @@ export const navigation = {
         { title: "Portfolio", href: "/portfolio", icon: User, description: "Manage your onchain account" },
     ],
     marketplace: [
+        { title: "Marketplace", href: "/marketplace", icon: ShoppingBag, description: "Trade onchain assets" },
         { title: "Explore NFTs", href: "/assets", icon: Box, description: "Browse all IP assets" },
         { title: "Collections", href: "/collections", icon: Layers, description: "View verified collections" },
-        { title: "CommunityActivity", href: "/activity", icon: BarChart, description: "Protocol activity" },
+        { title: "Community", href: "/activities", icon: BarChart, description: "Protocol activity" },
     ],
     launchpad: [
         { title: "Creator Launchpad", href: "/launchpad", icon: Rocket, description: "Creator tools dashboard" },
@@ -63,8 +64,8 @@ export const navigation = {
     discover: [
         { title: "IP Assets", href: "/assets", icon: Box, description: "Explore registered IP assets" },
         { title: "Collections", href: "/collections", icon: Layers, description: "Browse curated IP collections" },
-        { title: "Activities", href: "/activities", icon: Zap, description: "Community events & rewards" },
-        { title: "Marketplace", href: "/marketplace", icon: Rocket, description: "Trade onchain assets" },
+        { title: "Activities", href: "/activities", icon: Zap, description: "Protocol activities" },
+        { title: "Marketplace", href: "/marketplace", icon: ShoppingBag, description: "Trade onchain assets" },
     ],
     create: [
         { title: "Creator Studio", href: "/create", icon: Rocket, description: "Creator tools dashboard" },

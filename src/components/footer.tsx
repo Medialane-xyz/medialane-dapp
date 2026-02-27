@@ -55,7 +55,7 @@ export function Footer() {
               <Link href="/assets" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">All Assets</Link>
               <Link href="/collections" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">All Collections</Link>
               <Link href="/marketplace" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Marketplace</Link>
-              <Link href="/activity" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Community Activity</Link>
+              <Link href="/activities" className="text-sm font-medium text-foreground/60 hover:text-foreground transition-colors">Community Activity</Link>
             </div>
           </motion.div>
 

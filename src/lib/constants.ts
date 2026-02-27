@@ -3,7 +3,6 @@ import type { IPType } from "./types";
  * Application-wide constants
  */
 // Contract addresses
-// Contract addresses
 export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_COLLECTION_CONTRACT_ADDRESS as `0x${string}`;
 export const COLLECTION_CONTRACT_ADDRESS = CONTRACT_ADDRESS;
 export const MEDIALANE_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_MEDIALANE_CONTRACT_ADDRESS as `0x${string}`;
@@ -15,6 +14,9 @@ export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL || "https://voy
 const ENV_START_BLOCK = process.env.NEXT_PUBLIC_COLLECTIONS_CONTRACT_START_BLOCK ? parseInt(process.env.NEXT_PUBLIC_COLLECTIONS_CONTRACT_START_BLOCK) : null;
 export const START_BLOCK = ENV_START_BLOCK || (process.env.NEXT_PUBLIC_STARKNET_NETWORK === "mainnet" ? 6204232 : 1861690);
 export const REGISTRY_START_BLOCK = ENV_START_BLOCK || (process.env.NEXT_PUBLIC_STARKNET_NETWORK === "mainnet" ? 4924753 : 1861690);
+// Note: the effective scan start is Math.min(REGISTRY_START_BLOCK, MARKETPLACE_START_BLOCK),
+// so marketplace events are also fetched from REGISTRY_START_BLOCK regardless of this value.
+export const MARKETPLACE_START_BLOCK = START_BLOCK;
 
 const IS_MAINNET = process.env.NEXT_PUBLIC_STARKNET_NETWORK === "mainnet";
 

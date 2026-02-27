@@ -13,42 +13,11 @@ import { Badge } from "@/components/ui/badge"
 import { ShoppingCart, Tag, Gavel, XCircle, Activity } from "lucide-react"
 import { useMarketplaceListings } from "@/hooks/use-marketplace-events"
 import { normalizeStarknetAddress } from "@/lib/utils"
-import { SUPPORTED_TOKENS } from "@/lib/constants"
+import { formatPrice, lookupToken, formatTimeAgoFromUnix } from "@/lib/activity-ui"
 
 interface AssetHistoryProps {
     nftAddress: string
     tokenId: string
-}
-
-const formatPrice = (amount: string, decimals: number = 18): string => {
-    try {
-        const val = BigInt(amount)
-        return (Number(val) / Math.pow(10, decimals)).toFixed(decimals <= 6 ? 2 : 4)
-    } catch {
-        return "0"
-    }
-}
-
-const getCurrencyInfo = (tokenAddress: string): { symbol: string; decimals: number } => {
-    const normalized = normalizeStarknetAddress(tokenAddress).toLowerCase()
-    for (const token of SUPPORTED_TOKENS) {
-        if (normalizeStarknetAddress(token.address).toLowerCase() === normalized) {
-            return { symbol: token.symbol, decimals: token.decimals }
-        }
-    }
-    return { symbol: "TOKEN", decimals: 18 }
-}
-
-const formatTimeAgo = (timestamp: number): string => {
-    const seconds = Math.floor(Date.now() / 1000) - timestamp
-    if (seconds < 60) return "just now"
-    const minutes = Math.floor(seconds / 60)
-    if (minutes < 60) return `${minutes}m ago`
-    const hours = Math.floor(minutes / 60)
-    if (hours < 24) return `${hours}h ago`
-    const days = Math.floor(hours / 24)
-    if (days < 30) return `${days}d ago`
-    return `${Math.floor(days / 30)}mo ago`
 }
 
 export function AssetHistory({ nftAddress, tokenId }: AssetHistoryProps) {
@@ -110,7 +79,7 @@ export function AssetHistory({ nftAddress, tokenId }: AssetHistoryProps) {
 
                 const priceToken = isListing ? order.considerationToken : order.offerToken
                 const priceAmount = isListing ? order.considerationAmount : order.offerAmount
-                const { symbol, decimals } = getCurrencyInfo(priceToken)
+                const { symbol, decimals } = lookupToken(priceToken) ?? { symbol: "TOKEN", decimals: 18 }
                 const price = `${formatPrice(priceAmount, decimals)} ${symbol}`
 
                 return {
@@ -120,7 +89,7 @@ export function AssetHistory({ nftAddress, tokenId }: AssetHistoryProps) {
                     price,
                     from: `${order.offerer.slice(0, 6)}...${order.offerer.slice(-4)}`,
                     status: order.status,
-                    date: formatTimeAgo(order.startTime),
+                    date: formatTimeAgoFromUnix(order.startTime),
                     startTime: order.startTime,
                 }
             })

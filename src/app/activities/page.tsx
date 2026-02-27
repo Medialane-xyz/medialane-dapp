@@ -1,60 +1,16 @@
-
 "use client"
 
-import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
-import { ActivityCard } from "@/components/activity-card"
+import { ActivityFilters } from "@/components/activity-filters"
+import { ActivityFeed } from "@/components/activity-feed"
 import { useActivities } from "@/hooks/use-activities"
-import {
-  Activity,
-  Search,
-  Filter,
-  RefreshCw,
-  X,
-  Loader2,
-  AlertCircle
-} from "lucide-react"
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { useActivityFilters } from "@/hooks/use-activity-filters"
+import { RefreshCw } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
 
 export default function ActivitiesPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [activityTypeFilter, setActivityTypeFilter] = useState("all")
-
-  // Load more initially for grid
-  const { activities, loading, loadingMore, error, hasMore, loadMore, refresh } = useActivities(12);
-
-  const filteredActivities = useMemo(() => {
-    let result = activities;
-
-    if (searchQuery) {
-      const lowerQuery = searchQuery.toLowerCase();
-      result = result.filter(
-        (activity) =>
-          activity.assetName.toLowerCase().includes(lowerQuery) ||
-          activity.user.toLowerCase().includes(lowerQuery) ||
-          activity.details.toLowerCase().includes(lowerQuery)
-      );
-    }
-
-    if (activityTypeFilter !== "all") {
-      result = result.filter((activity) => activity.type === activityTypeFilter);
-    }
-
-    return result;
-  }, [activities, searchQuery, activityTypeFilter]);
-
-  const activityTypes = ["all", "mint", "transfer", "remix", "collection"];
+  const { activities, loading, loadingMore, error, hasMore, loadMore, refresh } = useActivities(undefined, 20)
+  const { searchQuery, setSearchQuery, typeFilter, setTypeFilter, filtered, hasActiveFilters, clearFilters } = useActivityFilters(activities)
 
   return (
     <div className="min-h-screen py-10">
@@ -63,7 +19,7 @@ export default function ActivitiesPage() {
       <main className="container relative mx-auto px-4 pb-12 space-y-12 max-w-7xl">
         <PageHeader
           title="Protocol Activity"
-          description="Explorer the pulse of the Mediolano ecosystem. Track live mints, collections, and asset transfers occurring on Starknet."
+          description="Explore the pulse of the Mediolano ecosystem. Track live mints, collections, and asset transfers occurring on Starknet."
         >
           <div className="flex items-center gap-2 px-4 py-2 rounded-full border bg-background/50 backdrop-blur text-sm text-muted-foreground shadow-sm flex-1 md:flex-none justify-center md:justify-start">
             <span className="font-semibold text-foreground">{activities.length}</span>
@@ -81,108 +37,29 @@ export default function ActivitiesPage() {
           </Button>
         </PageHeader>
 
-        {/* Controls Section */}
         <div className="space-y-6 bg-background/80 backdrop-blur-xl p-1 -m-1 rounded-2xl md:bg-transparent md:p-0">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="relative flex-1 group">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-              <Input
-                placeholder="Search by asset, user, or details..."
-                className="pl-10 h-11 bg-background border-border/60 focus:border-primary/30 hover:border-border transition-all shadow-sm rounded-xl"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-
-            {/* Type Filters */}
-            <Select value={activityTypeFilter} onValueChange={setActivityTypeFilter}>
-              <SelectTrigger className="w-full lg:w-[180px] h-11 bg-background border-border/60 focus:border-primary/30 rounded-xl">
-                <div className="flex items-center text-muted-foreground font-medium">
-                  <Filter className="h-4 w-4 mr-2 opacity-50" />
-                  <SelectValue placeholder="Filter by Type" />
-                </div>
-              </SelectTrigger>
-              {/* Force background color explicitly to avoid transparency issues */}
-              <SelectContent className="bg-popover border-border/60 backdrop-blur-xl">
-                <SelectItem value="all">All Activities</SelectItem>
-                <SelectItem value="mint">Mints</SelectItem>
-                <SelectItem value="transfer">Transfers</SelectItem>
-                <SelectItem value="remix">Remixes</SelectItem>
-                <SelectItem value="collection">Collections</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <ActivityFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            typeFilter={typeFilter}
+            onTypeChange={setTypeFilter}
+            searchPlaceholder="Search by asset, user, or details..."
+          />
         </div>
 
-        {/* Content Feed */}
-        <div className="min-h-[400px]">
-          {error ? (
-            <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-8 text-center space-y-3">
-              <div className="inline-flex p-3 rounded-full bg-destructive/10 text-destructive mb-2">
-                <AlertCircle className="h-6 w-6" />
-              </div>
-              <h3 className="text-lg font-semibold text-destructive">Failed to load activity</h3>
-              <p className="text-muted-foreground">{error}</p>
-              <Button onClick={refresh} variant="outline" className="mt-4">Retry Connection</Button>
-            </div>
-          ) : loading && !loadingMore && activities.length === 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="h-[340px] rounded-xl bg-muted/20 animate-pulse" />
-              ))}
-            </div>
-          ) : filteredActivities.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center space-y-4 border-2 border-dashed rounded-3xl border-muted">
-              <div className="p-4 rounded-full bg-muted/30 text-muted-foreground">
-                <Activity className="h-8 w-8" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xl font-medium">No results found</h3>
-                <p className="text-muted-foreground">Try adjusting your filters or search query</p>
-              </div>
-              <Button
-                variant="ghost"
-                onClick={() => { setSearchQuery(""); setActivityTypeFilter("all"); }}
-                className="mt-2"
-              >
-                Clear all filters
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-10">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredActivities.map((activity) => (
-                  <div key={activity.id} className="animate-in fade-in zoom-in-95 duration-500 fill-mode-backwards">
-                    <ActivityCard activity={activity} />
-                  </div>
-                ))}
-              </div>
-
-              {hasMore && (
-                <div className="flex justify-center py-8">
-                  <Button
-                    size="lg"
-                    variant="secondary"
-                    onClick={loadMore}
-                    disabled={loadingMore}
-                    className="min-w-[180px] rounded-full shadow-lg hover:shadow-xl transition-all"
-                  >
-                    {loadingMore ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Fetching more...
-                      </>
-                    ) : (
-                      "View Older Activity"
-                    )}
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
+        <ActivityFeed
+          activities={activities}
+          filteredActivities={filtered}
+          loading={loading}
+          loadingMore={loadingMore}
+          error={error}
+          hasMore={hasMore}
+          loadMore={loadMore}
+          refresh={refresh}
+          emptyMessage="No protocol activity yet"
+          emptyMessageFiltered={hasActiveFilters ? "No results — try adjusting your filters" : undefined}
+          onClearFilters={clearFilters}
+        />
       </main>
     </div>
   )
