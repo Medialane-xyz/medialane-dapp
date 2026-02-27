@@ -8,7 +8,8 @@ import { usePortfolio } from "@/hooks/use-portfolio";
 import { normalizeStarknetAddress } from "@/lib/utils";
 import { PortfolioOrderItem } from "./portfolio-order-item";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Inbox, Gavel, History } from "lucide-react";
+import { Loader2, Inbox, Gavel, History, Clock } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface PortfolioOrderListProps {
     searchQuery?: string;
@@ -43,6 +44,19 @@ export function PortfolioOrderList({ searchQuery = "", mode }: PortfolioOrderLis
         });
         return set;
     }, [tokens]);
+
+    const expiringOffers = useMemo(() => {
+        if (!address || mode !== "offers-made") return [];
+        const now = Math.floor(Date.now() / 1000);
+        const normalizedUser = normalizeStarknetAddress(address).toLowerCase();
+        return allOrders.filter(o =>
+            normalizeStarknetAddress(o.offerer).toLowerCase() === normalizedUser &&
+            o.offerType === "ERC20" &&
+            o.status === "active" &&
+            o.endTime > now &&
+            o.endTime - now < 86400
+        );
+    }, [allOrders, address, mode]);
 
     const filteredBids = useMemo(() => {
         if (!address || (!listings && !allOrders)) return [];
@@ -132,6 +146,15 @@ export function PortfolioOrderList({ searchQuery = "", mode }: PortfolioOrderLis
 
     return (
         <div className="space-y-4">
+            {mode === "offers-made" && expiringOffers.length > 0 && (
+                <Alert className="border-amber-500/30 bg-amber-500/10 text-amber-600">
+                    <Clock className="h-4 w-4" />
+                    <AlertDescription>
+                        {expiringOffers.length} offer{expiringOffers.length > 1 ? "s" : ""} expiring in less than 24 hours.
+                    </AlertDescription>
+                </Alert>
+            )}
+
             {/* Table Header - Desktop Only */}
             <div className="hidden md:grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_auto] gap-4 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 border-b border-border/10">
                 <div>Item</div>

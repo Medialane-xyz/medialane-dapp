@@ -18,6 +18,7 @@ import { OverviewTab } from "@/components/asset/overview-tab";
 import { LicenseTab } from "@/components/asset/license-tab";
 import { OwnerTab } from "@/components/asset/owner-tab";
 import { AssetTimelineTab } from "./creator-asset-timeline-tab";
+import { AssetHistory } from "@/components/marketplace/asset/asset-history";
 import { ReportAssetDialog } from "@/components/report-asset-dialog";
 import { useAsset } from "@/hooks/use-asset";
 import { AssetActionPanel } from "@/components/marketplace/asset/asset-action-panel";
@@ -362,10 +363,11 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                   </div>
 
                   <Tabs defaultValue="overview" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-muted/50 rounded-xl">
+                    <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-muted/50 rounded-xl">
                       <TabsTrigger value="overview" className="py-3 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">Overview</TabsTrigger>
                       <TabsTrigger value="provenance" className="py-3 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">Provenance</TabsTrigger>
                       <TabsTrigger value="license" className="py-3 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">License</TabsTrigger>
+                      <TabsTrigger value="activity" className="py-3 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">Activity</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="overview" className="mt-6 space-y-6">
@@ -404,6 +406,10 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                       <Card className="border-border/50 p-6">
                         <LicenseTab asset={asset!} />
                       </Card>
+                    </TabsContent>
+
+                    <TabsContent value="activity" className="mt-6">
+                      <AssetHistory nftAddress={nftAddress || ""} tokenId={String(tokenId)} />
                     </TabsContent>
                   </Tabs>
                 </div>

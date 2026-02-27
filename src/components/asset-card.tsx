@@ -37,6 +37,7 @@ import {
 import type { Asset } from "@/types/asset"
 import type { RecentAsset } from "@/hooks/use-recent-assets"
 import { isOwnListing } from "@/lib/ownership"
+import { useAssetOffers } from "@/hooks/use-asset-offers"
 
 interface AssetCardProps {
   listing?: MarketplaceOrder;
@@ -68,6 +69,9 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
 
   // Ownership detection — covers both listed (offerer) and unlisted (owner/creator) assets
   const isOwn = isOwnListing(listing?.offerer || asset?.owner || asset?.creator, address);
+
+  // Best bid
+  const { allOffers } = useAssetOffers(offerToken || undefined, offerIdentifier || undefined);
 
   // Cart integration
   const { items, addItem, removeItem, setIsOpen } = useCart();
@@ -179,6 +183,14 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
               <p className="text-[10px] font-medium text-muted-foreground/60 mb-1">Status</p>
               <span className="text-xs font-medium text-muted-foreground/80 px-2 py-0.5 rounded-sm bg-muted/50 border border-border/30">
                 Unlisted
+              </span>
+            </div>
+          )}
+          {allOffers.length > 0 && (
+            <div className="text-right">
+              <p className="text-[10px] text-muted-foreground/60">Best Bid</p>
+              <span className="text-xs font-semibold text-primary">
+                {allOffers[0].formattedPrice} {allOffers[0].currencySymbol}
               </span>
             </div>
           )}

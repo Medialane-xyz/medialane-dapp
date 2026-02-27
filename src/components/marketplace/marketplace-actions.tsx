@@ -12,8 +12,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { shortenAddress } from "@/lib/utils"
+import { useCollectionFloor } from "@/hooks/use-collection-floor"
+import { useCart } from "@/store/use-cart"
 import {
     ShoppingBag,
     HandCoins,
@@ -49,6 +51,10 @@ export function MarketplaceActions({
     const { data: listing, isLoading: isListingLoading, refetch } = useListing(nftAddress, tokenId)
     const { cancelOrder, acceptOffer, isProcessing } = useMarketplace()
     const { allOffers, userOffer, isLoading: isOffersLoading } = useAssetOffers(nftAddress, tokenId)
+
+    const collectionFloor = useCollectionFloor(nftAddress)
+    const { items, addItem, removeItem, setIsOpen: setCartOpen } = useCart()
+    const isInCart = listing ? items.some(i => i.listing.orderHash === listing.orderHash) : false
 
     const [cancellingOfferHash, setCancellingOfferHash] = useState<string | null>(null)
     const [acceptingOfferHash, setAcceptingOfferHash] = useState<string | null>(null)
@@ -145,23 +151,49 @@ export function MarketplaceActions({
                     ) : (
                         <>
                             {listing ? (
-                                <PurchaseDialog
-                                    asset={{
-                                        id: assetId,
-                                        name: assetName,
-                                        price: listing.formattedPrice || "0",
-                                        currency: listing.currencySymbol || "USDC",
-                                        image: `/api/assets/image?address=${nftAddress}&tokenId=${tokenId}`,
-                                        collectionName: "Collection",
-                                        listing: listing
-                                    }}
-                                    trigger={
-                                        <Button className="flex-1 h-11">
-                                            <ShoppingBag className="mr-2 h-4 w-4" />
-                                            Buy Now
-                                        </Button>
-                                    }
-                                />
+                                <>
+                                    <PurchaseDialog
+                                        asset={{
+                                            id: assetId,
+                                            name: assetName,
+                                            price: listing.formattedPrice || "0",
+                                            currency: listing.currencySymbol || "USDC",
+                                            image: `/api/assets/image?address=${nftAddress}&tokenId=${tokenId}`,
+                                            collectionName: "Collection",
+                                            listing: listing
+                                        }}
+                                        trigger={
+                                            <Button className="flex-1 h-11">
+                                                <ShoppingBag className="mr-2 h-4 w-4" />
+                                                Buy Now
+                                            </Button>
+                                        }
+                                    />
+                                    <Button
+                                        variant={isInCart ? "secondary" : "outline"}
+                                        className="flex-1 h-11"
+                                        onClick={() => {
+                                            if (isInCart) {
+                                                removeItem(listing.orderHash)
+                                            } else {
+                                                addItem(
+                                                    listing,
+                                                    {
+                                                        id: assetId,
+                                                        name: assetName,
+                                                        collectionName: "Digital Asset",
+                                                        image: `/api/assets/image?address=${nftAddress}&tokenId=${tokenId}`,
+                                                    } as any,
+                                                    undefined
+                                                )
+                                                setCartOpen(true)
+                                            }
+                                        }}
+                                    >
+                                        <ShoppingBag className="mr-2 h-4 w-4" />
+                                        {isInCart ? "In Cart" : "Add to Cart"}
+                                    </Button>
+                                </>
                             ) : (
                                 <Button className="flex-1 h-11" variant="secondary" disabled>
                                     Buy Now
@@ -172,8 +204,8 @@ export function MarketplaceActions({
                                 asset={{
                                     id: assetId,
                                     name: assetName,
-                                    floorPrice: listing?.formattedPrice,
-                                    currency: listing?.currencySymbol || "USDC",
+                                    floorPrice: collectionFloor?.formattedPrice ?? listing?.formattedPrice,
+                                    currency: collectionFloor?.symbol ?? listing?.currencySymbol ?? "USDC",
                                     image: `/api/assets/image?address=${nftAddress}&tokenId=${tokenId}`,
                                     collectionName: "Digital Asset",
                                     nftAddress: nftAddress,
