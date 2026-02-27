@@ -1,24 +1,14 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ActivityFilters } from "@/components/activity-filters"
-import { ActivityFeed } from "@/components/activity-feed"
-import { useUserActivities } from "@/hooks/use-user-activities"
-import { useActivityFilters } from "@/hooks/use-activity-filters"
+import { useActivitySection, ActivityFeedSection } from "@/components/activity-feed-section"
 import { useAccount } from "@starknet-react/core"
 import { X, Wallet } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
 
 export default function PortfolioActivitiesPage() {
     const { address } = useAccount()
-    const { activities, loading, loadingMore, error, hasMore, loadMore, refresh } = useUserActivities(address || "", 20)
-    const {
-        searchQuery, setSearchQuery,
-        typeFilter, setTypeFilter,
-        filtered,
-        clearFilters,
-        hasActiveFilters,
-    } = useActivityFilters(activities)
+    const section = useActivitySection(address || "", 20)
 
     if (!address) {
         return (
@@ -47,55 +37,32 @@ export default function PortfolioActivitiesPage() {
                     title="My Activities"
                     description="Track your personal history on the Mediolano Protocol. View your mints, transfers, and remixes."
                 >
-                    <div className="flex flex-col gap-6 w-full mt-4">
-                        <div className="flex flex-col lg:flex-row gap-4 w-full">
-                            <div className="flex-1">
-                                <ActivityFilters
-                                    searchQuery={searchQuery}
-                                    onSearchChange={setSearchQuery}
-                                    typeFilter={typeFilter}
-                                    onTypeChange={setTypeFilter}
-                                    onRefresh={refresh}
-                                    isRefreshing={loading && !loadingMore}
-                                    searchPlaceholder="Search by asset name or transaction..."
-                                />
-                            </div>
-
-                            <div className="flex flex-wrap gap-2 items-center lg:self-end">
-                                <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl border border-border/40 bg-background/40 backdrop-blur-md text-sm text-muted-foreground shadow-sm h-11">
-                                    <span className="font-semibold text-foreground">{activities.length}</span>
-                                    <span>events</span>
-                                </div>
-
-                                {hasActiveFilters && (
-                                    <Button
-                                        variant="ghost"
-                                        onClick={clearFilters}
-                                        className="h-11 px-4 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl"
-                                    >
-                                        <X className="h-4 w-4 mr-2" />
-                                        Clear
-                                    </Button>
-                                )}
-                            </div>
+                    <div className="flex flex-wrap gap-2 items-center mt-2">
+                        <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl border border-border/40 bg-background/40 backdrop-blur-md text-sm text-muted-foreground shadow-sm h-11">
+                            <span className="font-semibold text-foreground">{section.activities.length}</span>
+                            <span>events</span>
                         </div>
+
+                        {section.hasActiveFilters && (
+                            <Button
+                                variant="ghost"
+                                onClick={section.clearFilters}
+                                className="h-11 px-4 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl"
+                            >
+                                <X className="h-4 w-4 mr-2" />
+                                Clear
+                            </Button>
+                        )}
                     </div>
                 </PageHeader>
 
-                <ActivityFeed
-                    activities={activities}
-                    filteredActivities={filtered}
-                    loading={loading}
-                    loadingMore={loadingMore}
-                    error={error}
-                    hasMore={hasMore}
-                    loadMore={loadMore}
-                    refresh={refresh}
+                <ActivityFeedSection
+                    {...section}
+                    showRefresh
+                    showEndMessage
+                    searchPlaceholder="Search by asset name or transaction..."
                     emptyMessage="No activities yet"
-                    emptyMessageFiltered={hasActiveFilters ? "No matches found — try adjusting your filters" : undefined}
-                    onClearFilters={clearFilters}
-                    showEndMessage={true}
-                    hasActiveFilters={hasActiveFilters}
+                    emptyMessageFiltered={section.hasActiveFilters ? "No matches found — try adjusting your filters" : undefined}
                 />
             </main>
         </div>

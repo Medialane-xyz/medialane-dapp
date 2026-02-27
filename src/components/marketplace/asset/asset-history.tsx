@@ -20,6 +20,17 @@ interface AssetHistoryProps {
     tokenId: string
 }
 
+type HistoryIconType = "cart" | "x-circle" | "tag" | "gavel"
+
+function HistoryIcon({ type, color }: { type: HistoryIconType; color: string }) {
+    switch (type) {
+        case "cart":  return <ShoppingCart className={`h-4 w-4 ${color}`} />
+        case "x-circle": return <XCircle className={`h-4 w-4 ${color}`} />
+        case "tag":   return <Tag className={`h-4 w-4 ${color}`} />
+        case "gavel": return <Gavel className={`h-4 w-4 ${color}`} />
+    }
+}
+
 export function AssetHistory({ nftAddress, tokenId }: AssetHistoryProps) {
     const { allOrders } = useMarketplaceListings()
 
@@ -52,28 +63,36 @@ export function AssetHistory({ nftAddress, tokenId }: AssetHistoryProps) {
                 const isListing = order.offerType === "ERC721"
 
                 let eventType: string
-                let icon: JSX.Element
+                let iconType: HistoryIconType
+                let iconColor: string
+
                 if (isListing) {
                     if (order.status === "fulfilled") {
                         eventType = "Sale"
-                        icon = <ShoppingCart className="h-4 w-4 text-green-400" />
+                        iconType = "cart"
+                        iconColor = "text-green-400"
                     } else if (order.status === "cancelled") {
                         eventType = "Cancelled"
-                        icon = <XCircle className="h-4 w-4 text-red-400" />
+                        iconType = "x-circle"
+                        iconColor = "text-red-400"
                     } else {
                         eventType = "Listed"
-                        icon = <Tag className="h-4 w-4 text-blue-400" />
+                        iconType = "tag"
+                        iconColor = "text-blue-400"
                     }
                 } else {
                     if (order.status === "fulfilled") {
                         eventType = "Offer Accepted"
-                        icon = <ShoppingCart className="h-4 w-4 text-green-400" />
+                        iconType = "cart"
+                        iconColor = "text-green-400"
                     } else if (order.status === "cancelled") {
                         eventType = "Offer Cancelled"
-                        icon = <XCircle className="h-4 w-4 text-red-400" />
+                        iconType = "x-circle"
+                        iconColor = "text-red-400"
                     } else {
                         eventType = "Offer"
-                        icon = <Gavel className="h-4 w-4 text-purple-400" />
+                        iconType = "gavel"
+                        iconColor = "text-purple-400"
                     }
                 }
 
@@ -85,7 +104,8 @@ export function AssetHistory({ nftAddress, tokenId }: AssetHistoryProps) {
                 return {
                     key: order.orderHash,
                     eventType,
-                    icon,
+                    iconType,
+                    iconColor,
                     price,
                     from: `${order.offerer.slice(0, 6)}...${order.offerer.slice(-4)}`,
                     status: order.status,
@@ -123,7 +143,7 @@ export function AssetHistory({ nftAddress, tokenId }: AssetHistoryProps) {
                         <TableRow key={row.key} className="border-white/10 hover:bg-white/5">
                             <TableCell className="font-medium">
                                 <div className="flex items-center gap-2">
-                                    {row.icon}
+                                    <HistoryIcon type={row.iconType} color={row.iconColor} />
                                     {row.eventType}
                                 </div>
                             </TableCell>
