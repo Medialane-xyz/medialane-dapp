@@ -5,7 +5,8 @@ import { PortfolioAssets } from "@/components/portfolio/portfolio-assets"
 import type { TokenData } from "@/hooks/use-portfolio"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
-import { Search, AlertCircle, X, Palette } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Search, AlertCircle, X, Palette, RefreshCw } from "lucide-react"
 import { useCreatorData } from "@/components/creator/creator-data-context"
 
 export default function CreatorAssetsPage() {
@@ -17,6 +18,7 @@ export default function CreatorAssetsPage() {
         assetsLoading,
         assetsError,
         collections,
+        refetchAssets,
     } = useCreatorData()
 
     // Filter tokens based on search and exclude remixes
@@ -50,8 +52,8 @@ export default function CreatorAssetsPage() {
     return (
         <div className="container mx-auto px-4 py-8">
             {/*  Search Bar */}
-            <div className="mb-6">
-                <div className="relative max-w-md">
+            <div className="mb-6 flex items-center gap-3">
+                <div className="relative max-w-md flex-1">
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg blur-xl opacity-50" />
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -71,6 +73,15 @@ export default function CreatorAssetsPage() {
                         )}
                     </div>
                 </div>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={refetchAssets}
+                    title="Refresh assets"
+                    className="shrink-0"
+                >
+                    <RefreshCw className={`h-4 w-4 ${assetsLoading ? "animate-spin" : ""}`} />
+                </Button>
             </div>
 
             {assetsError ? (

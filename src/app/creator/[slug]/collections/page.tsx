@@ -3,15 +3,16 @@
 import { useState, useMemo } from "react"
 import { CollectionCard } from "@/components/collection-card"
 import { Input } from "@/components/ui/input"
-import { Search, FolderOpen, AlertCircle, X } from "lucide-react"
+import { Search, FolderOpen, AlertCircle, X, RefreshCw } from "lucide-react"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { useCreatorData } from "@/components/creator/creator-data-context"
 
 export default function CreatorCollectionsPage() {
     const [searchQuery, setSearchQuery] = useState("")
 
     // Use context instead of hooks - no duplicate data fetching!
-    const { collections, collectionsLoading, collectionsError } = useCreatorData()
+    const { collections, collectionsLoading, collectionsError, refetchCollections } = useCreatorData()
 
     const filteredCollections = useMemo(() => {
         if (!searchQuery) return collections
@@ -27,8 +28,8 @@ export default function CreatorCollectionsPage() {
     return (
         <div className="container mx-auto px-4 py-8 pb-20">
             {/* Search Bar */}
-            <div className="mb-6">
-                <div className="relative max-w-md">
+            <div className="mb-6 flex items-center gap-3">
+                <div className="relative max-w-md flex-1">
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg blur-xl opacity-50" />
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -48,6 +49,15 @@ export default function CreatorCollectionsPage() {
                         )}
                     </div>
                 </div>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={refetchCollections}
+                    title="Refresh collections"
+                    className="shrink-0"
+                >
+                    <RefreshCw className={`h-4 w-4 ${collectionsLoading ? "animate-spin" : ""}`} />
+                </Button>
             </div>
 
             {collectionsError ? (

@@ -43,7 +43,7 @@ export default async function CreatorLayout({
     return (
         <CreatorDataProvider slug={slug}>
             <div className="min-h-screen flex flex-col bg-background">
-                <CreatorHeader address={slug} />
+                <CreatorHeader />
                 <CreatorNavigation />
                 <main className="flex-1">
                     {children}

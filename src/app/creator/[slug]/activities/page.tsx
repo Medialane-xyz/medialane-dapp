@@ -123,7 +123,8 @@ export default function CreatorActivitiesPage() {
                             <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
                             <Loader2 className="relative h-8 w-8 animate-spin text-primary" />
                         </div>
-                        <p className="text-muted-foreground">Loading activities...</p>
+                        <p className="text-muted-foreground font-medium">Scanning blockchain activity...</p>
+                        <p className="text-xs text-muted-foreground/60 mt-1">Searching recent blocks for your activity history</p>
                     </div>
                 ) : filteredActivities.length === 0 && !loading ? (
                     <Card className="border-dashed p-12 text-center bg-muted/10 backdrop-blur-sm">
@@ -146,7 +147,17 @@ export default function CreatorActivitiesPage() {
                         </div>
 
                         {hasMore && (
-                            <div className="flex justify-center pt-4">
+                            <div className="flex flex-col items-center gap-2 pt-4">
+                                <p className="text-xs text-muted-foreground/60">
+                                    Showing {activities.length} recent events ·{" "}
+                                    <button
+                                        onClick={loadMore}
+                                        disabled={loadingMore}
+                                        className="underline hover:text-muted-foreground transition-colors disabled:opacity-50"
+                                    >
+                                        scan older blocks
+                                    </button>
+                                </p>
                                 <Button
                                     variant="outline"
                                     onClick={loadMore}

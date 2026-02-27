@@ -1,50 +1,30 @@
 "use client";
 
-import { useMemo } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Share2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Share2, CheckCircle2, Twitter, Instagram, Globe } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGetCollections } from "@/hooks/use-collection";
+import { useCreatorData } from "@/components/creator/creator-data-context";
 
-interface CreatorHeaderProps {
-    address: string;
-}
+export function CreatorHeader() {
+    const {
+        headerImage,
+        avatarImage,
+        creatorInfo,
+        collectionsLoading,
+        assetsLoading,
+        collections,
+        standardTokens,
+    } = useCreatorData();
 
-export function CreatorHeader({ address }: CreatorHeaderProps) {
-    // 1. Fetch collections directly
-    const { collections, loading } = useGetCollections(address as `0x${string}`);
-
-    // 2. Strict Image Logic: Find first valid image that IS NOT a placeholder
-    const { headerImage, avatarImage } = useMemo(() => {
-        let foundImage: string | null = null;
-
-        // Search for valid image in collections
-        const validCollection = collections.find(c =>
-            c.image &&
-            typeof c.image === 'string' &&
-            c.image !== "" &&
-            !c.image.includes("placeholder")
-        );
-
-        if (validCollection) {
-            foundImage = validCollection.image;
-        }
-
-        return {
-            headerImage: foundImage,
-            avatarImage: foundImage // Use same image for avatar for now if valid
-        };
-    }, [collections]);
-
-    // 3. Handlers
-    const displayName = `${address.slice(0, 6)}...${address.slice(-4)}`;
+    const isLoading = collectionsLoading;
 
     const handleShare = () => {
         if (typeof navigator !== 'undefined') {
             if (navigator.share) {
                 navigator.share({
-                    title: `Creator ${displayName}`,
+                    title: `Creator ${creatorInfo.name}`,
                     url: window.location.href,
                 }).catch(() => { });
             } else {
@@ -53,7 +33,7 @@ export function CreatorHeader({ address }: CreatorHeaderProps) {
         }
     };
 
-    if (loading) {
+    if (isLoading) {
         return <HeaderSkeleton />;
     }
 
@@ -62,10 +42,8 @@ export function CreatorHeader({ address }: CreatorHeaderProps) {
 
             {/* --- Background Layer --- */}
             <div className="absolute inset-0 z-0 select-none pointer-events-none">
-                {/* 1. Base Gradient (Always present) */}
                 <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background" />
 
-                {/* 2. Dynamic Image OR Premium Gradient Fallback */}
                 {headerImage ? (
                     <Image
                         src={headerImage}
@@ -76,11 +54,9 @@ export function CreatorHeader({ address }: CreatorHeaderProps) {
                         sizes="100vw"
                     />
                 ) : (
-                    // Premium Fallback Gradient (Aurora / Mesh style)
                     <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/30 via-secondary/20 to-transparent blur-3xl" />
                 )}
 
-                {/* 3. Overlay for text legibility */}
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
             </div>
 
@@ -90,21 +66,18 @@ export function CreatorHeader({ address }: CreatorHeaderProps) {
 
                     {/* Avatar */}
                     <div className="relative group">
-                        {/* Glow effect behind avatar */}
-                        <div className={`absolute -inset-4 rounded-full blur-2xl opacity-40 transition-opacity duration-1000 ${avatarImage ? "bg-primary/50" : "bg-gradient-to-r from-primary to-secondary"
-                            }`} />
+                        <div className={`absolute -inset-4 rounded-full blur-2xl opacity-40 transition-opacity duration-1000 ${avatarImage ? "bg-primary/50" : "bg-gradient-to-r from-primary to-secondary"}`} />
 
                         <div className="relative h-64 w-64 rounded-full overflow-hidden shadow-2xl backdrop-blur-sm bg-background/50">
                             {avatarImage ? (
                                 <Image
                                     src={avatarImage}
-                                    alt={displayName}
+                                    alt={creatorInfo.name}
                                     fill
                                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                                     priority
                                 />
                             ) : (
-                                // Elegant Gradient Avatar Fallback
                                 <div className="w-full h-full bg-gradient-to-tr from-primary/10 via-primary/5 to-secondary/10 flex items-center justify-center">
                                     <div className="w-full h-full absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 to-transparent opacity-50" />
                                 </div>
@@ -113,13 +86,80 @@ export function CreatorHeader({ address }: CreatorHeaderProps) {
                     </div>
 
                     {/* Info */}
-                    <div className="flex flex-col items-center gap-5 max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-backwards">
-                        <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-sm font-sans">
-                            {displayName}
-                        </h1>
+                    <div className="flex flex-col items-center gap-3 max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-backwards">
 
+                        {/* Name + Verified Badge */}
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-3xl font-bold tracking-tight text-foreground drop-shadow-sm font-sans">
+                                {creatorInfo.name}
+                            </h1>
+                            {creatorInfo.verified && (
+                                <Badge variant="secondary" className="flex items-center gap-1 px-2 py-0.5">
+                                    <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                                    <span className="text-xs">Verified</span>
+                                </Badge>
+                            )}
+                        </div>
 
+                        {/* Bio */}
+                        {creatorInfo.bio && (
+                            <p className="text-muted-foreground/80 max-w-md text-sm">{creatorInfo.bio}</p>
+                        )}
 
+                        {/* Stats Row */}
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span>
+                                <span className="font-semibold text-foreground">
+                                    {collectionsLoading ? "—" : collections.length}
+                                </span>{" "}
+                                Collections
+                            </span>
+                            <span className="text-muted-foreground/40">·</span>
+                            <span>
+                                <span className="font-semibold text-foreground">
+                                    {assetsLoading ? "—" : standardTokens.length}
+                                </span>{" "}
+                                Assets
+                            </span>
+                        </div>
+
+                        {/* Social Links */}
+                        {(creatorInfo.twitter || creatorInfo.instagram || creatorInfo.website) && (
+                            <div className="flex items-center gap-2">
+                                {creatorInfo.twitter && (
+                                    <a
+                                        href={creatorInfo.twitter}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-2 rounded-full bg-background/40 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        <Twitter className="h-4 w-4" />
+                                    </a>
+                                )}
+                                {creatorInfo.instagram && (
+                                    <a
+                                        href={creatorInfo.instagram}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-2 rounded-full bg-background/40 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        <Instagram className="h-4 w-4" />
+                                    </a>
+                                )}
+                                {creatorInfo.website && (
+                                    <a
+                                        href={creatorInfo.website}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-2 rounded-full bg-background/40 hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        <Globe className="h-4 w-4" />
+                                    </a>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Share Button */}
                         <div className="mt-2">
                             <Button
                                 variant="outline"
