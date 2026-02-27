@@ -52,7 +52,7 @@ export function MarketplaceActions({
 
     return (
         <div className="w-full space-y-4">
-            <div className="rounded-xl border bg-card p-5 shadow-sm space-y-4">
+            <div className="rounded-xl glass-panel p-5 shadow-sm space-y-4">
                 {listing ? (
                     <div className="flex flex-col gap-1">
                         <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Current Price</p>
@@ -153,7 +153,7 @@ export function MarketplaceActions({
             </div>
 
             <Link href={`/create/remix/${slug}`} className="block">
-                <div className="p-5 rounded-xl border bg-card/50 hover:bg-card hover:border-primary/30 transition-all flex items-center justify-between group cursor-pointer shadow-sm">
+                <div className="p-5 rounded-xl glass-panel hover:border-primary/30 transition-all flex items-center justify-between group cursor-pointer shadow-sm">
                     <div className="flex items-center gap-4">
                         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                             <RefreshCw className="h-5 w-5 text-primary" />

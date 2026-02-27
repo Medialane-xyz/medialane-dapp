@@ -37,11 +37,11 @@ export function Header() {
       className={cn(
         "fixed top-0 z-50 w-full transition-all duration-500",
         isScrolled
-          ? "bg-transparent backdrop-blur-2xl backdrop-saturate-150"
-          : "bg-transparent"
+          ? "bg-background/60 backdrop-blur-xl border-b border-white/5"
+          : "bg-gradient-to-b from-background/80 via-background/30 to-transparent pointer-events-none"
       )}
     >
-      <div className="container mx-auto flex items-center justify-between h-16 px-4">
+      <div className="container mx-auto flex items-center justify-between h-16 px-4 pointer-events-auto">
 
         {/* Left: Logo */}
         <div className="flex items-center gap-2">
@@ -49,7 +49,7 @@ export function Header() {
         </div>
 
         {/* Center: Desktop Smart Navigation Triggers */}
-        <div className="hidden md:flex items-center gap-1 bg-black/5 dark:bg-white/5 p-1 rounded-full backdrop-blur-md">
+        <div className="hidden md:flex items-center gap-1 p-1">
           <Button
             variant="ghost"
             size="sm"
@@ -85,7 +85,7 @@ export function Header() {
         <div className="flex items-center gap-2">
 
           {/* Action Group: Cart, Wallet, Theme */}
-          <div className="hidden md:flex items-center gap-1 bg-black/5 dark:bg-white/5 p-1 rounded-full backdrop-blur-md">
+          <div className="hidden md:flex items-center gap-1 p-1">
             {/* Cart Trigger */}
             <Button
               variant="ghost"
@@ -112,7 +112,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="sm"
-            className="hidden sm:flex h-9 gap-2 rounded-full bg-black/5 dark:bg-white/5 p-1 px-3 hover:bg-white/10 transition-all text-foreground border-none backdrop-blur-md"
+            className="hidden sm:flex h-9 gap-2 rounded-full p-1 px-3 hover:bg-white/10 transition-all text-foreground"
             onClick={() => document.dispatchEvent(new CustomEvent("openCommandMenu"))}
           >
             <Command className="h-3.5 w-3.5" />
@@ -121,8 +121,8 @@ export function Header() {
             </kbd>
           </Button>
 
-          {/* Mobile Actions Container (Subtle Pill) */}
-          <div className="flex md:hidden items-center gap-1 bg-black/5 dark:bg-white/5 p-1 rounded-full backdrop-blur-md">
+          {/* Mobile Actions Container */}
+          <div className="flex md:hidden items-center gap-1 p-1">
             <Button
               variant="ghost"
               size="icon"

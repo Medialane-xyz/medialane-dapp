@@ -26,7 +26,7 @@ export function Logo() {
 
   return (
     <div className="flex items-center space-x-2">
-      <Link href="/" className="transition-opacity hover:opacity-80">
+      <Link href="/" className="transition-opacity hover:opacity-80 drop-shadow-md">
         {resolvedTheme === "dark" ? (
           <Image
             src="/medialane-light-logo.png"

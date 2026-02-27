@@ -335,25 +335,25 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                 <div className="lg:col-span-2 space-y-8">
                   {/* Quick Stats Grid */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 -mt-12 mb-12 relative z-30">
-                    <div className="glass-card p-4 rounded-xl bg-background/50 backdrop-blur-md border border-border/50">
+                    <div className="glass-panel p-4 rounded-xl">
                       <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1.5">
                         <Cpu className="h-3 w-3" /> Blockchain
                       </p>
                       <p className="font-bold">Starknet</p>
                     </div>
-                    <div className="glass-card p-4 rounded-xl bg-background/50 backdrop-blur-md border border-border/50">
+                    <div className="glass-panel p-4 rounded-xl">
                       <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1.5">
                         <FileCode className="h-3 w-3" /> Standard
                       </p>
                       <p className="font-bold">ERC-721</p>
                     </div>
-                    <div className="glass-card p-4 rounded-xl bg-background/50 backdrop-blur-md border border-border/50">
+                    <div className="glass-panel p-4 rounded-xl">
                       <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1.5">
                         <Layers className="h-3 w-3" /> IP Type
                       </p>
                       <p className="font-bold truncate" title={asset?.type}>{asset?.type || "Generic"}</p>
                     </div>
-                    <div className="glass-card p-4 rounded-xl bg-background/50 backdrop-blur-md border border-border/50">
+                    <div className="glass-panel p-4 rounded-xl">
                       <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1.5">
                         <Check className="h-3 w-3" /> Status
                       </p>
@@ -369,7 +369,7 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                     </TabsList>
 
                     <TabsContent value="overview" className="mt-6 space-y-6">
-                      <Card className="border-border/50 bg-background/50 backdrop-blur-sm overflow-hidden">
+                      <Card className="border-border/50 overflow-hidden">
                         <div className="p-6">
                           <OverviewTab asset={{
                             ...asset!,
@@ -386,7 +386,7 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                     </TabsContent>
 
                     <TabsContent value="provenance" className="mt-6">
-                      <Card className="border-border/50 bg-background/50 backdrop-blur-sm p-6 min-h-[400px]">
+                      <Card className="border-border/50 p-6 min-h-[400px]">
                         {enhancedAsset ? (
                           <SimpleProvenance
                             events={provenanceEvents}
@@ -401,7 +401,7 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                     </TabsContent>
 
                     <TabsContent value="license" className="mt-6 space-y-8">
-                      <Card className="border-border/50 bg-background/50 backdrop-blur-sm p-6">
+                      <Card className="border-border/50 p-6">
                         <LicenseTab asset={asset!} />
                       </Card>
                     </TabsContent>
@@ -423,7 +423,7 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                       assetName={asset.name}
                     />
 
-                    <Card className="border-border/50 bg-background/50 backdrop-blur-sm overflow-hidden">
+                    <Card className="border-border/50 overflow-hidden">
                       <div className="p-5 border-b border-border/50 bg-muted/20">
                         <h3 className="font-semibold flex items-center gap-2">
                           <ShieldCheck className="h-4 w-4 text-primary" />
