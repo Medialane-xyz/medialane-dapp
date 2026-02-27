@@ -23,6 +23,11 @@ interface UseMarketplaceReturn {
     checkoutCart: (items: any[]) => Promise<string | undefined>;
     cancelOrder: (orderHash: string) => Promise<string | undefined>;
     cancelListing: (orderHash: string) => Promise<string | undefined>;
+    acceptOffer: (
+        orderHash: string,
+        nftContractAddress: string,
+        tokenId: string
+    ) => Promise<string | undefined>;
 
     isProcessing: boolean;
     isLoading: boolean; // For compatibility
@@ -405,12 +410,72 @@ export function useMarketplace(): UseMarketplaceReturn {
         });
     }, [account, medialaneContract, chain, toast, provider, withProcessing]);
 
+    /**
+     * Asset owner accepts an incoming bid. Signs OrderFulfillment typed data,
+     * approves the NFT transfer to the marketplace, then executes both calls
+     * atomically so either both succeed or neither does.
+     */
+    const acceptOffer = useCallback(async (
+        orderHash: string,
+        nftContractAddress: string,
+        tokenId: string
+    ) => {
+        if (!account || !medialaneContract || !chain) {
+            const msg = "Account, contract, or network not available";
+            setError(msg);
+            toast({ title: "Error", description: msg, variant: "destructive" });
+            return undefined;
+        }
+
+        return withProcessing(async () => {
+            const currentNonce = await medialaneContract.nonces(account.address);
+
+            const fulfillmentParams = {
+                order_hash: orderHash,
+                fulfiller: account.address,
+                nonce: currentNonce.toString(),
+            };
+
+            const chainId = chain.id as any as constants.StarknetChainId;
+            const typedData = stringifyBigInts(getOrderFulfillmentTypedData(fulfillmentParams, chainId));
+
+            console.log("Signing offer acceptance typed data:", typedData);
+            const signature = await account.signMessage(typedData);
+            const signatureArray = Array.isArray(signature)
+                ? signature
+                : [signature.r.toString(), signature.s.toString()];
+
+            const fulfillCall = medialaneContract.populate("fulfill_order", [{
+                fulfillment: fulfillmentParams,
+                signature: signatureArray,
+            }]);
+
+            // Owner must approve the NFT transfer before fulfilling
+            const { cairo } = await import("starknet");
+            const tokenIdUint256 = cairo.uint256(tokenId);
+            const approveCall = {
+                contractAddress: nftContractAddress,
+                entrypoint: "approve",
+                calldata: [medialaneContract.address, tokenIdUint256.low.toString(), tokenIdUint256.high.toString()],
+            };
+
+            const tx = await account.execute([approveCall, fulfillCall]);
+            console.log("Accept offer transaction sent:", tx.transaction_hash);
+
+            await provider.waitForTransaction(tx.transaction_hash);
+            setTxHash(tx.transaction_hash);
+            toast({ title: "Offer Accepted", description: "The offer has been accepted and the asset transferred." });
+            return tx.transaction_hash;
+        });
+    }, [account, medialaneContract, chain, toast, provider, withProcessing]);
+
     return {
         createListing,
         makeOffer,
         checkoutCart,
         cancelOrder,
         cancelListing: cancelOrder,
+        acceptOffer,
         isProcessing,
         isLoading: isProcessing,
         txHash,
