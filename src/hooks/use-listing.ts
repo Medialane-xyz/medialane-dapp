@@ -38,7 +38,7 @@ export function useListing(assetContract: string, tokenId: string) {
         abi: IPMarketplaceABI as Abi,
     });
 
-    return useQuery({
+    const query = useQuery({
         queryKey: ['listing', assetContract, tokenId, listings.length],
         queryFn: async (): Promise<(MarketplaceOrder & { formattedPrice: string; currencySymbol: string }) | null> => {
             if (!assetContract || !tokenId) return null;
@@ -60,4 +60,9 @@ export function useListing(assetContract: string, tokenId: string) {
         enabled: !eventsLoading && !!assetContract && !!tokenId,
         refetchInterval: 30000, // Refetch every 30s
     });
+
+    return {
+        ...query,
+        isLoading: eventsLoading || query.isLoading
+    };
 }

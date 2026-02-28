@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useState, useMemo } from "react"
 import { shortenAddress } from "@/lib/utils"
 import { useCollectionFloor } from "@/hooks/use-collection-floor"
@@ -85,8 +86,19 @@ export function MarketplaceActions({
 
     if (isListingLoading) {
         return (
-            <div className="w-full h-24 flex items-center justify-center rounded-xl border bg-muted/30">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <div className="w-full space-y-4 animate-in fade-in duration-500">
+                <div className="rounded-xl glass-panel p-5 shadow-sm space-y-4">
+                    <div className="flex items-center gap-3 py-2">
+                        <Loader2 className="h-5 w-5 animate-spin text-primary/70" />
+                        <p className="text-sm font-medium text-muted-foreground">
+                            Checking market status...
+                        </p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                        <Skeleton className="flex-1 h-11 rounded-md" />
+                        {!isOwner && <Skeleton className="flex-1 h-11 rounded-md" />}
+                    </div>
+                </div>
             </div>
         )
     }
