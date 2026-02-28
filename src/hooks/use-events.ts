@@ -183,6 +183,19 @@ export function useAssetProvenanceEvents(contractAddress: string, tokenId: strin
     const provider = new RpcProvider({ nodeUrl: RPC_URL });
     const targetTokenId = BigInt(tokenId);
 
+    const fetchWithRetry = async <T>(fn: () => Promise<T>, maxRetries = 4): Promise<T> => {
+      let lastErr;
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          return await fn();
+        } catch (e: any) {
+          lastErr = e;
+          // Wait and retry with exponential backoff to handle RPC 429 Too Many Requests
+          await new Promise(r => setTimeout(r, 600 * Math.pow(2, attempt)));
+        }
+      }
+      throw lastErr;
+    };
 
     const fetchAllRegistryEvents = async () => {
       try {
@@ -207,19 +220,19 @@ export function useAssetProvenanceEvents(contractAddress: string, tokenId: strin
             // Try snake_case selector first
             try {
               const entrypointSnake = hash.getSelectorFromName("get_collection_id");
-              collectionIdResult = await provider.callContract({
+              collectionIdResult = await fetchWithRetry(() => provider.callContract({
                 contractAddress: normalizedContractAddress,
                 entrypoint: entrypointSnake,
                 calldata: []
-              });
+              }));
             } catch (snakeErr) {
               // Try camelCase selector
               const entrypointCamel = hash.getSelectorFromName("getCollectionId");
-              collectionIdResult = await provider.callContract({
+              collectionIdResult = await fetchWithRetry(() => provider.callContract({
                 contractAddress: normalizedContractAddress,
                 entrypoint: entrypointCamel,
                 calldata: []
-              });
+              }));
             }
 
             // Result is u256 (low, high)
@@ -248,7 +261,7 @@ export function useAssetProvenanceEvents(contractAddress: string, tokenId: strin
         const MAX_PAGES = 50;
 
         do {
-          const response = await provider.getEvents({
+          const response = await fetchWithRetry(() => provider.getEvents({
             address: registryAddress,
             from_block: { block_number: REGISTRY_START_BLOCK },
             to_block: "latest",
@@ -258,7 +271,7 @@ export function useAssetProvenanceEvents(contractAddress: string, tokenId: strin
             ]],
             chunk_size: 1000,
             continuation_token: continuationToken
-          });
+          }));
 
           if (response.events) {
             events.push(...response.events);
@@ -266,6 +279,9 @@ export function useAssetProvenanceEvents(contractAddress: string, tokenId: strin
 
           continuationToken = response.continuation_token;
           page++;
+          if (continuationToken && page < MAX_PAGES) {
+            await new Promise(r => setTimeout(r, 150)); // tiny delay to prevent 429 burst
+          }
         } while (continuationToken && page < MAX_PAGES);
 
         return { events, collectionId };
@@ -284,15 +300,26 @@ export function useAssetProvenanceEvents(contractAddress: string, tokenId: strin
         let page = 0;
         const MAX_PAGES = 50;
 
+        // Filter by token ID for contract transfers
+        const targetTokenId = BigInt(tokenId);
+        const tokenLow = targetTokenId & ((1n << 128n) - 1n);
+        const tokenHigh = targetTokenId >> 128n;
+
         do {
-          const response = await provider.getEvents({
+          const response = await fetchWithRetry(() => provider.getEvents({
             address: normalizedContractAddress,
             from_block: { block_number: START_BLOCK }, // Start from predefined block
             to_block: "latest",
-            keys: [[STANDARD_TRANSFER_SELECTOR]],
+            keys: [
+              [STANDARD_TRANSFER_SELECTOR],
+              [], // wildcard from
+              [], // wildcard to
+              [num.toHex(tokenLow)], // token_id_low
+              [num.toHex(tokenHigh)] // token_id_high
+            ],
             chunk_size: 1000,
             continuation_token: continuationToken
-          });
+          }));
 
           if (response.events) {
             events.push(...response.events);

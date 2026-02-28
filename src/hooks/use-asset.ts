@@ -102,12 +102,30 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
         setTimeout(() => reject(new Error("Connection timeout")), 15000)
       );
 
+      const fetchWithRetry = async <T>(fn: () => Promise<T>, maxRetries = 4): Promise<T> => {
+        let lastErr;
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+          try {
+            return await fn();
+          } catch (e: any) {
+            lastErr = e;
+            // If not rate limit error, and not "entrypoint does not exist" - just wait and retry.
+            await new Promise(r => setTimeout(r, 600 * Math.pow(2, attempt)));
+          }
+        }
+        throw lastErr;
+      };
+
+      const safeCall = async (methods: string[], args: any[] = []) => {
+        const method = methods.find(m => typeof (contract as any)[m] === "function");
+        if (!method) return undefined;
+        return fetchWithRetry(() => (contract as any)[method](...args));
+      };
+
       const onchainData = (await Promise.race([
         (async () => {
           // owner
-          const ownerRaw = await (contract as any).owner_of?.(tokenId).catch(async () => {
-            return await (contract as any).ownerOf(tokenId);
-          });
+          const ownerRaw = await safeCall(["owner_of", "ownerOf"], [tokenId]).catch(() => undefined);
           let owner: `0x${string}` | undefined;
           if (ownerRaw) {
             try {
@@ -118,14 +136,12 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
           }
 
           // token URI
-          const uriRaw = await (contract as any).token_uri?.(tokenId).catch(async () => {
-            return await (contract as any).tokenURI(tokenId);
-          });
+          const uriRaw = await safeCall(["token_uri", "tokenURI"], [tokenId]).catch(() => undefined);
           const tokenURI = String(uriRaw || "");
 
           // collection & name
-          const collectionIdRaw = await (contract as any).get_collection_id?.().catch(() => null);
-          const contractNameRaw = await (contract as any).name?.().catch(() => null);
+          const collectionIdRaw = await safeCall(["get_collection_id", "getCollectionId"]).catch(() => null);
+          const contractNameRaw = await safeCall(["name"]).catch(() => null);
 
           return {
             owner,
@@ -188,7 +204,17 @@ export function useAsset(nftAddress?: `0x${string}`, tokenIdInput?: number) {
         image: processIPFSHashToUrl((metadata?.image as string) || "", "/placeholder.svg"),
         type: (metadata?.type as string) || (metadata?.assetType as string | undefined),
         registrationDate: metadata?.registrationDate as string | undefined,
-        attributes: (metadata?.attributes as Array<{ trait_type: string; value: string; }>) || undefined,
+        attributes: (() => {
+          const attrs = (metadata?.attributes as Array<{ trait_type: string; value: string; }>) || [];
+          if (!attrs.length) return undefined;
+          const seen = new Set();
+          return attrs.filter(attr => {
+            const key = attr.trait_type?.toLowerCase?.() || String(attr.trait_type);
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+        })(),
         properties: metadata?.properties || undefined,
         external_url: metadata?.external_url || undefined,
         owner: onchainData.owner,
