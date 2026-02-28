@@ -100,7 +100,6 @@ export function Footer() {
             onClick={() => openCommandMenu()}
             className="group relative flex items-center gap-4 py-2.5 px-8 rounded-full bg-foreground/[0.02] border border-foreground/[0.05] hover:bg-foreground/[0.04] hover:border-foreground/[0.1] transition-all duration-300"
           >
-            <Command className="w-3.5 h-3.5 text-muted-foreground group-hover:text-blue-600 transition-colors" />
             <span className="text-muted-foreground group-hover:text-blue-600">
               <kbd className="ml-2 font-mono group-hover:opacity-60 transition-opacity">⌘K</kbd>
             </span>

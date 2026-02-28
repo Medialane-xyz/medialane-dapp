@@ -19,14 +19,13 @@ import { constructMetadata } from "@/utils/seo";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://dapp.medialane.io'),
   ...constructMetadata({
-    title: "Medialane | IP Innovation Protocol",
-    description: "Create, Trade, Remix, and Monetize on the Integrity Web. The premier decentralized protocol for programmable intellectual property.",
+    title: "Medialane",
+    description: "Create, Trade, Remix, and Monetize your Creative Works.",
   }),
   applicationName: "Medialane Dapp",
   authors: [{ name: "Medialane Protocol" }],
   generator: "Next.js",
   keywords: ["IP", "Intellectual Property", "Web3", "Starknet", "NFT", "Creator Economy", "Programmable IP", "Integrity Web"],
-  manifest: "/site.webmanifest",
   appleWebApp: {
     title: "Medialane",
     statusBarStyle: "black-translucent",
