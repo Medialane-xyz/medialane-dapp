@@ -50,18 +50,20 @@ export function TemplateCard({ template, isSelected, onSelect }: TemplateCardPro
   return (
     <Card
       className={cn(
-        "group overflow-hidden cursor-pointer transition-all duration-300 relative rounded-xl glass-panel backdrop-blur-md shadow-[inset_0_0_20px_rgba(0,0,0,0.2)] border",
-        isSelected
-          ? `ring-1 ring-offset-2 ring-offset-background ${colorClasses.border} shadow-glow-md ${colorClasses.shadow} border-${colorClasses.border.split('-')[1]}/50`
-          : "border-white/5 hover:border-white/20 hover:-translate-y-1 hover:shadow-lg",
+        "group overflow-hidden cursor-pointer transition-all duration-300 relative rounded-xl border border-border bg-card/60 backdrop-blur-xl shadow-sm hover:shadow-md hover:border-primary/20",
+          isSelected
+            ? `ring-1 ring-offset-2 ring-offset-background ring-${colorClasses.border.split('-')[1]} border-${colorClasses.border.split('-')[1]} shadow-sm`
+            : "hover:-translate-y-1"
       )}
       onClick={onSelect}
     >
       {/* Status Badges */}
+      <div className={cn("absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity", colorClasses.topBorderGradient)} />
+      {/* Status Badges */}
       <div className="absolute top-3 right-3 flex flex-col gap-1 z-20">
         {isPopular && (
-          <Badge className="bg-outrun-yellow/20 text-outrun-yellow border border-outrun-yellow/30 shadow-glow-sm shadow-outrun-yellow/20 text-[10px] tracking-wider uppercase">
-            <Sparkles className="h-3 w-3 mr-1 drop-shadow-[0_0_5px_rgba(255,255,0,0.8)]" />
+          <Badge className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[10px] tracking-wider uppercase shadow-sm">
+            <Sparkles className="h-3 w-3 mr-1" />
             Popular
           </Badge>
         )}
@@ -72,11 +74,11 @@ export function TemplateCard({ template, isSelected, onSelect }: TemplateCardPro
         <div className={cn("p-6 pb-4 relative overflow-hidden", colorClasses.bgGradient)}>
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent mix-blend-overlay" />
           <div className="relative flex items-start justify-between z-10">
-            <div className={cn("p-3 rounded-xl shadow-glow-sm backdrop-blur-sm border border-white/10", colorClasses.iconBg, colorClasses.shadow)}>
+            <div className={cn("p-2.5 rounded-lg border bg-background shadow-sm", colorClasses.border)}>
               <IconComponent className={cn("h-6 w-6", colorClasses.iconColor)} />
             </div>
             {isSelected && (
-              <div className={cn("h-6 w-6 rounded-full flex items-center justify-center shadow-glow-sm border border-white/10", colorClasses.iconBg, colorClasses.shadow)}>
+              <div className={cn("h-6 w-6 rounded-full flex items-center justify-center border bg-background shadow-sm", colorClasses.border)}>
                 <CheckCircle2 className={cn("h-4 w-4", colorClasses.iconColor)} />
               </div>
             )}
@@ -88,7 +90,7 @@ export function TemplateCard({ template, isSelected, onSelect }: TemplateCardPro
           <div className="mb-3">
             <h3 className="text-lg font-semibold mb-1 tracking-wide">{template.name}</h3>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Badge variant="outline" className="text-[10px] border-white/10 bg-black/20 uppercase tracking-wider">
+              <Badge variant="secondary" className="text-[10px] border border-border/50 uppercase tracking-wider bg-background/50 text-muted-foreground">
                 {template.category}
               </Badge>
             </div>
@@ -101,12 +103,12 @@ export function TemplateCard({ template, isSelected, onSelect }: TemplateCardPro
             <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Key Features</h4>
             <div className="flex flex-wrap gap-1.5">
               {template.features.slice(0, 2).map((feature, index) => (
-                <Badge key={index} variant="secondary" className="text-[10px] bg-white/5 border border-white/10 text-foreground/90">
+                <Badge key={index} variant="secondary" className="text-[10px] bg-background border border-border text-foreground/80">
                   {feature}
                 </Badge>
               ))}
               {template.features.length > 2 && (
-                <Badge variant="secondary" className="text-[10px] bg-white/5 border border-white/10 text-foreground/90">
+                <Badge variant="secondary" className="text-[10px] bg-background border border-border text-foreground/80">
                   +{template.features.length - 2} more
                 </Badge>
               )}
@@ -116,7 +118,7 @@ export function TemplateCard({ template, isSelected, onSelect }: TemplateCardPro
           <div className="mt-5 pt-2 relative z-10">
             <Link href={`/create/templates/${template.id}`} onClick={(e) => e.stopPropagation()} className="block w-full">
               <Button className={cn("w-full gap-2 transition-all active:scale-[0.98] font-bold tracking-wide",
-                isSelected ? "gradient-vivid shadow-glow-sm shadow-neon-cyan/20 text-white" : "bg-white/5 hover:bg-white/10 text-foreground hover:shadow-glow-sm")} size="sm">
+                isSelected ? "bg-gradient-to-r from-outrun-cyan to-outrun-magenta text-white shadow-md border hover:-translate-y-0.5" : "bg-background/60 backdrop-blur-sm hover:bg-background/90 border border-border text-foreground hover:border-primary/20")} size="sm">
                 Use Template
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
@@ -166,72 +168,59 @@ function getColorClasses(color: string) {
   switch (color) {
     case "blue":
       return {
-        bgGradient: "bg-outrun-cyan/10",
-        iconBg: "bg-outrun-cyan/20",
-        iconColor: "text-outrun-cyan drop-shadow-[0_0_5px_rgba(0,255,255,0.8)]",
-        border: "border-outrun-cyan",
-        shadow: "shadow-neon-cyan/30",
-        hoverGradient: "from-outrun-cyan to-transparent"
+        bgGradient: "bg-outrun-cyan/5",
+        iconColor: "text-outrun-cyan",
+        border: "border-outrun-cyan/30 group-hover:border-outrun-cyan/60",
+        topBorderGradient: "via-outrun-cyan/40"
       }
     case "purple":
     case "violet":
       return {
-        bgGradient: "bg-outrun-magenta/10",
-        iconBg: "bg-outrun-magenta/20",
-        iconColor: "text-outrun-magenta drop-shadow-[0_0_5px_rgba(255,0,255,0.8)]",
-        border: "border-outrun-magenta",
-        shadow: "shadow-neon-magenta/30",
-        hoverGradient: "from-outrun-magenta to-transparent"
+        bgGradient: "bg-outrun-magenta/5",
+        iconColor: "text-outrun-magenta",
+        border: "border-outrun-magenta/30 group-hover:border-outrun-magenta/60",
+        topBorderGradient: "via-outrun-magenta/40"
       }
     case "amber":
     case "orange":
       return {
-        bgGradient: "bg-outrun-yellow/10",
-        iconBg: "bg-outrun-yellow/20",
-        iconColor: "text-outrun-yellow drop-shadow-[0_0_5px_rgba(255,255,0,0.8)]",
-        border: "border-outrun-yellow",
-        shadow: "shadow-outrun-yellow/30",
-        hoverGradient: "from-outrun-yellow to-transparent"
+        bgGradient: "bg-outrun-yellow/5",
+        iconColor: "text-amber-500",
+        border: "border-amber-500/30 group-hover:border-amber-500/60",
+        topBorderGradient: "via-amber-500/40"
       }
     case "teal":
     case "emerald":
       return {
-        bgGradient: "bg-neon-cyan/10",
-        iconBg: "bg-neon-cyan/20",
-        iconColor: "text-neon-cyan drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]",
-        border: "border-neon-cyan",
-        shadow: "shadow-neon-cyan/30",
-        hoverGradient: "from-neon-cyan to-transparent"
+        bgGradient: "bg-neon-cyan/5",
+        iconColor: "text-teal-500",
+        border: "border-teal-500/30 group-hover:border-teal-500/60",
+        topBorderGradient: "via-teal-500/40"
       }
     case "red":
       return {
-        bgGradient: "bg-red-500/10",
-        iconBg: "bg-red-500/20",
-        iconColor: "text-red-400 drop-shadow-[0_0_5px_rgba(248,113,113,0.8)]",
-        border: "border-red-500",
-        shadow: "shadow-red-500/30",
-        hoverGradient: "from-red-500 to-transparent"
+        bgGradient: "bg-red-500/5",
+        iconColor: "text-red-500",
+        border: "border-red-500/30 group-hover:border-red-500/60",
+        topBorderGradient: "via-red-500/40"
       }
     case "sky":
     case "indigo":
       return {
-        bgGradient: "bg-blue-500/10",
-        iconBg: "bg-blue-500/20",
-        iconColor: "text-blue-400 drop-shadow-[0_0_5px_rgba(96,165,250,0.8)]",
-        border: "border-blue-500",
-        shadow: "shadow-blue-500/30",
-        hoverGradient: "from-blue-500 to-transparent"
+        bgGradient: "bg-blue-500/5",
+        iconColor: "text-blue-500",
+        border: "border-blue-500/30 group-hover:border-blue-500/60",
+        topBorderGradient: "via-blue-500/40"
       }
     case "slate":
     case "gray":
     default:
       return {
-        bgGradient: "bg-white/5",
-        iconBg: "bg-white/10",
-        iconColor: "text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]",
-        border: "border-white/30",
-        shadow: "shadow-white/10",
-        hoverGradient: "from-white to-transparent"
+        bgGradient: "bg-muted/50",
+        iconColor: "text-foreground",
+        border: "border-border group-hover:border-primary/30",
+        topBorderGradient: "via-primary/20"
       }
   }
 }
+

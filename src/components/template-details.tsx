@@ -47,17 +47,17 @@ export function TemplateDetails({ template }: TemplateDetailsProps) {
   const isPopular = template.id === "audio" || template.id === "art" || template.id === "nft"
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="relative bg-card/60 backdrop-blur-xl border border-border shadow-sm rounded-xl overflow-hidden">
       <CardHeader className={cn("pb-4 relative overflow-hidden", colorClasses.bgGradient)}>
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
         <div className="relative">
           <div className="flex items-start justify-between mb-3">
-            <div className={cn("p-3 rounded-xl shadow-lg", colorClasses.iconBg)}>
+            <div className={cn("p-2.5 rounded-lg border bg-background shadow-sm", colorClasses.border)}>
               <IconComponent className={cn("h-6 w-6", colorClasses.iconColor)} />
             </div>
             <div className="flex flex-col gap-1">
               {isPopular && (
-                <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs">
+                <Badge className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[10px] tracking-wider uppercase shadow-sm">
                   <Sparkles className="h-3 w-3 mr-1" />
                   Popular
                 </Badge>
@@ -67,7 +67,7 @@ export function TemplateDetails({ template }: TemplateDetailsProps) {
 
           <CardTitle className="text-xl mb-2">{template.name} Template</CardTitle>
           <div className="flex items-center gap-3 text-sm">
-            <Badge variant="outline" className="text-xs bg-white/20 border-white/30">
+            <Badge variant="outline" className="text-xs bg-background/50 border-border/50 text-muted-foreground">
               {template.category}
             </Badge>
           </div>
@@ -158,99 +158,59 @@ function getColorClasses(color: string) {
   switch (color) {
     case "blue":
       return {
-        bgGradient: "bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/50 dark:to-blue-900/30",
-        bgLight: "bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-800/50",
-        iconBg: "bg-white/90 dark:bg-blue-900/50",
-        iconColor: "text-blue-600 dark:text-blue-400",
-        border: "border-blue-200 dark:border-blue-800",
+        bgGradient: "bg-outrun-cyan/5",
+        bgLight: "bg-outrun-cyan/5 border border-outrun-cyan/20",
+        iconColor: "text-outrun-cyan",
+        border: "border-outrun-cyan/30",
       }
     case "purple":
-      return {
-        bgGradient: "bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/50 dark:to-purple-900/30",
-        bgLight: "bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/50 dark:border-purple-800/50",
-        iconBg: "bg-white/90 dark:bg-purple-900/50",
-        iconColor: "text-purple-600 dark:text-purple-400",
-        border: "border-purple-200 dark:border-purple-800",
-      }
-    case "teal":
-      return {
-        bgGradient: "bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-950/50 dark:to-teal-900/30",
-        bgLight: "bg-teal-50/50 dark:bg-teal-950/20 border border-teal-200/50 dark:border-teal-800/50",
-        iconBg: "bg-white/90 dark:bg-teal-900/50",
-        iconColor: "text-teal-600 dark:text-teal-400",
-        border: "border-teal-200 dark:border-teal-800",
-      }
     case "violet":
       return {
-        bgGradient: "bg-gradient-to-br from-violet-50 to-violet-100 dark:from-violet-950/50 dark:to-violet-900/30",
-        bgLight: "bg-violet-50/50 dark:bg-violet-950/20 border border-violet-200/50 dark:border-violet-800/50",
-        iconBg: "bg-white/90 dark:bg-violet-900/50",
-        iconColor: "text-violet-600 dark:text-violet-400",
-        border: "border-violet-200 dark:border-violet-800",
+        bgGradient: "bg-outrun-magenta/5",
+        bgLight: "bg-outrun-magenta/5 border border-outrun-magenta/20",
+        iconColor: "text-outrun-magenta",
+        border: "border-outrun-magenta/30",
+      }
+    case "amber":
+    case "orange":
+      return {
+        bgGradient: "bg-outrun-yellow/5",
+        bgLight: "bg-amber-500/5 border border-amber-500/20",
+        iconColor: "text-amber-500",
+        border: "border-amber-500/30",
+      }
+    case "teal":
+    case "emerald":
+      return {
+        bgGradient: "bg-neon-cyan/5",
+        bgLight: "bg-teal-500/5 border border-teal-500/20",
+        iconColor: "text-teal-500",
+        border: "border-teal-500/30",
       }
     case "red":
       return {
-        bgGradient: "bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/50 dark:to-red-900/30",
-        bgLight: "bg-red-50/50 dark:bg-red-950/20 border border-red-200/50 dark:border-red-800/50",
-        iconBg: "bg-white/90 dark:bg-red-900/50",
-        iconColor: "text-red-600 dark:text-red-400",
-        border: "border-red-200 dark:border-red-800",
-      }
-    case "amber":
-      return {
-        bgGradient: "bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950/50 dark:to-amber-900/30",
-        bgLight: "bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/50",
-        iconBg: "bg-white/90 dark:bg-amber-900/50",
-        iconColor: "text-amber-600 dark:text-amber-400",
-        border: "border-amber-200 dark:border-amber-800",
+        bgGradient: "bg-red-500/5",
+        bgLight: "bg-red-500/5 border border-red-500/20",
+        iconColor: "text-red-500",
+        border: "border-red-500/30",
       }
     case "sky":
-      return {
-        bgGradient: "bg-gradient-to-br from-sky-50 to-sky-100 dark:from-sky-950/50 dark:to-sky-900/30",
-        bgLight: "bg-sky-50/50 dark:bg-sky-950/20 border border-sky-200/50 dark:border-sky-800/50",
-        iconBg: "bg-white/90 dark:bg-sky-900/50",
-        iconColor: "text-sky-600 dark:text-sky-400",
-        border: "border-sky-200 dark:border-sky-800",
-      }
     case "indigo":
       return {
-        bgGradient: "bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-950/50 dark:to-indigo-900/30",
-        bgLight: "bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-200/50 dark:border-indigo-800/50",
-        iconBg: "bg-white/90 dark:bg-indigo-900/50",
-        iconColor: "text-indigo-600 dark:text-indigo-400",
-        border: "border-indigo-200 dark:border-indigo-800",
-      }
-    case "emerald":
-      return {
-        bgGradient: "bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/50 dark:to-emerald-900/30",
-        bgLight: "bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-800/50",
-        iconBg: "bg-white/90 dark:bg-emerald-900/50",
-        iconColor: "text-emerald-600 dark:text-emerald-400",
-        border: "border-emerald-200 dark:border-emerald-800",
-      }
-    case "gray":
-      return {
-        bgGradient: "bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/30",
-        bgLight: "bg-gray-50/50 dark:bg-gray-950/20 border border-gray-200/50 dark:border-gray-700/50",
-        iconBg: "bg-white/90 dark:bg-gray-800/50",
-        iconColor: "text-gray-600 dark:text-gray-400",
-        border: "border-gray-200 dark:border-gray-700",
+        bgGradient: "bg-blue-500/5",
+        bgLight: "bg-blue-500/5 border border-blue-500/20",
+        iconColor: "text-blue-500",
+        border: "border-blue-500/30",
       }
     case "slate":
-      return {
-        bgGradient: "bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-800/30",
-        bgLight: "bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/50 dark:border-slate-700/50",
-        iconBg: "bg-white/90 dark:bg-slate-800/50",
-        iconColor: "text-slate-600 dark:text-slate-400",
-        border: "border-slate-200 dark:border-slate-700",
-      }
+    case "gray":
     default:
       return {
-        bgGradient: "bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/30",
-        bgLight: "bg-gray-50/50 dark:bg-gray-950/20 border border-gray-200/50 dark:border-gray-700/50",
-        iconBg: "bg-white/90 dark:bg-gray-800/50",
-        iconColor: "text-gray-600 dark:text-gray-400",
-        border: "border-gray-200 dark:border-gray-700",
+        bgGradient: "bg-muted/50",
+        bgLight: "bg-muted/50 border border-border",
+        iconColor: "text-foreground",
+        border: "border-border",
       }
   }
 }
+

@@ -12,6 +12,7 @@ import { TemplateDetails } from "@/components/template-details"
 import { Badge } from "@/components/ui/badge"
 import { templates } from "@/lib/templates"
 import { PageHeader } from "@/components/page-header"
+import { cn } from "@/lib/utils"
 
 const categories = [
   { id: "all", name: "All Templates", icon: "Sparkles" },
@@ -60,7 +61,7 @@ export default function TemplatesPage() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search templates..."
-              className="pl-10 h-10 bg-background/50 backdrop-blur-sm"
+              className="pl-10 h-10 bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -87,13 +88,13 @@ export default function TemplatesPage() {
                 <Button
                   key={category.id}
                   variant={activeCategory === category.id ? "default" : "outline"}
+                  className={cn("flex items-center gap-2 transition-all duration-300", activeCategory !== category.id && "bg-background/40 backdrop-blur-sm border-border/50 hover:bg-background/80 hover:border-border")}
                   size="sm"
                   onClick={() => setActiveCategory(category.id)}
-                  className="flex items-center gap-2"
                 >
                   <span>{category.name}</span>
                   {category.id === "popular" && (
-                    <Badge variant="secondary" className="ml-1 h-4 px-1.5 text-xs">
+                    <Badge variant="secondary" className="ml-1 h-4 px-1.5 text-xs text-amber-500 bg-amber-500/10 border-amber-500/20">
                       3
                     </Badge>
                   )}
@@ -149,9 +150,9 @@ export default function TemplatesPage() {
                   </div>
                 </>
               ) : (
-                <Card className="glass-card">
+                <Card className="relative bg-card/40 backdrop-blur-xl border border-border/50 shadow-sm rounded-xl overflow-hidden">
                   <CardContent className="p-6 text-center">
-                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/10">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/5 border border-border shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
                       <Sparkles className="h-8 w-8 text-primary" />
                     </div>
                     <h3 className="mb-2 text-xl font-medium">Select a Template</h3>
@@ -168,7 +169,7 @@ export default function TemplatesPage() {
               )}
 
               {/* Quick Stats */}
-              <Card className="glass-card">
+              <Card className="relative bg-card/40 backdrop-blur-xl border border-border/50 shadow-sm rounded-xl overflow-hidden">
                 <CardContent className="p-4">
                   <h4 className="font-medium mb-3">Platform Stats</h4>
                   <div className="space-y-2 text-sm">
