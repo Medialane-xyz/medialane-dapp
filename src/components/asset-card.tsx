@@ -222,8 +222,8 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
         ) : (
           <Link href={assetUrl} className="w-full">
             <Button
-              variant="default"
-              className="w-full h-9 gap-1 shadow-sm transition-all font-medium active:scale-[0.98] hover:shadow-glow-sm hover:shadow-neon-cyan/30"
+              variant="outline"
+              className="w-full h-9 gap-2 font-medium border-outrun-cyan/30 text-outrun-cyan hover:bg-outrun-cyan/10 hover:border-neon-cyan/50 hover:shadow-glow-sm hover:shadow-neon-cyan/30 transition-all active:scale-[0.98]"
             >
               <Eye className="h-3.5 w-3.5 mr-1" />
               View

@@ -31,26 +31,54 @@ export interface MarketplaceOrder {
     status: "active" | "fulfilled" | "cancelled";
 }
 
+let globalListingsPromise: Promise<{ listings: MarketplaceOrder[], allOrders: MarketplaceOrder[] }> | null = null;
+let globalLastFetchTime = 0;
+let globalCachedListings: MarketplaceOrder[] | null = null;
+let globalCachedAllOrders: MarketplaceOrder[] | null = null;
+const CACHE_TTL_MS = 15000; // 15 seconds
+
 /**
  * Hook to scan marketplace contract events and derive active listings.
  * Fetches OrderCreated, OrderFulfilled, and OrderCancelled events,
  * then computes the set of currently active orders.
  */
 export function useMarketplaceListings() {
-    const [listings, setListings] = useState<MarketplaceOrder[]>([]);
-    const [allOrders, setAllOrders] = useState<MarketplaceOrder[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [listings, setListings] = useState<MarketplaceOrder[]>(globalCachedListings || []);
+    const [allOrders, setAllOrders] = useState<MarketplaceOrder[]>(globalCachedAllOrders || []);
+    const [isLoading, setIsLoading] = useState(!globalCachedListings);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchEvents = useCallback(async () => {
+    const fetchEvents = useCallback(async (force = false) => {
         if (!RPC_URL || !MEDIALANE_CONTRACT_ADDRESS) {
+            return;
+        }
+
+        const now = Date.now();
+        if (!force && globalCachedListings && (now - globalLastFetchTime < CACHE_TTL_MS)) {
+            setListings(globalCachedListings);
+            setAllOrders(globalCachedAllOrders!);
+            setIsLoading(false);
+            return;
+        }
+
+        if (globalListingsPromise && !force) {
+            setIsLoading(true);
+            try {
+                const result = await globalListingsPromise;
+                setListings(result.listings);
+                setAllOrders(result.allOrders);
+            } catch (err: any) {
+                setError(err.message || "Failed to fetch marketplace events");
+            } finally {
+                setIsLoading(false);
+            }
             return;
         }
 
         setIsLoading(true);
         setError(null);
 
-        try {
+        globalListingsPromise = (async () => {
             const provider = new RpcProvider({ nodeUrl: RPC_URL });
             const contractAddress = normalizeStarknetAddress(MEDIALANE_CONTRACT_ADDRESS);
 
@@ -70,7 +98,7 @@ export function useMarketplaceListings() {
                         ORDER_FULFILLED_SELECTOR,
                         ORDER_CANCELLED_SELECTOR,
                     ]],
-                    chunk_size: 1000,
+                    chunk_size: 500,
                     continuation_token: continuationToken,
                 });
 
@@ -80,6 +108,11 @@ export function useMarketplaceListings() {
 
                 continuationToken = response.continuation_token;
                 page++;
+
+                // Add delay to prevent rate limit on Alchemy for starknet_getEvents
+                if (continuationToken && page < MAX_PAGES) {
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
             } while (continuationToken && page < MAX_PAGES);
 
             // Process events: build order map
@@ -108,48 +141,63 @@ export function useMarketplaceListings() {
             }
 
             // Fetch details for each order hash
-            // Using parallel calls for efficiency
+            // Rate-limiting parallel calls for Alchemy Free Tier (~330 CU/sec, starknet_call is ~15 CU)
             const contract = new Contract({
                 abi: IPMarketplaceABI as any,
                 address: contractAddress,
                 providerOrAccount: provider
             });
 
-            const orderDetailsResults = await Promise.all(
-                activeHashesToFetch.map(async ({ hash: orderHash, offerer, event }) => {
-                    try {
-                        const details = await contract.get_order_details(orderHash);
+            const orderDetailsResults: any[] = [];
+            const BATCH_SIZE = 10;
+            const BATCH_DELAY_MS = 500;
 
-                        // Parse status from enum 
-                        // OrderStatus variants: None, Created, Filled, Cancelled
-                        const statusKey = Object.keys(details.order_status)[0];
-                        let status: "active" | "fulfilled" | "cancelled" = "active";
-                        if (statusKey === "Filled") status = "fulfilled";
-                        if (statusKey === "Cancelled") status = "cancelled";
+            for (let i = 0; i < activeHashesToFetch.length; i += BATCH_SIZE) {
+                const batch = activeHashesToFetch.slice(i, i + BATCH_SIZE);
 
-                        return {
-                            orderHash,
-                            offerer: normalizeStarknetAddress(details.offerer.toString()),
-                            offerToken: normalizeStarknetAddress(details.offer.token.toString()),
-                            offerIdentifier: details.offer.identifier_or_criteria.toString(),
-                            offerAmount: details.offer.start_amount.toString(),
-                            offerType: shortString.decodeShortString(num.toHex(details.offer.item_type)),
-                            considerationToken: normalizeStarknetAddress(details.consideration.token.toString()),
-                            considerationIdentifier: details.consideration.identifier_or_criteria.toString(),
-                            considerationAmount: details.consideration.start_amount.toString(),
-                            considerationType: shortString.decodeShortString(num.toHex(details.consideration.item_type)),
-                            startTime: Number(details.start_time),
-                            endTime: Number(details.end_time),
-                            blockNumber: event.block_number,
-                            transactionHash: event.transaction_hash,
-                            status,
-                        } as MarketplaceOrder;
-                    } catch (err) {
-                        console.error(`Failed to fetch details for order ${orderHash}:`, err);
-                        return null;
-                    }
-                })
-            );
+                const batchResults = await Promise.all(
+                    batch.map(async ({ hash: orderHash, offerer, event }) => {
+                        try {
+                            const details = await contract.get_order_details(orderHash);
+
+                            // Parse status from enum 
+                            // OrderStatus variants: None, Created, Filled, Cancelled
+                            const statusKey = Object.keys(details.order_status)[0];
+                            let status: "active" | "fulfilled" | "cancelled" = "active";
+                            if (statusKey === "Filled") status = "fulfilled";
+                            if (statusKey === "Cancelled") status = "cancelled";
+
+                            return {
+                                orderHash,
+                                offerer: normalizeStarknetAddress(details.offerer.toString()),
+                                offerToken: normalizeStarknetAddress(details.offer.token.toString()),
+                                offerIdentifier: details.offer.identifier_or_criteria.toString(),
+                                offerAmount: details.offer.start_amount.toString(),
+                                offerType: shortString.decodeShortString(num.toHex(details.offer.item_type)),
+                                considerationToken: normalizeStarknetAddress(details.consideration.token.toString()),
+                                considerationIdentifier: details.consideration.identifier_or_criteria.toString(),
+                                considerationAmount: details.consideration.start_amount.toString(),
+                                considerationType: shortString.decodeShortString(num.toHex(details.consideration.item_type)),
+                                startTime: Number(details.start_time),
+                                endTime: Number(details.end_time),
+                                blockNumber: event.block_number,
+                                transactionHash: event.transaction_hash,
+                                status,
+                            } as MarketplaceOrder;
+                        } catch (err) {
+                            console.error(`Failed to fetch details for order ${orderHash}:`, err);
+                            return null;
+                        }
+                    })
+                );
+
+                orderDetailsResults.push(...batchResults);
+
+                // Add delay between batches if there are more items to process
+                if (i + BATCH_SIZE < activeHashesToFetch.length) {
+                    await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
+                }
+            }
 
             for (const order of orderDetailsResults) {
                 if (order) {
@@ -178,14 +226,24 @@ export function useMarketplaceListings() {
                 (o) => o.status === "active" && o.endTime > now
             );
 
-            setListings(activeListings);
+            return { listings: activeListings, allOrders: orders };
+        })();
+
+        try {
+            const result = await globalListingsPromise;
+            globalCachedListings = result.listings;
+            globalCachedAllOrders = result.allOrders;
+            globalLastFetchTime = Date.now();
+            setListings(result.listings);
+            setAllOrders(result.allOrders);
         } catch (err: any) {
             console.error("[Marketplace Events] Fetch error:", err);
             setError(err.message || "Failed to fetch marketplace events");
         } finally {
+            globalListingsPromise = null;
             setIsLoading(false);
         }
-    }, []);
+    }, [setListings, setAllOrders, setIsLoading, setError]);
 
     useEffect(() => {
         fetchEvents();
