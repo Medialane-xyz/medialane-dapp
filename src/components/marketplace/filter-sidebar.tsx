@@ -25,7 +25,7 @@ import {
 
 export function FilterSidebar() {
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 glass-panel p-6 rounded-2xl">
             {/* Header with subtle accent */}
             <div className="flex items-center justify-between pb-4 border-b border-border">
                 <div className="flex items-center gap-2">
@@ -111,8 +111,8 @@ export function FilterSidebar() {
             </Accordion>
 
             {/* Simple Help Note */}
-            <div className="rounded-lg border border-border/10 bg-accent/5 p-4 mt-8">
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <div className="rounded-lg border border-outrun-cyan/20 bg-outrun-cyan/5 p-4 mt-8 shadow-glow-sm shadow-neon-cyan/10">
+                <p className="text-[11px] text-neon-cyan/80 leading-relaxed font-medium">
                     Verified assets feature immutable on-chain records for total provenance.
                 </p>
             </div>

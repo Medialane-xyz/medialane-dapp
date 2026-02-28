@@ -142,8 +142,9 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
             }
         }}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-            <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden bg-card border-none shadow-2xl">
-                <div className="p-6 space-y-6">
+            <DialogContent className="sm:max-w-[420px] bg-card/90 backdrop-blur-3xl border-white/10 shadow-2xl p-0 overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-outrun-magenta via-outrun-purple to-neon-cyan" />
+                <div className="p-6 space-y-6 relative">
                     <DialogHeader>
                         <DialogTitle className="text-xl font-bold tracking-tight">Make an Offer</DialogTitle>
                         <DialogDescription className="text-muted-foreground/80">
@@ -153,8 +154,8 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
 
                     {stage === "success" ? (
                         <div className="py-2 flex flex-col items-center text-center space-y-6 animate-in fade-in zoom-in duration-300">
-                            <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center">
-                                <CheckCircle2 className="h-10 w-10 text-primary" />
+                            <div className="h-20 w-20 bg-neon-cyan/20 rounded-full flex items-center justify-center shadow-glow shadow-neon-cyan/30">
+                                <CheckCircle2 className="h-10 w-10 text-neon-cyan drop-shadow-lg" />
                             </div>
                             <div className="space-y-2">
                                 <h2 className="text-2xl font-bold tracking-tight text-foreground">Offer Live!</h2>
@@ -203,8 +204,8 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
                     ) : stage === "processing" ? (
                         <div className="py-12 flex flex-col items-center text-center space-y-6 animate-in fade-in duration-300">
                             <div className="relative">
-                                <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
-                                <Loader2 className="h-12 w-12 animate-spin text-primary relative z-10" />
+                                <div className="absolute inset-0 bg-outrun-magenta/20 blur-2xl rounded-full" />
+                                <Loader2 className="h-12 w-12 animate-spin text-outrun-magenta relative z-10" />
                             </div>
                             <div className="space-y-2">
                                 <h2 className="text-xl font-bold tracking-tight">Processing Offer</h2>
@@ -267,7 +268,7 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
                                                             type="number"
                                                             step="any"
                                                             placeholder="0.00"
-                                                            className="h-14 pl-4 pr-16 text-xl font-bold bg-muted/20 border-border/50 focus:border-primary/50 transition-all rounded-xl"
+                                                            className="h-14 pl-4 pr-16 text-xl font-bold bg-muted/20 border-border/50 focus:border-outrun-magenta/50 focus:ring-1 focus:ring-outrun-magenta/20 transition-all rounded-xl shadow-inner shadow-black/20"
                                                             {...field}
                                                         />
                                                     </FormControl>
@@ -302,7 +303,7 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
                                                                 onClick={() => field.onChange(option.seconds)}
                                                                 className={cn(
                                                                     "h-9 text-[10px] font-bold uppercase tracking-tight rounded-lg transition-all",
-                                                                    field.value === option.seconds ? "shadow-md bg-primary" : "bg-muted/30 border-border/50 hover:bg-muted/50"
+                                                                    field.value === option.seconds ? "shadow-glow-sm shadow-outrun-purple/30 bg-outrun-purple text-white border-transparent" : "bg-muted/30 border-border/50 hover:bg-muted/50"
                                                                 )}
                                                             >
                                                                 {option.label}
@@ -315,8 +316,8 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
                                         )}
                                     />
 
-                                    <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 flex gap-3 shadow-inner mt-4">
-                                        <Shield className="w-4 h-4 text-primary shrink-0 mt-0.5 opacity-80" />
+                                    <div className="bg-outrun-magenta/5 border border-outrun-magenta/20 rounded-xl p-4 flex gap-3 shadow-inner shadow-outrun-magenta/5 mt-4">
+                                        <Shield className="w-4 h-4 text-outrun-magenta shrink-0 mt-0.5 opacity-80" />
                                         <div className="space-y-1">
                                             <p className="text-[11px] font-bold text-foreground/80">On-Chain Binding</p>
                                             <p className="text-[10px] text-muted-foreground leading-relaxed">
@@ -345,7 +346,7 @@ export function OfferDialog({ trigger, asset, isOpen: controlledOpen, onOpenChan
                                         <Button
                                             type="submit"
                                             disabled={!form.watch("price") || isProcessing}
-                                            className="flex-[2] h-12 font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all active:scale-[0.98]"
+                                            className="flex-[2] h-12 font-bold shadow-glow-sm shadow-neon-cyan/30 text-white bg-outrun-purple hover:bg-outrun-purple/90 transition-all active:scale-[0.98]"
                                         >
                                             {isProcessing ? (
                                                 <>

@@ -15,11 +15,11 @@ export default function AnimatedBackground() {
         className="absolute inset-0"
         animate={{
           background: [
-            'radial-gradient(circle at 5% 20%,rgba(0, 68, 255, 0.3), transparent 100%)',
-            'radial-gradient(circle at 60% 80%,rgba(0, 238, 255, 0.2), transparent 60%)',
-            'radial-gradient(circle at 0% 50%,rgba(238, 0, 255, 0.3), transparent 80%)',
-            'radial-gradient(circle at 80% 80%,rgba(76, 0, 255, 0.35), transparent 60%)',
-            'radial-gradient(circle at 5% 20%,rgba(0, 0, 255, 0.37), transparent 100%)',
+            'radial-gradient(circle at 5% 20%,rgba(139, 0, 255, 0.25), transparent 100%)',
+            'radial-gradient(circle at 60% 80%,rgba(0, 255, 255, 0.15), transparent 60%)',
+            'radial-gradient(circle at 0% 50%,rgba(255, 0, 255, 0.25), transparent 80%)',
+            'radial-gradient(circle at 80% 80%,rgba(255, 153, 0, 0.2), transparent 60%)',
+            'radial-gradient(circle at 5% 20%,rgba(139, 0, 255, 0.25), transparent 100%)',
           ],
         }}
         transition={{

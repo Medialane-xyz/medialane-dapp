@@ -102,8 +102,8 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
   const isLoading = shouldFetchMetadata && metadataLoading;
 
   return (
-    <Card className="overflow-hidden border-border/50 bg-card hover:border-border transition-all duration-200 group flex flex-col h-full relative box-border hover:shadow-md">
-      <Link href={assetUrl} className="block relative aspect-square overflow-hidden bg-muted/20">
+    <Card className="overflow-hidden border-border/50 bg-card hover:border-outrun-magenta/50 transition-all duration-300 group flex flex-col h-full relative box-border hover:shadow-neon-magenta/20">
+      <Link href={assetUrl} className="block relative aspect-square overflow-hidden bg-gradient-to-br from-outrun-magenta/10 via-background/50 to-neon-cyan/10 backdrop-blur-sm">
         {isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-muted-foreground/20" />
@@ -142,7 +142,7 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
                   </>
                 ) : (
                   <>
-                    <p className="text-[11px] text-muted-foreground/70 font-mono truncate hover:underline" title={creatorAddress}>
+                    <p className="text-[11px] text-muted-foreground font-mono truncate hover:underline" title={creatorAddress}>
                       <Link href={`/creator/${creatorAddress}`}>
                         {creatorAddress.slice(0, 6)}...{creatorAddress.slice(-4)}
                       </Link>
@@ -154,14 +154,14 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
                   <div className="w-5 h-5 flex-shrink-0 rounded-full bg-muted border border-border/50 flex items-center justify-center overflow-hidden">
                     <span className="text-[8px] font-medium text-muted-foreground uppercase">{(collectionName || "IP").slice(0, 2)}</span>
                   </div>
-                  <Link href={`/collections/${offerToken}`} className="text-[11px] text-muted-foreground/70 truncate hover:underline font-medium">
+                  <Link href={`/collections/${offerToken}`} className="text-[11px] text-muted-foreground font-medium truncate hover:underline">
                     {collectionName || "Unknown Collection"}
                   </Link>
                 </>
               )}
             </div>
 
-            <Badge variant="secondary" className="text-[10px] shrink-0 font-normal text-muted-foreground bg-outrun-cyan/10 hover:bg-outrun-cyan/20 border-outrun-cyan/20 ml-auto uppercase tracking-wider">
+            <Badge variant="secondary" className="text-[10px] shrink-0 font-medium text-neon-cyan bg-outrun-cyan/10 hover:bg-outrun-cyan/20 border-neon-cyan/30 shadow-glow-sm shadow-neon-cyan/20 ml-auto uppercase tracking-wider">
               {ipType || "IP Asset"}
             </Badge>
           </div>
@@ -170,7 +170,7 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
         <div className="flex justify-between items-end mt-auto h-[38px]">
           {listing ? (
             <div>
-              <p className="text-[10px] font-medium text-muted-foreground/60 mb-0.5">Price</p>
+              <p className="text-[10px] font-medium text-muted-foreground mb-0.5">Price</p>
               <div className="flex items-baseline gap-1">
                 <span className="text-lg font-semibold text-foreground tracking-tight">
                   {formattedPrice}
@@ -180,15 +180,15 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
             </div>
           ) : (
             <div className="mb-0.5">
-              <p className="text-[10px] font-medium text-muted-foreground/60 mb-1">Status</p>
-              <span className="text-xs font-medium text-muted-foreground/80 px-2 py-0.5 rounded-sm bg-muted/50 border border-border/30">
+              <p className="text-[10px] font-medium text-muted-foreground mb-1">Status</p>
+              <span className="text-xs font-medium text-muted-foreground px-2 py-0.5 rounded-sm bg-muted/60 border border-border">
                 Unlisted
               </span>
             </div>
           )}
           {allOffers.length > 0 && (
             <div className="text-right">
-              <p className="text-[10px] text-muted-foreground/60">Best Bid</p>
+              <p className="text-[10px] text-muted-foreground">Best Bid</p>
               <span className="text-xs font-semibold text-primary">
                 {allOffers[0].formattedPrice} {allOffers[0].currencySymbol}
               </span>
@@ -203,7 +203,7 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
             <Link href={assetUrl} className="w-full">
               <Button
                 variant="outline"
-                className="w-full h-9 gap-2 font-medium border-primary/30 text-primary hover:bg-primary/5 transition-all active:scale-[0.98]"
+                className="w-full h-9 gap-2 font-medium border-outrun-cyan/30 text-outrun-cyan hover:bg-outrun-cyan/10 hover:border-neon-cyan/50 hover:shadow-glow-sm hover:shadow-neon-cyan/30 transition-all active:scale-[0.98]"
               >
                 <Eye className="h-3.5 w-3.5" />
                 View
@@ -223,7 +223,7 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
           <Link href={assetUrl} className="w-full">
             <Button
               variant="default"
-              className="w-full h-9 gap-1 shadow-sm transition-all font-medium active:scale-[0.98]"
+              className="w-full h-9 gap-1 shadow-sm transition-all font-medium active:scale-[0.98] hover:shadow-glow-sm hover:shadow-neon-cyan/30"
             >
               <Eye className="h-3.5 w-3.5 mr-1" />
               View
@@ -233,8 +233,8 @@ export function AssetCard({ listing, asset }: AssetCardProps) {
 
         <Link href={`/create/remix/${offerToken}-${offerIdentifier}`} className="w-full">
           <Button
-            variant="secondary"
-            className="w-full h-9 gap-2 transition-all font-medium active:scale-[0.98] border border-border/50 bg-secondary/30 hover:bg-secondary/50"
+            variant="outline"
+            className="w-full h-9 gap-2 font-medium border-outrun-magenta/30 text-outrun-magenta hover:bg-outrun-magenta/10 hover:border-outrun-magenta/50 hover:shadow-glow-sm hover:shadow-neon-magenta/30 transition-all active:scale-[0.98]"
           >
             <RefreshCw className="h-3.5 w-3.5" />
             Remix
@@ -292,7 +292,7 @@ export default AssetCard;
 
 export function AssetCardSkeleton() {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden glass-panel">
       <Skeleton className="aspect-square w-full" />
       <div className="p-4 space-y-3">
         <div className="flex items-start justify-between gap-2">

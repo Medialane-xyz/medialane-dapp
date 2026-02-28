@@ -37,8 +37,8 @@ export function Header() {
       className={cn(
         "fixed top-0 z-50 w-full transition-all duration-500",
         isScrolled
-          ? "bg-background/60 backdrop-blur-xl border-b border-white/5"
-          : "bg-gradient-to-b from-background/80 via-background/30 to-transparent pointer-events-none"
+          ? "bg-white/10 dark:bg-black/10 backdrop-blur-xl border-b border-b-outrun-gradient shadow-glass"
+          : "bg-gradient-to-b from-background/40 via-background/20 to-transparent pointer-events-none border-b border-transparent"
       )}
     >
       <div className="container mx-auto flex items-center justify-between h-16 px-4 pointer-events-auto">
@@ -54,7 +54,7 @@ export function Header() {
             variant="ghost"
             size="sm"
             onClick={() => openCommandMenu("marketplace")}
-            className="h-8 gap-2 rounded-full px-4 text-xs font-medium hover:bg-white/50 dark:hover:bg-white/10 text-foreground transition-all"
+            className="h-8 gap-2 rounded-full px-4 text-xs font-medium hover:bg-white/20 dark:hover:bg-white/10 hover:shadow-neon-cyan/20 hover:text-neon-cyan text-foreground transition-all duration-300"
           >
             <Boxes className="w-3.5 h-3.5" />
             <span>Explore</span>
@@ -64,7 +64,7 @@ export function Header() {
             variant="ghost"
             size="sm"
             onClick={() => openCommandMenu("launchpad")}
-            className="h-8 gap-2 rounded-full px-4 text-xs font-medium hover:bg-white/50 dark:hover:bg-white/10 text-foreground transition-all"
+            className="h-8 gap-2 rounded-full px-4 text-xs font-medium hover:bg-white/20 dark:hover:bg-white/10 hover:shadow-neon-cyan/20 hover:text-neon-cyan text-foreground transition-all duration-300"
           >
             <Rocket className="w-3.5 h-3.5" />
             <span>Launchpad</span>
@@ -74,7 +74,7 @@ export function Header() {
             variant="ghost"
             size="sm"
             onClick={() => openCommandMenu("portfolio")}
-            className="h-8 gap-2 rounded-full px-4 text-xs font-medium hover:bg-white/50 dark:hover:bg-white/10 text-foreground transition-all"
+            className="h-8 gap-2 rounded-full px-4 text-xs font-medium hover:bg-white/20 dark:hover:bg-white/10 hover:shadow-neon-cyan/20 hover:text-neon-cyan text-foreground transition-all duration-300"
           >
             <User className="w-3.5 h-3.5" />
             <span>Portfolio</span>
@@ -91,7 +91,7 @@ export function Header() {
               variant="ghost"
               size="icon"
               onClick={() => setIsOpen(true)}
-              className="relative h-8 w-8 rounded-full hover:bg-white/50 dark:hover:bg-white/10 transition-all text-foreground"
+              className="relative h-8 w-8 rounded-full hover:bg-white/20 dark:hover:bg-white/10 hover:shadow-neon-pink/20 hover:text-neon-pink transition-all duration-300 text-foreground"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
               {mounted && items.length > 0 && (
@@ -112,11 +112,11 @@ export function Header() {
           <Button
             variant="ghost"
             size="sm"
-            className="hidden sm:flex h-9 gap-2 rounded-full p-1 px-3 hover:bg-white/10 transition-all text-foreground"
+            className="hidden sm:flex h-9 gap-2 rounded-full p-1 px-3 hover:bg-white/20 dark:hover:bg-white/10 hover:shadow-neon-cyan/20 transition-all text-foreground"
             onClick={() => document.dispatchEvent(new CustomEvent("openCommandMenu"))}
           >
             <Command className="h-3.5 w-3.5" />
-            <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 font-mono text-[10px] font-medium opacity-100">
+            <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-white/20 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md px-1.5 font-mono text-[10px] font-medium opacity-100">
               <span className="text-xs">K</span>
             </kbd>
           </Button>

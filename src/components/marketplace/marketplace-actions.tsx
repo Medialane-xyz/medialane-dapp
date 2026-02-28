@@ -153,7 +153,7 @@ export function MarketplaceActions({
                                     tokenId: tokenId
                                 }}
                                 trigger={
-                                    <Button className="flex-1 h-11">
+                                    <Button className="flex-1 h-11 bg-outrun-magenta hover:bg-outrun-magenta/90 text-white shadow-glow-sm shadow-neon-magenta/20">
                                         <Tag className="mr-2 h-4 w-4" />
                                         List for Sale
                                     </Button>
@@ -175,7 +175,7 @@ export function MarketplaceActions({
                                             listing: listing
                                         }}
                                         trigger={
-                                            <Button className="flex-1 h-11">
+                                            <Button className="flex-1 h-11 gradient-vivid shadow-glow-sm shadow-neon-cyan/20 border-none font-bold">
                                                 <ShoppingBag className="mr-2 h-4 w-4" />
                                                 Buy Now
                                             </Button>
@@ -224,7 +224,7 @@ export function MarketplaceActions({
                                     tokenId: tokenId
                                 }}
                                 trigger={
-                                    <Button className="flex-1 h-11" variant={userOffer ? "secondary" : "default"}>
+                                    <Button className="flex-1 h-11 font-medium bg-outrun-purple hover:bg-outrun-purple/90 text-white shadow-glow-sm shadow-outrun-purple/20 border-none" variant={userOffer ? "secondary" : "default"}>
                                         <HandCoins className="mr-2 h-4 w-4" />
                                         {userOffer ? "Update Offer" : "Make Offer"}
                                     </Button>
@@ -237,9 +237,9 @@ export function MarketplaceActions({
 
             {/* ── Your Active Offer (buyer view) ───────────────────────── */}
             {!isOwner && userOffer && (
-                <div className="rounded-xl glass-panel p-5 shadow-sm space-y-3 border border-primary/20 bg-primary/5">
+                <div className="rounded-xl glass-panel p-5 shadow-sm space-y-3 border border-neon-cyan/20 bg-neon-cyan/5">
                     <div className="flex items-center justify-between">
-                        <p className="text-xs text-primary uppercase font-bold tracking-wider">Your Active Offer</p>
+                        <p className="text-xs text-neon-cyan uppercase font-bold tracking-wider">Your Active Offer</p>
                         <Badge variant="secondary" className="text-xs gap-1">
                             <Clock className="h-3 w-3" />
                             {userOffer.timeRemaining}
@@ -345,17 +345,17 @@ export function MarketplaceActions({
 
             {/* ── Remix panel ──────────────────────────────────────────── */}
             <Link href={`/create/remix/${slug}`} className="block">
-                <div className="p-5 rounded-xl glass-panel hover:border-primary/30 transition-all flex items-center justify-between group cursor-pointer shadow-sm">
+                <div className="p-5 rounded-2xl glass-panel hover:border-outrun-magenta/50 hover:shadow-glow-sm hover:shadow-neon-magenta/10 transition-all flex items-center justify-between group cursor-pointer">
                     <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                            <RefreshCw className="h-5 w-5 text-primary" />
+                        <div className="h-10 w-10 rounded-full bg-outrun-magenta/10 flex items-center justify-center group-hover:bg-outrun-magenta/20 transition-colors">
+                            <RefreshCw className="h-5 w-5 text-outrun-magenta" />
                         </div>
                         <div>
-                            <p className="font-semibold text-foreground">Create a Remix</p>
+                            <p className="font-bold text-foreground group-hover:text-outrun-magenta transition-colors">Create a Remix</p>
                             <p className="text-xs text-muted-foreground font-medium">Custom licensing & pricing</p>
                         </div>
                     </div>
-                    <Sparkles className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <Sparkles className="h-5 w-5 text-muted-foreground group-hover:text-outrun-magenta transition-colors" />
                 </div>
             </Link>
         </div>

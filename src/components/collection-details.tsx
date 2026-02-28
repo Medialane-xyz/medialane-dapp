@@ -150,7 +150,7 @@ export default function CollectionDetails({ collectionAddress }: CollectionDetai
                 {/* Background with gradient and blur */}
                 <div className="absolute inset-0">
                     {/* Base gradient - More vivid */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-purple-500/20 to-secondary/40 mix-blend-overlay" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-outrun-magenta/40 via-outrun-purple/20 to-neon-cyan/40 mix-blend-overlay" />
 
                     {/* Collection Image Background - More visible */}
                     <Image
@@ -186,9 +186,9 @@ export default function CollectionDetails({ collectionAddress }: CollectionDetai
                         <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12">
                             {/* Collection Avatar - Larger */}
                             <div className="flex-shrink-0 relative group w-full max-w-[200px] md:max-w-[300px] mx-auto lg:mx-0">
-                                <div className="absolute -inset-1 rounded-2xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+                                <div className="absolute -inset-1 rounded-2xl blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-tr from-outrun-magenta to-neon-cyan/50" />
                                 <div
-                                    className="relative w-full rounded-2xl overflow-hidden border-[2px] border-white/20 backdrop-blur-xl shadow-2xl transition-all duration-300 ease-in-out bg-black/20"
+                                    className="relative w-full rounded-2xl overflow-hidden border-2 border-white/10 dark:border-white/10 backdrop-blur-xl shadow-neon-cyan/20 transition-all duration-300 ease-in-out bg-black/20"
                                     style={{ aspectRatio: imageRatio || "1/1" }}
                                 >
                                     <LazyImage
@@ -277,25 +277,25 @@ export default function CollectionDetails({ collectionAddress }: CollectionDetai
 
                         {/* Bottom Section: Stats Widget - Moved below */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6 mt-4">
-                            <div className="glass p-6">
+                            <div className="glass-panel p-6 border-white/10 shadow-glow-sm shadow-outrun-purple/10">
                                 <div className="flex flex-col">
                                     <p className="text-sm font-medium text-foreground mb-2 uppercase tracking-wider">Total Assets</p>
                                     <p className="text-3xl md:text-4xl font-bold text-foreground">{collection.itemCount || 0}</p>
                                 </div>
                             </div>
-                            <div className="glass p-6">
+                            <div className="glass-panel p-6 border-white/10 shadow-glow-sm shadow-outrun-purple/10">
                                 <div className="flex flex-col">
                                     <p className="text-sm font-medium text-foreground mb-2 uppercase tracking-wider">Total Minted</p>
                                     <p className="text-3xl md:text-4xl font-bold text-foreground">{collection.totalMinted || 0}</p>
                                 </div>
                             </div>
-                            <div className="glass p-6">
+                            <div className="glass-panel p-6 border-white/10 shadow-glow-sm shadow-outrun-purple/10">
                                 <div className="flex flex-col">
                                     <p className="text-sm font-medium text-foreground mb-2 uppercase tracking-wider">Floor Price</p>
                                     <p className="text-3xl md:text-4xl font-bold text-foreground">--</p>
                                 </div>
                             </div>
-                            <div className="glass p-6">
+                            <div className="glass-panel p-6 border-white/10 shadow-glow-sm shadow-outrun-purple/10">
                                 <div className="flex flex-col">
                                     <p className="text-sm font-medium text-foreground mb-2 uppercase tracking-wider">Owners</p>
                                     <p className="text-3xl md:text-4xl font-bold text-foreground">--</p>
@@ -441,7 +441,7 @@ function CollectionPageSkeleton() {
                         {/* Stats Widget */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6 mt-4">
                             {[...Array(4)].map((_, i) => (
-                                <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 h-32 flex flex-col justify-center space-y-2">
+                                <div key={i} className="glass-panel rounded-2xl p-6 h-32 flex flex-col justify-center space-y-2">
                                     <Skeleton className="h-4 w-24" />
                                     <Skeleton className="h-10 w-16" />
                                 </div>

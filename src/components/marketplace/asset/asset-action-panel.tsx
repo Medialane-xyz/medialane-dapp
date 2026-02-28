@@ -54,31 +54,31 @@ export function AssetActionPanel({
         }
     }
 
-    const actionButtonClass = "h-10 justify-start glass-button text-foreground hover:text-foreground rounded-lg text-sm font-normal"
+    const actionButtonClass = "h-10 justify-start w-full text-foreground hover:bg-white/5 hover:text-white rounded-lg text-sm font-medium transition-colors"
 
     return (
         <div className="sticky top-24 space-y-4">
             {/* Actions Card */}
-            <div className="glass-card p-4 space-y-2">
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-1">Actions</h3>
+            <div className="glass-panel p-4 space-y-2 rounded-2xl">
+                <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 px-1">Actions</h3>
 
                 {isOwner && (
                     <Button variant="ghost" className={actionButtonClass} onClick={onTransferClick}>
-                        <ArrowRightLeft className="mr-2.5 h-4 w-4 text-cyan-500" />
+                        <ArrowRightLeft className="mr-2.5 h-4 w-4 text-neon-cyan" />
                         Transfer Asset
                     </Button>
                 )}
 
                 <Link href={`/create/remix/${slug}`} className="block">
                     <Button variant="ghost" className={`w-full ${actionButtonClass}`}>
-                        <Palette className="mr-2.5 h-4 w-4 text-pink-500" />
+                        <Palette className="mr-2.5 h-4 w-4 text-outrun-magenta" />
                         Remix Studio
                     </Button>
                 </Link>
 
                 <Link href={`/provenance/${slug}`} className="block">
                     <Button variant="ghost" className={`w-full ${actionButtonClass}`}>
-                        <History className="mr-2.5 h-4 w-4 text-amber-500" />
+                        <History className="mr-2.5 h-4 w-4 text-outrun-yellow" />
                         View Provenance
                     </Button>
                 </Link>

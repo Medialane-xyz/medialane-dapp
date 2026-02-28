@@ -22,7 +22,7 @@
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 215.4 16.3% 40%;
 
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
@@ -30,8 +30,8 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 214.3 31.8% 85%;
+    --input: 214.3 31.8% 85%;
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
@@ -44,6 +44,17 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Neon & Outrun Variables (Light Theme - Darkened for visibility) */
+    --neon-cyan: 183 100% 35%;
+    --neon-pink: 300 100% 40%;
+    --neon-purple: 284 100% 45%;
+    --outrun-magenta: 300 100% 40%;
+    --outrun-cyan: 180 100% 35%;
+    --outrun-orange: 36 100% 45%;
+    --outrun-purple: 273 100% 45%;
+    --outrun-pink: 328 100% 45%;
+    --outrun-yellow: 60 100% 35%;
   }
 
   .dark {
@@ -83,6 +94,17 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Neon & Outrun Variables (Dark Theme - Maximum brightness) */
+    --neon-cyan: 183 100% 50%;
+    --neon-pink: 300 100% 50%;
+    --neon-purple: 284 100% 50%;
+    --outrun-magenta: 300 100% 50%;
+    --outrun-cyan: 180 100% 50%;
+    --outrun-orange: 36 100% 50%;
+    --outrun-purple: 273 100% 50%;
+    --outrun-pink: 328 100% 54%;
+    --outrun-yellow: 60 100% 50%;
   }
 }
 
@@ -98,14 +120,48 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-glass;
+    @apply bg-white/50 dark:bg-black/50 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-glass transition-all duration-300;
   }
-  
+
   .glass-pill {
-    @apply bg-black/5 dark:bg-white/5 backdrop-blur-md border border-white/10;
+    @apply bg-white/30 dark:bg-black/30 backdrop-blur-md border border-white/30 dark:border-white/10 transition-all duration-300;
   }
-  
+
   .glass-heavy {
-    @apply bg-background/80 dark:bg-background/80 backdrop-blur-2xl border border-white/20 dark:border-white/10;
+    @apply bg-white/80 dark:bg-black/80 backdrop-blur-2xl border border-white/40 dark:border-white/10 transition-all duration-300;
+  }
+
+  .border-outrun-gradient {
+    position: relative;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .border-outrun-gradient::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, #FF00FF, #00FFFF, #FF9900);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .border-b-outrun-gradient {
+    position: relative;
+    border-bottom: 1px solid transparent;
+  }
+
+  .border-b-outrun-gradient::before {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 1px;
+    background: linear-gradient(90deg, #FF00FF, #00FFFF, #FF9900);
+    pointer-events: none;
   }
 }

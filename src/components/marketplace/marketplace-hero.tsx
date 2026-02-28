@@ -14,17 +14,17 @@ export function MarketplaceHero() {
                 <motion.div
                     animate={{ x: [0, 50, 0], y: [0, -30, 0], scale: [1, 1.1, 1] }}
                     transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-gradient-radial from-violet-500/30 to-transparent rounded-full blur-3xl"
+                    className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-gradient-radial from-outrun-magenta/30 to-transparent rounded-full blur-3xl"
                 />
                 <motion.div
                     animate={{ x: [0, -40, 0], y: [0, 40, 0], scale: [1, 1.2, 1] }}
                     transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-gradient-radial from-cyan-500/25 to-transparent rounded-full blur-3xl"
+                    className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-gradient-radial from-neon-cyan/25 to-transparent rounded-full blur-3xl"
                 />
                 <motion.div
                     animate={{ x: [0, 30, 0], y: [0, 30, 0], scale: [1, 1.05, 1] }}
                     transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute top-1/3 right-1/3 w-1/4 h-1/4 bg-gradient-radial from-blue-500/20 to-transparent rounded-full blur-3xl"
+                    className="absolute top-1/3 right-1/3 w-1/4 h-1/4 bg-gradient-radial from-outrun-purple/20 to-transparent rounded-full blur-3xl"
                 />
             </div>
 
@@ -35,9 +35,9 @@ export function MarketplaceHero() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-medium"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-pill border-neon-cyan/30 text-neon-cyan shadow-glow-sm shadow-neon-cyan/20 text-sm font-medium"
                     >
-                        <Sparkles className="w-4 h-4 text-yellow-400" />
+                        <Sparkles className="w-4 h-4 text-neon-cyan" />
                         <span>Discover the Integrity Web</span>
                     </motion.div>
 

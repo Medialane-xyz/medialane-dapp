@@ -133,15 +133,16 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-            <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden border-none bg-background shadow-2xl">
-                <DialogHeader className="p-6 pb-2">
+            <DialogContent className="sm:max-w-[420px] bg-card/90 backdrop-blur-3xl border-white/10 shadow-2xl p-0 overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-outrun-magenta via-outrun-purple to-neon-cyan" />
+                <DialogHeader className="p-6 pb-2 relative z-10">
                     <DialogTitle className="text-xl font-bold tracking-tight">List for Sale</DialogTitle>
                 </DialogHeader>
 
                 {stage === "success" ? (
                     <div className="p-8 flex flex-col items-center text-center space-y-6">
-                        <div className="h-20 w-20 bg-emerald-500/10 rounded-full flex items-center justify-center">
-                            <CheckCircle2 className="h-10 w-10 text-emerald-500" />
+                        <div className="h-20 w-20 bg-neon-cyan/20 rounded-full flex items-center justify-center shadow-glow shadow-neon-cyan/30">
+                            <CheckCircle2 className="h-10 w-10 text-neon-cyan drop-shadow-lg" />
                         </div>
                         <div className="space-y-2">
                             <h2 className="text-2xl font-bold tracking-tight">Listing Live!</h2>
@@ -201,12 +202,12 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                                                         type="number"
                                                         step="any"
                                                         placeholder="0.00"
-                                                        className="h-12 pl-4 pr-16 bg-muted/20 border-border focus:ring-1 focus:ring-primary/20 text-lg font-medium"
+                                                        className="h-12 pl-4 pr-16 bg-muted/20 border-border/50 focus:border-outrun-magenta/50 focus:ring-1 focus:ring-outrun-magenta/20 transition-all rounded-xl shadow-inner shadow-black/20 text-lg font-bold"
                                                         disabled={isProcessing}
                                                         {...field}
                                                     />
                                                 </FormControl>
-                                                <div className="absolute right-3 top-[9px] px-2.5 py-1.5 bg-background border rounded-md text-xs font-bold shadow-sm">
+                                                <div className="absolute right-3 top-[9px] px-2.5 py-1.5 bg-background border border-border/50 rounded-md text-xs font-bold shadow-sm">
                                                     {form.watch("currency")}
                                                 </div>
                                             </div>
@@ -233,8 +234,8 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                                                             size="sm"
                                                             onClick={() => field.onChange(opt.seconds)}
                                                             className={cn(
-                                                                "h-10 text-xs font-medium transition-all",
-                                                                field.value === opt.seconds ? "shadow-md scale-[1.02]" : "hover:bg-muted/50"
+                                                                "h-10 text-xs font-medium transition-all rounded-lg",
+                                                                field.value === opt.seconds ? "shadow-glow-sm shadow-outrun-purple/30 bg-outrun-purple text-white border-transparent" : "bg-muted/30 border-border/50 hover:bg-muted/50"
                                                             )}
                                                             disabled={isProcessing}
                                                         >
@@ -259,7 +260,7 @@ export function ListingDialog({ trigger, asset }: ListingDialogProps) {
                                     <Button
                                         type="submit"
                                         disabled={isProcessing}
-                                        className="w-full h-12 text-sm font-bold tracking-wide shadow-lg shadow-primary/10 transition-all hover:scale-[1.01]"
+                                        className="w-full h-12 text-sm font-bold tracking-wide shadow-glow-sm shadow-neon-cyan/30 text-white bg-outrun-purple hover:bg-outrun-purple/90 transition-all active:scale-[0.98]"
                                     >
                                         {isProcessing ? (
                                             <>
