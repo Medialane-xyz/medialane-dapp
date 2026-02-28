@@ -94,7 +94,7 @@ export const navigation = {
         { title: "Terms of Use", href: "/docs/terms-of-use", icon: Code, description: "Terms of use" },
     ],
     socials: [
-        { title: "X (Twitter)", href: "https://x.com/medialane_xyz", icon: Twitter },
+        { title: "X (Twitter)", href: "https://x.com/medialane_io", icon: Twitter },
         { title: "GitHub", href: "https://github.com/mediolano-xyz", icon: Github },
         { title: "Telegram", href: "https://t.me/integrityweb", icon: Send },
         { title: "Email", href: "mailto:medialanexyz@gmail.com", icon: Mail },

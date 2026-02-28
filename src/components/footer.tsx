@@ -90,8 +90,8 @@ export function Footer() {
 
           {/* Primary Socials */}
           <div className="flex gap-8">
-            <SocialLink href="https://x.com/medialane_xyz" icon={<Twitter className="w-4 h-4" />} />
-            <SocialLink href="https://github.com/medialanexyz" icon={<Github className="w-4 h-4" />} />
+            <SocialLink href="https://x.com/medialane_io" icon={<Twitter className="w-4 h-4" />} />
+            <SocialLink href="https://github.com/medialane-io" icon={<Github className="w-4 h-4" />} />
             <SocialLink href="#" icon={<Send className="w-4 h-4" />} />
           </div>
 

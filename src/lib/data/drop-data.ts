@@ -30,10 +30,10 @@ export const DROP_DATA = {
         name: 'Medialane Protocol',
         role: 'Core Team',
         bio: 'Building the financial infrastructure for the creator capital markets. Medialane empowers creators to tokenize and monetize their intellectual property.',
-        avatar: 'https://github.com/medialane.png',
+        avatar: '/og-imagejpg',
         socials: {
-            twitter: 'https://twitter.com/medialane',
-            discord: 'https://discord.gg/medialane',
+            twitter: 'https://twitter.com/medialane_io',
+            discord: '#',
             website: 'https://medialane.io',
         },
         stats: {
