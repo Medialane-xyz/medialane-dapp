@@ -19,7 +19,7 @@ export const mediolanoFeatures: Feature[] = [
     icon: "🎨",
     gradient: "gradient-teal-purple",
     bgImage: "/featured/ip-creator-bg.jpg",
-    link: "https://dapp.medialane.xyz",
+    link: "https://dapp.medialane.io",
   },
   {
     id: "mip-mobile",
@@ -29,7 +29,7 @@ export const mediolanoFeatures: Feature[] = [
     icon: "📱",
     gradient: "gradient-purple-orange",
     bgImage: "/featured/mip-mobile-bg.jpg",
-    link: "https://mdapp.medialane.xyz",
+    link: "https://dapp.medialane.io",
   },
   {
     id: "zero-fee",
@@ -39,6 +39,6 @@ export const mediolanoFeatures: Feature[] = [
     icon: "⚡",
     gradient: "gradient-teal-orange",
     bgImage: "/featured/zero-fee-bg.jpg",
-    link: "https://mediolano.app/protocol",
+    link: "https://mediolano.xyz",
   },
 ]

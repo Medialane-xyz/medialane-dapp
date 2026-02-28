@@ -187,7 +187,7 @@ export function FeaturedHero() {
                                     </h2>
 
                                     <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed max-w-2xl mx-auto line-clamp-3 drop-shadow-sm font-light">
-                                        {currentCollection.description || "Discover this amazing collection on Mediolano."}
+                                        {currentCollection.description || "Discover this amazing collection on Medialane."}
                                     </p>
 
                                     {/* Stats */}

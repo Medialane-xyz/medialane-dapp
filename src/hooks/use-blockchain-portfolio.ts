@@ -148,19 +148,19 @@ export function useBlockchainPortfolio() {
           id: tokenId,
           name: metadata.name || `IP Asset #${tokenId}`,
           image: metadata.image || "/placeholder.svg",
-          collection: metadata.collection_name || metadata.collection || "Mediolano IP Collection",
+          collection: metadata.collection_name || metadata.collection || "IP Collection",
           floorPrice: metadata.floor_price || metadata.floorPrice || 0.1,
           tokenURI: tokenURIString,
           description: metadata.description || `Blockchain asset with ID ${tokenId}`,
           tokenId: metadata.token_id || `#${tokenId}`,
           collectionId: metadata.collection_id || "mediolano-ip",
-          collectionDescription: metadata.collection_description || "Mediolano IP Collection",
+          collectionDescription: metadata.collection_description || "IP Collection",
           collectionImage: metadata.collection_image || metadata.image || "/placeholder.svg",
           collectionItemCount: metadata.collection_item_count || 1,
           rarity: metadata.rarity || "Common",
           attributes: metadata.attributes || [
             { trait_type: "Token ID", value: tokenId },
-            { trait_type: "Collection", value: metadata.collection_name || metadata.collection || "Mediolano IP Collection" }
+            { trait_type: "Collection", value: metadata.collection_name || metadata.collection || "IP Collection" }
           ],
           createdAt: metadata.created_at || metadata.createdAt || new Date().toISOString()
         };
@@ -172,19 +172,19 @@ export function useBlockchainPortfolio() {
           id: tokenId,
           name: `IP Asset #${tokenId}`,
           image: "/placeholder.svg",
-          collection: "Mediolano IP Collection",
+          collection: "IP Collection",
           floorPrice: 0.1,
           tokenURI: tokenURIString,
           description: `Blockchain asset with ID ${tokenId}`,
           tokenId: `#${tokenId}`,
           collectionId: "mediolano-ip",
-          collectionDescription: "Mediolano IP Collection",
+          collectionDescription: "IP Collection",
           collectionImage: "/placeholder.svg",
           collectionItemCount: 1,
           rarity: "Common",
           attributes: [
             { trait_type: "Token ID", value: tokenId },
-            { trait_type: "Collection", value: "Mediolano IP Collection" }
+            { trait_type: "Collection", value: "IP Collection" }
           ],
           createdAt: new Date().toISOString() // Use current date as placeholder
         };
@@ -204,8 +204,8 @@ export function useBlockchainPortfolio() {
       tokenId: asset.tokenId || `#${asset.id}`,
       collection: {
         id: asset.collectionId || "mediolano-ip",
-        name: asset.collection || "Mediolano IP Collection",
-        description: asset.collectionDescription || "Mediolano IP Collection",
+        name: asset.collection || "IP Collection",
+        description: asset.collectionDescription || "IP Collection",
         floorPrice: asset.floorPrice || 0.1,
         image: asset.collectionImage || asset.image || "/placeholder.svg",
         itemCount: asset.collectionItemCount || 1,
@@ -225,7 +225,7 @@ export function useBlockchainPortfolio() {
       rarity: asset.rarity || "Common",
       attributes: asset.attributes || [
         { trait_type: "Token ID", value: asset.id },
-        { trait_type: "Collection", value: asset.collection || "Mediolano IP Collection" }
+        { trait_type: "Collection", value: asset.collection || "IP Collection" }
       ],
       createdAt: asset.createdAt || new Date().toISOString() // Use current date as placeholder
     }));

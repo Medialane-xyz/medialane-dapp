@@ -17,7 +17,7 @@ export const viewport: Viewport = {
 import { constructMetadata } from "@/utils/seo";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://dapp.medialane.xyz'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://dapp.medialane.io'),
   ...constructMetadata({
     title: "Medialane | IP Innovation Protocol",
     description: "Create, Trade, Remix, and Monetize on the Integrity Web. The premier decentralized protocol for programmable intellectual property.",
@@ -45,8 +45,8 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Medialane Protocol',
-    url: 'https://dapp.medialane.xyz',
-    logo: 'https://dapp.medialane.xyz/favicon.ico',
+    url: 'https://dapp.medialane.io',
+    logo: 'https://dapp.medialane.io/favicon.ico',
     description: "Create, Trade, Remix, and Monetize on the Integrity Web.",
     sameAs: [
       'https://twitter.com/medialane',

@@ -19,7 +19,7 @@ Medialane is a Next.js (App Router) dapp on **Starknet** with two primary featur
 1. **Creator Launchpad** (`/launchpad`, `/create`) — mint and manage tokenized IP assets (IP Coins, Collection Drops, etc.)
 2. **NFT Marketplace** (`/marketplace`) — list, buy, make offers, and auction IP NFTs
 
-The app is deployed at [medialane.xyz](https://medialane.xyz) on Starknet Mainnet.
+The app is deployed at [medialane.io](https://medialane.io) on Starknet Mainnet.
 
 ## Key Environment Variables
 

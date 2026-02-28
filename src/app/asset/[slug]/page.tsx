@@ -34,11 +34,11 @@ export default async function page({ params }: AssetPageProps) {
     '@type': 'CreativeWork',
     name: `Medialane IP ${slug.substring(0, 8)}...`,
     description: `Explore the programmable IP asset ${slug} on the Medialane Integrity Web.`,
-    url: `https://dapp.medialane.xyz/asset/${slug}`,
+    url: `https://dapp.medialane.io/asset/${slug}`,
     publisher: {
       '@type': 'Organization',
       name: 'Medialane Protocol',
-      logo: 'https://dapp.medialane.xyz/favicon.ico'
+      logo: 'https://dapp.medialane.io/favicon.ico'
     }
   };
 

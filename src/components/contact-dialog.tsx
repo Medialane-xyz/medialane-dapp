@@ -119,7 +119,7 @@ export function ContactDialog({
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <MessageSquare className="h-5 w-5 text-blue-500" />
-                        Contact Mediolano Team
+                        Contact Medialane Team
                     </DialogTitle>
                     <DialogDescription className="break-words">
                         We'd love to hear from you! Send us your questions, suggestions, or proposals.

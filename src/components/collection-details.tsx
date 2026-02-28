@@ -175,7 +175,7 @@ export default function CollectionDetails({ collectionAddress }: CollectionDetai
                             <AlertTriangle className="h-4 w-4" />
                             <AlertTitle>Reported Content</AlertTitle>
                             <AlertDescription>
-                                This collection has been flagged by the Mediolano Community.
+                                This collection has been flagged by the Medialane Community.
                                 Proceed with caution.
                             </AlertDescription>
                         </Alert>

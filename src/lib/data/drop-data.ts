@@ -34,7 +34,7 @@ export const DROP_DATA = {
         socials: {
             twitter: 'https://twitter.com/medialane',
             discord: 'https://discord.gg/medialane',
-            website: 'https://medialane.xyz',
+            website: 'https://medialane.io',
         },
         stats: {
             collections: 1,

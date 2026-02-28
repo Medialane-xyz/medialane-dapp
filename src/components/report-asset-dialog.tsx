@@ -120,7 +120,7 @@ export function ReportAssetDialog({
           result.error || (
             <div className="flex flex-col gap-1">
               <span>Failed to submit report.</span>
-              <span>Please contact <a href="mailto:support@mediolano.app" className="underline">support@mediolano.app</a></span>
+              <span>Please contact <a href="mailto:dao@medialane.org" className="underline">dao@medialane.org</a></span>
             </div>
           )
         )
@@ -131,7 +131,7 @@ export function ReportAssetDialog({
       toast.error(
         <div className="flex flex-col gap-1">
           <span>An unexpected error occurred.</span>
-          <span>Please contact <a href="mailto:support@mediolano.app" className="underline">support@mediolano.app</a></span>
+          <span>Please contact <a href="mailto:dao@medialane.org" className="underline">dao@medialane.org</a></span>
         </div>
       )
     }
@@ -271,7 +271,7 @@ export function ReportAssetDialog({
             <div className="text-center space-y-2">
               <h3 className="font-semibold text-green-700">Report Submitted Successfully</h3>
               <p className="text-sm text-muted-foreground">
-                Thank you for helping keep Mediolano safe. We'll review your report and take appropriate action if
+                Thank you for helping keep Medialane safe. We'll review your report and take appropriate action if
                 necessary.
               </p>
               <p className="text-xs text-muted-foreground">

@@ -245,7 +245,7 @@ export default function CreatorAssetPage({ params }: AssetPageProps) {
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle>Reported Content</AlertTitle>
                     <AlertDescription>
-                      This asset has been flagged by the Mediolano Community. Proceed with caution.
+                      This asset has been flagged by the Medialane Community. Proceed with caution.
                     </AlertDescription>
                   </Alert>
                 )}

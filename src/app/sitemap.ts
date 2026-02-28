@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dapp.medialane.xyz'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dapp.medialane.io'
 
     const routes = [
         { path: '', priority: 1.0, changeFrequency: 'daily' },

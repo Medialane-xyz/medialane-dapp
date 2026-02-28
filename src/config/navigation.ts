@@ -32,7 +32,7 @@ import {
 
 export const navigation = {
     main: [
-        { title: "Start", href: "/", icon: Home, description: "Medialane.xyz" },
+        { title: "Start", href: "/", icon: Home, description: "medialane.io" },
         { title: "Marketplace", href: "/marketplace", icon: ShoppingBag, description: "Trade onchain assets" },
         { title: "Launchpad", href: "/launchpad", icon: Rocket, description: "Creator Launchpad" },
         { title: "Portfolio", href: "/portfolio", icon: User, description: "Manage your onchain account" },

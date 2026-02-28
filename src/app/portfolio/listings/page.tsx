@@ -3,7 +3,7 @@ import ListingsClientPage from "./client-page";
 
 export const metadata: Metadata = {
     title: "My Listings | Medialane",
-    description: "Manage your active IP marketplace listings on Mediolano.",
+    description: "Manage your active IP marketplace listings on Medialane.",
 };
 
 export default function ListingsPage() {

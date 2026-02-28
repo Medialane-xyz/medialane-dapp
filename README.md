@@ -10,7 +10,7 @@ We provide the definitive operating environment for creative capital, eliminatin
 
 Medialane is sustained by a clear fee model: a 2% service fee is applied to Creator Launchpad revenue products, and a 1% total fee is collected on all NFT Marketplace trading, auctions, remix, and licensing services. Medialane is designed to serve the future of creators' capital markets, businesses, and AI agents—without compromise.
 
-Medialane Dapp (Starknet Mainnet): https://medialane.xyz/
+Medialane Dapp (Starknet Mainnet): https://medialane.io/
 
 Roadmap:
  Medialane Protocol @ Starknet Sepolia 25.11

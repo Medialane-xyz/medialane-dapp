@@ -33,7 +33,7 @@ export default async function Page({ params }: CollectionPageProps) {
     '@type': 'Collection',
     name: `IP Collection ${collectionAddress.substring(0, 8)}...`,
     description: `Explore the IP collection deployed at ${collectionAddress} on the Medialane Integrity Web.`,
-    url: `https://dapp.medialane.xyz/collections/${collectionAddress}`,
+    url: `https://dapp.medialane.io/collections/${collectionAddress}`,
     publisher: {
       '@type': 'Organization',
       name: 'Medialane Protocol'
