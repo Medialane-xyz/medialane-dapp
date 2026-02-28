@@ -110,12 +110,12 @@ export function PortfolioAssets({ tokens, loading, collections = [] }: Portfolio
                     </div>
 
                     {hasMore && (
-                        <div className="flex justify-center pt-4">
+                        <div className="flex justify-center pt-8">
                             <Button
                                 variant="outline"
                                 size="lg"
                                 onClick={handleLoadMore}
-                                className="min-w-[150px]"
+                                className="min-w-[150px] border-outrun-cyan/30 text-outrun-cyan hover:bg-outrun-cyan/10 hover:border-neon-cyan/50 hover:shadow-glow-sm hover:shadow-neon-cyan/30 transition-all active:scale-[0.98]"
                             >
                                 Load More Assets
                             </Button>
@@ -147,12 +147,12 @@ function AssetCardSkeleton() {
 
 function EmptyState({ title, description }: { title: string; description: string }) {
     return (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                <Box className="h-8 w-8 text-muted-foreground" />
+        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-outrun-cyan/30 rounded-3xl bg-card/5 backdrop-blur-sm shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]">
+            <div className="p-4 rounded-full bg-gradient-to-br from-outrun-cyan/20 to-transparent flex items-center justify-center mb-6 shadow-glow-sm shadow-neon-cyan/20 ring-1 ring-outrun-cyan/30">
+                <Box className="h-8 w-8 text-outrun-cyan drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]" />
             </div>
-            <h3 className="text-lg font-medium">{title}</h3>
-            <p className="text-muted-foreground max-w-sm mt-1 mb-6 overflow-hidden">{description}</p>
+            <h3 className="text-xl font-bold tracking-tight">{title}</h3>
+            <p className="text-muted-foreground max-w-sm mt-2 mb-6 px-4">{description}</p>
         </div>
     );
 }

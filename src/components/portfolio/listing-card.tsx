@@ -86,13 +86,13 @@ export function ListingCard({ listing, onCancel }: ListingCardProps) {
                     </span>
                 </div>
                 <div className="absolute top-3 right-3 flex gap-2">
-                    <div className={`${listing.status === 'active' ? 'bg-green-500/80 shadow-[0_0_10px_rgba(34,197,94,0.3)]' :
-                        listing.status === 'fulfilled' ? 'bg-blue-500/80' :
-                            'bg-muted/80'
-                        } backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider border border-white/10`}>
+                    <div className={`${listing.status === 'active' ? 'bg-green-500/20 text-green-400 border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]' :
+                        listing.status === 'fulfilled' ? 'bg-blue-500/20 text-blue-400 border-blue-500/50' :
+                            'bg-muted/50 text-muted-foreground border-white/10'
+                        } backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border`}>
                         {listing.status}
                     </div>
-                    <div className={`${isListing ? 'bg-primary/80' : 'bg-orange-500/80'} backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider border border-white/10`}>
+                    <div className={`${isListing ? 'bg-neon-cyan/20 text-neon-cyan border-neon-cyan/50 shadow-[0_0_10px_rgba(0,255,255,0.2)]' : 'bg-outrun-magenta/20 text-outrun-magenta border-outrun-magenta/50 shadow-[0_0_10px_rgba(255,0,255,0.2)]'} backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border`}>
                         {isListing ? 'Sale' : 'Offer'}
                     </div>
                 </div>
@@ -109,7 +109,7 @@ export function ListingCard({ listing, onCancel }: ListingCardProps) {
                         </p>
                     </div>
                     <div className="text-right shrink-0">
-                        <p className="text-sm font-black text-primary tracking-tight">
+                        <p className={`text-sm font-black tracking-tight drop-shadow-sm ${isListing ? 'text-neon-cyan' : 'text-outrun-magenta'}`}>
                             {formattedPrice} <span className="text-[10px] font-bold ml-0.5">{currency.symbol}</span>
                         </p>
                         <p className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest">{isListing ? 'List Price' : 'Offer Price'}</p>
@@ -121,7 +121,7 @@ export function ListingCard({ listing, onCancel }: ListingCardProps) {
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full text-xs font-bold border border-border/40 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all rounded-lg group/btn"
+                    className="w-full text-xs font-bold border border-destructive/30 text-destructive hover:bg-destructive/20 hover:text-red-400 hover:border-destructive/50 hover:shadow-glow-sm hover:shadow-destructive/20 transition-all duration-300 rounded-lg group/btn"
                     onClick={() => onCancel?.(orderHash)}
                     disabled={(!isListing && !isBid) || listing.status !== 'active'}
                 >

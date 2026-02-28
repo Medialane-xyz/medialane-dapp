@@ -71,18 +71,18 @@ export function PortfolioListings({ searchQuery = "" }: PortfolioListingsProps) 
 
     if (filteredListings.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-border/50 rounded-3xl bg-muted/20">
-                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-6">
-                    <Tag className="h-8 w-8 text-muted-foreground/50" />
+            <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-outrun-magenta/30 rounded-3xl bg-card/5 backdrop-blur-sm shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]">
+                <div className="p-4 rounded-full bg-gradient-to-br from-outrun-magenta/20 to-transparent flex items-center justify-center mb-6 shadow-glow-sm shadow-neon-magenta/20 ring-1 ring-outrun-magenta/30">
+                    <Tag className="h-8 w-8 text-outrun-magenta drop-shadow-[0_0_8px_rgba(255,0,255,0.8)]" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">No listings found</h3>
-                <p className="text-muted-foreground max-w-sm mb-8 px-4">
+                <h3 className="text-xl font-bold tracking-tight mb-2">No listings found</h3>
+                <p className="text-muted-foreground mt-2 max-w-sm mb-8 px-4">
                     {searchQuery
                         ? `No items match your search "${searchQuery}".`
                         : "You don't have any active marketplace listings yet. List an asset to see it here."}
                 </p>
                 {!searchQuery && (
-                    <Button asChild className="rounded-full px-8 shadow-lg shadow-primary/20">
+                    <Button asChild className="rounded-full px-8 gradient-vivid shadow-glow-sm shadow-neon-cyan/30 text-white font-bold tracking-wide hover:scale-105 transition-transform duration-300">
                         <Link href="/portfolio/assets">
                             Go to My Assets
                         </Link>
@@ -104,13 +104,13 @@ export function PortfolioListings({ searchQuery = "" }: PortfolioListingsProps) 
                 ))}
             </div>
 
-            <div className="pt-8 border-t border-border/50 flex justify-between items-center text-xs text-muted-foreground">
+            <div className="pt-8 border-t border-border/20 flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
                 <p>Showing {filteredListings.length} listings</p>
                 <button
                     onClick={() => refetch()}
-                    className="hover:text-primary transition-colors flex items-center gap-1.5"
+                    className="hover:text-neon-cyan transition-colors flex items-center gap-1.5 group"
                 >
-                    <Loader2 className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
+                    <Loader2 className={`h-3 w-3 ${isLoading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
                     Refresh Listings
                 </button>
             </div>

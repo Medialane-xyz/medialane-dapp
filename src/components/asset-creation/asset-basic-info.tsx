@@ -90,7 +90,7 @@ export function AssetBasicInfo({
                     placeholder="e.g. Cosmic Dreams #01"
                     value={formState.title}
                     onChange={(e) => updateFormField("title", e.target.value)}
-                    className="h-12 text-base"
+                    className="h-12 text-base bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
                 />
             </div>
 
@@ -103,7 +103,7 @@ export function AssetBasicInfo({
                     value={formState.description}
                     onChange={(e) => updateFormField("description", e.target.value)}
                     rows={4}
-                    className="resize-none text-base"
+                    className="resize-none text-base bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
                 />
             </div>
 
@@ -147,16 +147,16 @@ export function AssetBasicInfo({
                 ) : (
                     <div
                         className={cn(
-                            "border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer group hover:border-primary/50 hover:bg-primary/5",
-                            "border-muted-foreground/20"
+                            "border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer group hover:border-outrun-cyan/40 hover:bg-outrun-cyan/5",
+                            "border-border/60 bg-card/20 backdrop-blur-sm shadow-sm"
                         )}
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
                         onClick={() => fileInputRef.current?.click()}
                     >
-                        <div className="h-12 w-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-                            <Upload className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                        <div className="h-14 w-14 bg-card rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform ring-1 ring-border/40 group-hover:ring-outrun-cyan/30 bg-background/50 shadow-sm">
+                            <Upload className="h-6 w-6 text-muted-foreground group-hover:text-neon-cyan  transition-colors" />
                         </div>
                         <h3 className="text-base font-medium mb-1">Drop your image here</h3>
                         <p className="text-muted-foreground mb-4 text-xs">
@@ -188,7 +188,7 @@ export function AssetBasicInfo({
                     }}
                     disabled={isLoadingCollections && !collections?.length}
                 >
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger className="h-12 bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm">
                         <SelectValue placeholder="Select Collection" />
                     </SelectTrigger>
                     <SelectContent>
@@ -231,7 +231,7 @@ export function AssetBasicInfo({
                     placeholder="https://yoursite.com/item/123"
                     value={formState.externalUrl || ""}
                     onChange={(e) => updateFormField("externalUrl", e.target.value)}
-                    className="h-12 text-base"
+                    className="h-12 text-base bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
                 />
                 <p className="text-xs text-muted-foreground">
                     Link to your website or the detailed project page for this asset.

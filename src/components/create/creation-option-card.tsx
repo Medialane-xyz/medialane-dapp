@@ -71,16 +71,16 @@ export function CreationOptionCard({ option, viewMode, isSelected, onSelect }: C
       <div className={cn("h-1 bg-gradient-to-r", option.gradient)} />
 
       {/* Badges */}
-      <div className="absolute top-3 right-3 flex flex-col gap-1">
+      <div className="absolute top-3 right-3 flex flex-col gap-1 z-10">
         {option.popular && (
-          <Badge className="gap-1 bg-transparent shadow-sm text-amber-500">
+          <Badge className="gap-1 bg-outrun-yellow/20 text-outrun-yellow border-outrun-yellow/30 shadow-[0_0_10px_rgba(255,255,0,0.2)]">
             <Star className="h-3 w-3" />
             Popular
           </Badge>
         )}
         {option.trending && (
           <Badge
-            className="gap-1 text-purple-700 bg-transparent shadow-sm"
+            className="gap-1 bg-outrun-magenta/20 text-outrun-magenta border-outrun-magenta/30 shadow-[0_0_10px_rgba(255,0,255,0.2)]"
           >
             <TrendingUp className="h-3 w-3" />
             Trending
@@ -136,9 +136,9 @@ export function CreationOptionCard({ option, viewMode, isSelected, onSelect }: C
         </div>
 
         {/* Action Button */}
-        <Link href={option.href} className="block">
+        <Link href={option.href} className="block mt-2">
           <Button
-            className="w-full gap-2 transition-all duration-300 group-hover:gradient-vivid-outrun group-hover:shadow-[0_0_20px_rgba(0,255,255,0.25)]"
+            className="w-full gap-2 transition-all duration-300 gradient-vivid shadow-glow-sm shadow-neon-cyan/20 hover:scale-[1.02] text-white font-bold tracking-wider"
             size="lg"
           >
             Get Started
@@ -184,30 +184,24 @@ function getIconComponent(iconName: string) {
 function getColorClasses(gradient: string) {
   switch (gradient) {
     case "from-blue-500 to-blue-700":
-      return { bgLight: "bg-blue-100 dark:bg-blue-900/30" }
+      return { bgLight: "bg-outrun-cyan/10 ring-1 ring-outrun-cyan/30 text-outrun-cyan drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]" }
     case "from-green-500 to-green-700":
-      return { bgLight: "bg-green-100 dark:bg-green-900/30" }
+      return { bgLight: "bg-green-500/10 ring-1 ring-green-500/30 text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]" }
     case "from-purple-500 to-purple-700":
-      return { bgLight: "bg-purple-100 dark:bg-purple-900/30" }
+      return { bgLight: "bg-outrun-purple/10 ring-1 ring-outrun-purple/30 text-outrun-purple drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" }
     case "from-rose-500 to-rose-700":
-      return { bgLight: "bg-rose-100 dark:bg-rose-900/30" }
+      return { bgLight: "bg-outrun-magenta/10 ring-1 ring-outrun-magenta/30 text-outrun-magenta drop-shadow-[0_0_8px_rgba(255,0,255,0.8)]" }
+    case "from-amber-500 to-amber-700":
+      return { bgLight: "bg-outrun-yellow/10 ring-1 ring-outrun-yellow/30 text-outrun-yellow drop-shadow-[0_0_8px_rgba(255,255,0,0.8)]" }
     case "from-blue-500 to-cyan-500":
-      return { bgLight: "bg-blue-100 dark:bg-blue-900/30" }
+      return { bgLight: "bg-outrun-cyan/10 ring-1 ring-outrun-cyan/30 text-outrun-cyan drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]" }
     case "from-purple-500 to-pink-500":
-      return { bgLight: "bg-purple-100 dark:bg-purple-900/30" }
-    case "from-purple-500 to-teal-500":
-      return { bgLight: "bg-purple-100 dark:bg-purple-900/30" }
+      return { bgLight: "bg-outrun-purple/10 ring-1 ring-outrun-purple/30 text-outrun-purple drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" }
     case "from-orange-500 to-red-500":
-      return { bgLight: "bg-orange-100 dark:bg-orange-900/30" }
-    case "from-indigo-500 to-purple-500":
-      return { bgLight: "bg-indigo-100 dark:bg-indigo-900/30" }
-    case "from-pink-500 to-rose-500":
-      return { bgLight: "bg-pink-100 dark:bg-pink-900/30" }
-    case "from-slate-500 to-gray-500":
-      return { bgLight: "bg-slate-100 dark:bg-slate-800/50" }
+      return { bgLight: "bg-orange-500/10 ring-1 ring-orange-500/30 text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]" }
     case "from-violet-500 to-purple-500":
-      return { bgLight: "bg-violet-100 dark:bg-violet-900/30" }
+      return { bgLight: "bg-purple-500/10 ring-1 ring-purple-500/30 text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" }
     default:
-      return { bgLight: "bg-gray-100 dark:bg-gray-800/50" }
+      return { bgLight: "bg-muted/50 ring-1 ring-muted text-muted-foreground" }
   }
 }

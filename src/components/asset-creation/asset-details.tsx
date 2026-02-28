@@ -54,7 +54,7 @@ export function AssetDetails({
                     placeholder="Creator name or address"
                     value={formState.creator}
                     onChange={(e) => updateFormField("creator", e.target.value)}
-                    className="h-12"
+                    className="h-12 text-base bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
                 />
                 <p className="text-xs text-muted-foreground">
                     Defaults to your wallet address.
@@ -67,12 +67,12 @@ export function AssetDetails({
                     <Tag className="h-4 w-4 text-muted-foreground" />
                     Tags
                 </Label>
-                <div className="flex flex-wrap gap-2 min-h-[2.5rem] p-2 rounded-md bg-muted/10 border border-muted-foreground/10">
+                <div className="flex flex-wrap gap-2 min-h-[3rem] p-3 rounded-xl bg-background/50 border border-border/50 shadow-inner">
                     {formState.tags.length === 0 && (
                         <span className="text-sm text-muted-foreground p-1">No tags added</span>
                     )}
                     {formState.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="pl-2 pr-1 py-1 flex items-center gap-1">
+                        <Badge key={tag} variant="secondary" className="pl-3 pr-2 py-1 flex items-center gap-1 bg-outrun-cyan/10 border border-outrun-cyan/20 text-outrun-cyan">
                             {tag}
                             <X
                                 className="h-3 w-3 cursor-pointer hover:text-red-500 transition-colors"
@@ -84,7 +84,7 @@ export function AssetDetails({
                 <Input
                     placeholder="Type tag and press Enter"
                     onKeyDown={handleTagKeyPress}
-                    className="h-12"
+                    className="h-12 text-base bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
                 />
             </div>
         </div>

@@ -420,14 +420,14 @@ export default function CreatePage() {
               ) : (
                 <>
                   {/* Popular Templates */}
-                  <Card className="glass-card">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-base flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-outrun-magenta" />
+                  <Card className="glass-panel border-outrun-cyan/30 bg-card/5 backdrop-blur-md shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]">
+                    <CardHeader className="pb-3 border-b border-outrun-cyan/10">
+                      <CardTitle className="text-base flex items-center gap-2 font-bold tracking-wide">
+                        <TrendingUp className="h-4 w-4 text-neon-cyan drop-shadow-[0_0_5px_rgba(0,255,255,0.8)]" />
                         Popular Templates
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3">
+                    <CardContent className="space-y-3 pt-3">
                       {templates.slice(0, 4).map((template) => {
                         const getIconComponent = (iconName: string) => {
                           switch (iconName) {
@@ -445,22 +445,21 @@ export default function CreatePage() {
                         }
 
                         return (
-                          <Link key={template.id} href={`/create/templates/${template.id}`}>
-                            <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-outrun-cyan/10 transition-colors cursor-pointer">
-                              <div className="p-1.5 rounded-md bg-outrun-cyan/10 text-outrun-cyan">
+                          <Link key={template.id} href={`/create/templates/${template.id}`} className="block group">
+                            <div className="flex items-center gap-3 p-2 rounded-lg bg-card/20 hover:bg-outrun-cyan/10 ring-1 ring-border/20 hover:ring-outrun-cyan/30 transition-all cursor-pointer">
+                              <div className="p-1.5 rounded-md bg-outrun-cyan/10 text-outrun-cyan group-hover:shadow-glow-sm shadow-neon-cyan/20">
                                 {getIconComponent(template.icon)}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <div className="font-medium text-sm">{template.name}</div>
-                                {/*<div className="text-xs text-muted-foreground">{template.count} created</div>*/}
+                                <div className="font-medium text-sm text-foreground/90 group-hover:text-neon-cyan transition-colors">{template.name}</div>
                               </div>
-                              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
+                              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-neon-cyan group-hover:translate-x-0.5 transition-all" />
                             </div>
                           </Link>
                         )
                       })}
-                      <Link href="/create/templates">
-                        <Button variant="outline" size="sm" className="w-full mt-2 bg-transparent hover:bg-outrun-cyan/10 hover:border-outrun-cyan/30 transition-all">
+                      <Link href="/create/templates" className="block mt-4">
+                        <Button variant="outline" size="sm" className="w-full bg-transparent border-outrun-cyan/30 text-outrun-cyan hover:bg-outrun-cyan/10 hover:border-neon-cyan/50 hover:shadow-glow-sm hover:shadow-neon-cyan/20 transition-all font-bold">
                           View All Templates
                         </Button>
                       </Link>
@@ -484,24 +483,24 @@ export default function CreatePage() {
                   </Card>*/}
 
                   {/* Benefits */}
-                  <Card className="glass-card">
-                    <CardContent className="p-4">
-                      <h4 className="font-medium mb-3">Why tokenize with Mediolano?</h4>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className="h-4 w-4 text-outrun-cyan" />
+                  <Card className="glass-panel border-outrun-magenta/30 bg-card/5 backdrop-blur-md shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]">
+                    <CardContent className="p-5">
+                      <h4 className="font-bold mb-4 text-outrun-magenta tracking-wide">Why tokenize with Medialane?</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-2.5 text-sm text-foreground/90">
+                          <CheckCircle className="h-4 w-4 text-neon-cyan drop-shadow-[0_0_5px_rgba(0,255,255,0.8)] mt-0.5 shrink-0" />
                           <span>Zero fees protocol and dapp</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className="h-4 w-4 text-outrun-cyan" />
+                        <div className="flex items-start gap-2.5 text-sm text-foreground/90">
+                          <CheckCircle className="h-4 w-4 text-neon-cyan drop-shadow-[0_0_5px_rgba(0,255,255,0.8)] mt-0.5 shrink-0" />
                           <span>Full ownership onchain</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className="h-4 w-4 text-outrun-cyan" />
+                        <div className="flex items-start gap-2.5 text-sm text-foreground/90">
+                          <CheckCircle className="h-4 w-4 text-neon-cyan drop-shadow-[0_0_5px_rgba(0,255,255,0.8)] mt-0.5 shrink-0" />
                           <span>Instant tokenization</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <CheckCircle className="h-4 w-4 text-outrun-cyan" />
+                        <div className="flex items-start gap-2.5 text-sm text-foreground/90">
+                          <CheckCircle className="h-4 w-4 text-neon-cyan drop-shadow-[0_0_5px_rgba(0,255,255,0.8)] mt-0.5 shrink-0" />
                           <span>Powered on Starknet Blockchain</span>
                         </div>
                       </div>

@@ -108,9 +108,9 @@ export function PortfolioOrderList({ searchQuery = "", mode }: PortfolioOrderLis
     };
 
     const getEmptyState = () => {
-        const icon = mode === "offers-received" ? <Inbox className="h-8 w-8" /> :
-            mode === "offers-made" ? <Gavel className="h-8 w-8" /> :
-                <History className="h-8 w-8" />;
+        const icon = mode === "offers-received" ? <Inbox className="h-8 w-8 text-neon-cyan drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]" /> :
+            mode === "offers-made" ? <Gavel className="h-8 w-8 text-outrun-magenta drop-shadow-[0_0_8px_rgba(255,0,255,0.8)]" /> :
+                <History className="h-8 w-8 text-outrun-yellow drop-shadow-[0_0_8px_rgba(255,255,0,0.8)]" />;
 
         const title = mode === "offers-received" ? "No offers received" :
             mode === "offers-made" ? "No offers made" :
@@ -121,14 +121,23 @@ export function PortfolioOrderList({ searchQuery = "", mode }: PortfolioOrderLis
                 mode === "offers-made" ? "You haven't made any buy offers yet." :
                     "Your historical bids will appear here.";
 
+        const borderColor = mode === "offers-received" ? "border-neon-cyan/30" :
+            mode === "offers-made" ? "border-outrun-magenta/30" : "border-outrun-yellow/30";
+
+        const gradientColor = mode === "offers-received" ? "from-neon-cyan/20" :
+            mode === "offers-made" ? "from-outrun-magenta/20" : "from-outrun-yellow/20";
+
+        const ringColor = mode === "offers-received" ? "ring-neon-cyan/30 shadow-neon-cyan/20" :
+            mode === "offers-made" ? "ring-outrun-magenta/30 shadow-neon-magenta/20" : "ring-outrun-yellow/30 shadow-outrun-yellow/20";
+
         return (
-            <div className="flex flex-col items-center justify-center py-20 text-center space-y-4 border border-dashed rounded-3xl border-border/50 bg-card/5">
-                <div className="p-4 rounded-full bg-muted/20 text-muted-foreground/50">
+            <div className={`flex flex-col items-center justify-center py-20 text-center space-y-4 border-2 border-dashed rounded-3xl ${borderColor} bg-card/5 backdrop-blur-sm shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]`}>
+                <div className={`p-4 rounded-full bg-gradient-to-br ${gradientColor} to-transparent shadow-glow-sm ${ringColor} ring-1 mb-2`}>
                     {icon}
                 </div>
                 <div className="space-y-1">
                     <h3 className="text-xl font-bold tracking-tight">{title}</h3>
-                    <p className="text-muted-foreground max-w-sm text-sm">
+                    <p className="text-muted-foreground max-w-sm text-sm px-4">
                         {description}
                     </p>
                 </div>
@@ -156,7 +165,7 @@ export function PortfolioOrderList({ searchQuery = "", mode }: PortfolioOrderLis
             )}
 
             {/* Table Header - Desktop Only */}
-            <div className="hidden md:grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_auto] gap-4 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 border-b border-border/10">
+            <div className={`hidden md:grid grid-cols-[2.5fr_1fr_1.5fr_1.5fr_1fr_auto] gap-4 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] border-b border-border/20 ${mode === 'offers-received' ? 'text-neon-cyan' : mode === 'offers-made' ? 'text-outrun-magenta' : 'text-outrun-yellow'}`}>
                 <div>Item</div>
                 <div>Type</div>
                 <div>Price</div>
@@ -177,11 +186,11 @@ export function PortfolioOrderList({ searchQuery = "", mode }: PortfolioOrderLis
             </div>
 
             {/* Footer */}
-            <div className="pt-8 border-t border-border/10 flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+            <div className="pt-8 border-t border-border/20 flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
                 <p>Showing {filteredBids.length} {mode.replace('-', ' ')} items</p>
                 <button
                     onClick={() => refetch()}
-                    className="hover:text-primary transition-colors flex items-center gap-1.5 group"
+                    className={`hover:text-${mode === 'offers-received' ? 'neon-cyan' : mode === 'offers-made' ? 'outrun-magenta' : 'outrun-yellow'} transition-colors flex items-center gap-1.5 group`}
                 >
                     <Loader2 className={`h-3 w-3 ${isLoading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
                     Refresh List

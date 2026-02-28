@@ -33,7 +33,7 @@ export function LicensingOptions({ formState, updateFormField }: LicensingOption
           value={formState.licenseType || "all-rights-reserved"}
           onValueChange={(value) => updateFormField("licenseType", value)}
         >
-          <SelectTrigger className="h-12">
+          <SelectTrigger className="h-12 bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm">
             <SelectValue placeholder="Select license type" />
           </SelectTrigger>
           <SelectContent>
@@ -62,8 +62,8 @@ export function LicensingOptions({ formState, updateFormField }: LicensingOption
             })}
           </SelectContent>
         </Select>
-        <div className="text-sm text-muted-foreground mt-2 p-3 bg-muted/30 rounded-md border flex gap-3 items-start">
-          <selectedLicense.icon className="h-5 w-5 mt-0.5 text-primary" />
+        <div className="text-sm text-foreground/80 mt-2 p-3 bg-muted/50 rounded-xl border flex gap-3 items-start">
+          <selectedLicense.icon className="h-5 w-5 mt-0.5 text-neon-cyan " />
           <div>
             <p className="font-medium text-foreground">{selectedLicense.name}</p>
             <p>{selectedLicense.description}</p>
@@ -83,7 +83,7 @@ export function LicensingOptions({ formState, updateFormField }: LicensingOption
             value={formState.customLicense || ""}
             onChange={(e) => updateFormField("customLicense", e.target.value)}
             rows={4}
-            className="resize-none"
+            className="resize-none bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
           />
         </div>
       )}
@@ -98,7 +98,7 @@ export function LicensingOptions({ formState, updateFormField }: LicensingOption
           value={formState.geographicScope || "worldwide"}
           onValueChange={(value) => updateFormField("geographicScope", value)}
         >
-          <SelectTrigger className="h-12">
+          <SelectTrigger className="h-12 bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm">
             <SelectValue placeholder="Select geographic scope" />
           </SelectTrigger>
           <SelectContent>
@@ -122,7 +122,7 @@ export function LicensingOptions({ formState, updateFormField }: LicensingOption
               placeholder="e.g. Germany, France, Japan..."
               value={formState.territory || ""}
               onChange={(e) => updateFormField("territory", e.target.value)}
-              className="mt-1"
+              className="mt-1 h-12 bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
             />
           </div>
         )}
@@ -136,7 +136,7 @@ export function LicensingOptions({ formState, updateFormField }: LicensingOption
           placeholder="Specify industries or applications (e.g. Medical devices, Education, Non-profit use only)..."
           value={formState.fieldOfUse || ""}
           onChange={(e) => updateFormField("fieldOfUse", e.target.value)}
-          className="resize-none"
+          className="resize-none bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
         />
       </div>
 
@@ -148,6 +148,7 @@ export function LicensingOptions({ formState, updateFormField }: LicensingOption
           placeholder="e.g. Perpetual, 5 years, until 2030..."
           value={formState.licenseDuration || ""}
           onChange={(e) => updateFormField("licenseDuration", e.target.value)}
+          className="h-12 bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
         />
       </div>
 
@@ -162,6 +163,7 @@ export function LicensingOptions({ formState, updateFormField }: LicensingOption
             placeholder="e.g. Licensee must grant back rights to improvements..."
             value={formState.grantBack || ""}
             onChange={(e) => updateFormField("grantBack", e.target.value)}
+            className="h-12 bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
           />
           <p className="text-sm text-muted-foreground">
             Specify conditions for improvements made to the IP.
@@ -175,6 +177,7 @@ export function LicensingOptions({ formState, updateFormField }: LicensingOption
             placeholder="e.g. No AI Training allowed, Zero Retention required..."
             value={formState.aiRights || ""}
             onChange={(e) => updateFormField("aiRights", e.target.value)}
+            className="h-12 bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
           />
           <p className="text-sm text-muted-foreground">
             Define rights regarding Artificial Intelligence training and data usage.

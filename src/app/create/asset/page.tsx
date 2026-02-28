@@ -341,14 +341,17 @@ export default function CreateAssetPage() {
               <Accordion type="multiple" defaultValue={["basic-info"]} className="w-full space-y-4">
 
                 {/* 1. Basic Information (Top Priority) */}
-                <AccordionItem value="basic-info" className="glass">
-                  <AccordionTrigger className="hover:no-underline px-4 py-4 text-xl font-semibold">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-primary" />
-                      <span>Asset Info</span>
+                <AccordionItem value="basic-info" className="relative group rounded-xl border border-border/50 bg-card/40 backdrop-blur-xl shadow-sm overflow-hidden transition-all hover:border-outrun-cyan/40">
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-outrun-cyan/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <AccordionTrigger className="hover:no-underline px-6 py-5 text-lg font-medium transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 text-primary shadow-[0_2px_10px_rgba(0,0,0,0.05)] text-primary">
+                        <FileText className="h-5 w-5 " />
+                      </div>
+                      <span className="text-foreground/90">Asset Info</span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-6 pt-2">
+                  <AccordionContent className="px-6 pb-6 pt-6 border-t border-border/10 bg-background/50">
                     <AssetBasicInfo
                       formState={formState}
                       updateFormField={updateFormField}
@@ -363,14 +366,17 @@ export default function CreateAssetPage() {
                 </AccordionItem>
 
                 {/* 2. Asset Type Selection */}
-                <AccordionItem value="ip-type" className="glass">
-                  <AccordionTrigger className="hover:no-underline px-4 py-4 text-xl font-semibold">
-                    <div className="flex items-center gap-2">
-                      <Settings2 className="h-5 w-5 text-primary" />
-                      <span>IP Type</span>
+                <AccordionItem value="ip-type" className="relative group rounded-xl border border-border/50 bg-card/40 backdrop-blur-xl shadow-sm overflow-hidden transition-all hover:border-outrun-magenta/40">
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-outrun-magenta/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <AccordionTrigger className="hover:no-underline px-6 py-5 text-lg font-medium transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 text-primary shadow-[0_2px_10px_rgba(0,0,0,0.05)] text-primary">
+                        <Settings2 className="h-5 w-5 " />
+                      </div>
+                      <span className="text-foreground/90">IP Type</span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-6 pt-2">
+                  <AccordionContent className="px-6 pb-6 pt-6 border-t border-border/10 bg-background/50">
                     <TemplateSelector
                       templates={templates}
                       selectedTemplateId={formState.assetType}
@@ -392,14 +398,17 @@ export default function CreateAssetPage() {
                 </AccordionItem>
 
                 {/* 3. Advanced Configuration */}
-                <AccordionItem value="advanced-info" className="glass">
-                  <AccordionTrigger className="hover:no-underline px-4 py-4 text-xl font-semibold">
-                    <div className="flex items-center gap-2">
-                      <Settings2 className="h-5 w-5 text-primary" />
-                      <span>Advanced Information</span>
+                <AccordionItem value="advanced-info" className="relative group rounded-xl border border-border/50 bg-card/40 backdrop-blur-xl shadow-sm overflow-hidden transition-all hover:border-outrun-yellow/40">
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-outrun-yellow/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <AccordionTrigger className="hover:no-underline px-6 py-5 text-lg font-medium transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 text-primary shadow-[0_2px_10px_rgba(0,0,0,0.05)] text-primary">
+                        <Settings2 className="h-5 w-5 " />
+                      </div>
+                      <span className="text-foreground/90">Advanced Information</span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-6 pt-2 space-y-8">
+                  <AccordionContent className="px-6 pb-6 pt-6 border-t border-border/10 bg-background/50 space-y-8">
                     {/* 3.1 Asset Details (Categorization) */}
                     <div id="asset-details" className="pt-2">
                       <h3 className="text-lg font-medium mb-4 flex items-center gap-2 text-muted-foreground">
@@ -416,14 +425,17 @@ export default function CreateAssetPage() {
                 </AccordionItem>
 
                 {/* 4. Licensing Options */}
-                <AccordionItem value="licensing" className="glass">
-                  <AccordionTrigger className="hover:no-underline px-4 py-4 text-xl font-semibold">
-                    <div className="flex items-center gap-2">
-                      <Settings2 className="h-5 w-5 text-primary" />
-                      <span>Programmable Licensing</span>
+                <AccordionItem value="licensing" className="relative group rounded-xl border border-border/50 bg-card/40 backdrop-blur-xl shadow-sm overflow-hidden transition-all hover:border-neon-cyan/40">
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neon-cyan/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <AccordionTrigger className="hover:no-underline px-6 py-5 text-lg font-medium transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 text-primary shadow-[0_2px_10px_rgba(0,0,0,0.05)] text-primary">
+                        <Settings2 className="h-5 w-5 " />
+                      </div>
+                      <span className="text-foreground/90">Programmable Licensing</span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-6 pt-2">
+                  <AccordionContent className="px-6 pb-6 pt-6 border-t border-border/10 bg-background/50">
                     <LicensingOptions
                       formState={formState}
                       updateFormField={updateFormField}
@@ -434,7 +446,7 @@ export default function CreateAssetPage() {
               </Accordion>
 
               {/* Submit Button */}
-              <div className="flex justify-end pt-2">
+              <div className="flex justify-end pt-4">
                 <Button
                   onClick={handleSubmit}
                   disabled={
@@ -446,9 +458,9 @@ export default function CreateAssetPage() {
                     loading
                   }
                   size="lg"
-                  className="px-10 h-12 text-lg shadow-lg hover:shadow-xl transition-all rounded-full"
+                  className="px-10 h-14 text-lg font-bold tracking-wider bg-gradient-to-r from-outrun-cyan to-outrun-magenta hover:from-outrun-cyan/90 hover:to-outrun-magenta/90 text-white shadow-lg shadow-outrun-magenta/20 transition-all rounded-xl hover:-translate-y-0.5 border border-white/10 w-full sm:w-auto"
                 >
-                  {loading && <Loader className="animate-spin h-5 w-5 mr-2" />}
+                  {loading && <Loader className="animate-spin h-5 w-5 mr-3" />}
                   {loading ? (upload_loading ? "Uploading..." : isCreating ? "Minting..." : "Processing") : "Create Asset"}
                 </Button>
               </div>
@@ -469,20 +481,22 @@ export default function CreateAssetPage() {
                 />
 
                 {/* Help Card */}
-                <Card className="glass-card">
-                  <CardContent className="p-4">
-                    <h4 className="font-medium mb-2 flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
+                <Card className="relative bg-card/40 backdrop-blur-xl border border-border/50 shadow-sm rounded-xl overflow-hidden">
+                  <CardContent className="p-5">
+                    <h4 className="font-bold mb-3 flex items-center gap-2 text-primary">
+                      <div className="p-1.5 rounded-md bg-outrun-cyan/10 ring-1 ring-outrun-cyan/30 shadow-glow-sm shadow-neon-cyan/20">
+                        <FileText className="h-4 w-4 " />
+                      </div>
                       Need Help?
                     </h4>
-                    <p className="text-sm text-muted-foreground mb-3">
+                    <p className="text-sm text-foreground/80 mb-4 leading-relaxed">
                       Learn more about creating and protecting your intellectual
                       property assets.
                     </p>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full bg-transparent"
+                      className="w-full bg-transparent border-outrun-cyan/30 text-primary hover:bg-outrun-cyan/10 hover:border-neon-cyan/50 hover:shadow-glow-sm hover:shadow-neon-cyan/20 transition-all font-bold tracking-wide"
                     >
                       View Documentation
                     </Button>
