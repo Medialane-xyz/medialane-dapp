@@ -369,7 +369,7 @@ export default function CreateAssetFromTemplate() {
             <Accordion type="multiple" defaultValue={["basic-info", "ip-type"]} className="w-full space-y-4">
 
               {/* 1. Basic Information (Top Priority) */}
-              <AccordionItem value="basic-info" className="border rounded-xl bg-card shadow-sm px-2">
+              <AccordionItem value="basic-info" className="border border-border/50 rounded-2xl bg-card/40 dark:bg-card/20 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.1)] px-2 overflow-hidden transition-all">
                 <AccordionTrigger className="hover:no-underline px-4 py-4 text-xl font-semibold">
                   <div className="flex items-center gap-2">
                     <FileText className="h-5 w-5 text-primary" />
@@ -391,7 +391,7 @@ export default function CreateAssetFromTemplate() {
               </AccordionItem>
 
               {/* 2. IP Type (Template Specifics) */}
-              <AccordionItem value="ip-type" className="border rounded-xl bg-card shadow-sm px-2">
+              <AccordionItem value="ip-type" className="border border-border/50 rounded-2xl bg-card/40 dark:bg-card/20 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.1)] px-2 overflow-hidden transition-all">
                 <AccordionTrigger className="hover:no-underline px-4 py-4 text-xl font-semibold">
                   <div className="flex items-center gap-2">
                     <Settings2 className="h-5 w-5 text-primary" />
@@ -412,7 +412,7 @@ export default function CreateAssetFromTemplate() {
               </AccordionItem>
 
               {/* 3. Advanced Configuration */}
-              <AccordionItem value="advanced-info" className="border rounded-xl bg-card shadow-sm px-2">
+              <AccordionItem value="advanced-info" className="border border-border/50 rounded-2xl bg-card/40 dark:bg-card/20 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.1)] px-2 overflow-hidden transition-all">
                 <AccordionTrigger className="hover:no-underline px-4 py-4 text-xl font-semibold">
                   <div className="flex items-center gap-2">
                     <Settings2 className="h-5 w-5 text-primary" />
@@ -431,7 +431,7 @@ export default function CreateAssetFromTemplate() {
               </AccordionItem>
 
               {/* 4. Licensing Options */}
-              <AccordionItem value="licensing" className="border rounded-xl bg-card shadow-sm px-2">
+              <AccordionItem value="licensing" className="border border-border/50 rounded-2xl bg-card/40 dark:bg-card/20 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.1)] px-2 overflow-hidden transition-all">
                 <AccordionTrigger className="hover:no-underline px-4 py-4 text-xl font-semibold">
                   <div className="flex items-center gap-2">
                     <Settings2 className="h-5 w-5 text-primary" />
@@ -461,7 +461,7 @@ export default function CreateAssetFromTemplate() {
                   !formState.collection
                 }
                 size="lg"
-                className="px-8"
+                className="px-8 bg-gradient-to-r from-outrun-cyan to-outrun-magenta text-white shadow-[0_0_15px_rgba(0,255,255,0.4)] border-none hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(255,0,255,0.5)] transition-all font-bold tracking-wide"
               >
                 {loading && <Loader className="animate-spin h-5 w-5 mr-2" />}
                 {loading
@@ -482,7 +482,7 @@ export default function CreateAssetFromTemplate() {
               <AssetPreview formState={formState} template={template} />
 
               {/* Help Card */}
-              <Card>
+              <Card className="relative bg-card/40 dark:bg-card/20 backdrop-blur-2xl border border-border/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.1)] rounded-2xl overflow-hidden">
                 <CardContent className="p-4">
                   <h4 className="font-medium mb-2 flex items-center gap-2">
                     <FileText className="h-4 w-4" />

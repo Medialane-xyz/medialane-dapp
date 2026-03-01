@@ -90,7 +90,7 @@ export function AssetBasicInfo({
                     placeholder="e.g. Cosmic Dreams #01"
                     value={formState.title}
                     onChange={(e) => updateFormField("title", e.target.value)}
-                    className="h-12 text-base bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
+                    className="h-12 text-base bg-black/5 dark:bg-black/20 backdrop-blur-2xl border border-white/10 dark:border-white/5 hover:border-outrun-cyan/50 focus:border-outrun-cyan focus:ring-2 focus:ring-outrun-cyan/20 transition-all rounded-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
                 />
             </div>
 
@@ -103,7 +103,7 @@ export function AssetBasicInfo({
                     value={formState.description}
                     onChange={(e) => updateFormField("description", e.target.value)}
                     rows={4}
-                    className="resize-none text-base bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
+                    className="resize-none text-base bg-black/5 dark:bg-black/20 backdrop-blur-2xl border border-white/10 dark:border-white/5 hover:border-outrun-cyan/50 focus:border-outrun-cyan focus:ring-2 focus:ring-outrun-cyan/20 transition-all rounded-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
                 />
             </div>
 
@@ -112,7 +112,7 @@ export function AssetBasicInfo({
                 <Label className="text-base font-medium">Asset Image <span className="text-destructive">*</span></Label>
 
                 {formState.mediaFile ? (
-                    <div className="relative group overflow-hidden rounded-xl border bg-muted/30">
+                    <div className="relative group overflow-hidden rounded-2xl border border-border/50 bg-card/40 dark:bg-card/20 backdrop-blur-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.1)]">
                         {formState.mediaPreviewUrl && formState.mediaFile.type.startsWith("image/") ? (
                             <div className="relative aspect-video w-full">
                                 <Image
@@ -231,7 +231,7 @@ export function AssetBasicInfo({
                     placeholder="https://yoursite.com/item/123"
                     value={formState.externalUrl || ""}
                     onChange={(e) => updateFormField("externalUrl", e.target.value)}
-                    className="h-12 text-base bg-background/40 backdrop-blur-md border border-border/50 hover:border-outrun-cyan/40 focus:border-outrun-cyan focus:ring-1 focus:ring-outrun-cyan/30 transition-all rounded-lg shadow-sm"
+                    className="h-12 text-base bg-black/5 dark:bg-black/20 backdrop-blur-2xl border border-white/10 dark:border-white/5 hover:border-outrun-cyan/50 focus:border-outrun-cyan focus:ring-2 focus:ring-outrun-cyan/20 transition-all rounded-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
                 />
                 <p className="text-xs text-muted-foreground">
                     Link to your website or the detailed project page for this asset.

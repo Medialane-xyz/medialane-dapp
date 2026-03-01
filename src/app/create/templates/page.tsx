@@ -88,7 +88,7 @@ export default function TemplatesPage() {
                 <Button
                   key={category.id}
                   variant={activeCategory === category.id ? "default" : "outline"}
-                  className={cn("flex items-center gap-2 transition-all duration-300", activeCategory !== category.id && "bg-background/40 backdrop-blur-sm border-border/50 hover:bg-background/80 hover:border-border")}
+                  className={cn("flex items-center gap-2 transition-all duration-300", activeCategory !== category.id && "bg-background/40 backdrop-blur-md border border-border/40 hover:bg-white/10 dark:hover:bg-white/5 hover:border-outrun-cyan/40 hover:text-outrun-cyan transition-all shadow-sm")}
                   size="sm"
                   onClick={() => setActiveCategory(category.id)}
                 >
@@ -150,9 +150,9 @@ export default function TemplatesPage() {
                   </div>
                 </>
               ) : (
-                <Card className="relative bg-card/40 backdrop-blur-xl border border-border/50 shadow-sm rounded-xl overflow-hidden">
+                <Card className="relative bg-card/40 dark:bg-card/20 backdrop-blur-2xl border border-border/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.1)] rounded-2xl overflow-hidden">
                   <CardContent className="p-6 text-center">
-                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/5 border border-border shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-outrun-magenta/20 to-outrun-cyan/20 border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
                       <Sparkles className="h-8 w-8 text-primary" />
                     </div>
                     <h3 className="mb-2 text-xl font-medium">Select a Template</h3>
@@ -169,7 +169,7 @@ export default function TemplatesPage() {
               )}
 
               {/* Quick Stats */}
-              <Card className="relative bg-card/40 backdrop-blur-xl border border-border/50 shadow-sm rounded-xl overflow-hidden">
+              <Card className="relative bg-card/40 dark:bg-card/20 backdrop-blur-2xl border border-border/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.1)] rounded-2xl overflow-hidden">
                 <CardContent className="p-4">
                   <h4 className="font-medium mb-3">Platform Stats</h4>
                   <div className="space-y-2 text-sm">
